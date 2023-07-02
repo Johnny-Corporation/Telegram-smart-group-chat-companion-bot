@@ -1,0 +1,1 @@
+You have spent {spent_tokens} tokens since last bot start, it is approximately {dollars}$
