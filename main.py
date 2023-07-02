@@ -94,7 +94,7 @@ def send_to_developers(msg, file=False):
 # --- Help ---
 @bot.message_handler(commands=["help"])
 @error_handler
-def handle_start(message):
+def error_command(message):
     bot.reply_to(
         message, templates["help.txt"]
     )  # finish here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -103,7 +103,7 @@ def handle_start(message):
 # --- Tokens info ---
 @bot.message_handler(commands=["tokens_info"])
 @error_handler
-def handle_start(message):
+def tokens_info_command(message):
     # bot.reply_to(message, templates["help.txt"])
     bot.reply_to(message, "Not implemented")
 
@@ -111,28 +111,28 @@ def handle_start(message):
 # --- About ---
 @bot.message_handler(commands=["about", "start"])
 @error_handler
-def handle_start(message):
+def about_command(message):
     bot.reply_to(message, templates["description.txt"])
 
 
 # --- Report bug ---
 @bot.message_handler(commands=["report_bug"])
 @error_handler
-def handle_start(message):
+def report_bug_command(message):
     bot.reply_to(message, templates["report_bug.txt"])
 
 
 # --- Request feature ---
 @bot.message_handler(commands=["request_feature"])
 @error_handler
-def handle_start(message):
+def request_feature_command(message):
     bot.reply_to(message, templates["request_feature"])
 
 
 # --- Enable ---
 @bot.message_handler(commands=["enable"])
 @error_handler
-def handle_start(message):
+def enable_command(message):
     # logic
     bot.reply_to(message, templates["enabled.txt"])
 
@@ -148,7 +148,7 @@ def handle_start(message):
 # --- Set temp ---
 @bot.message_handler(commands=["set_temperature"])
 @error_handler
-def handle_start(message):
+def set_temp_command(message):
     # logic (check val from 0 to 1!)
     bot.reply_to(message, "Not implemented")
 
@@ -160,6 +160,9 @@ def handle_new_chat_members(message):
     for new_chat_member in message.new_chat_members:
         if new_chat_member.id == bot_id:
             bot.send_message(message.chat.id, templates["new_group_welcome.txt"])
+            bot.send_message(
+                message.chat.id, "Initializing..."
+            )  # Will be replaced with sticker
 
 
 logger.info("Bot started")
