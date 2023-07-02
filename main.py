@@ -18,6 +18,9 @@ import json  # groups.json write groups in file !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 load_dotenv(".env")
 
+#----------------------------------------------------Register the users?-----------------------------
+
+
 logging.basicConfig(
     level=logging.DEBUG,
     format="%(asctime)s - %(levelname)s - %(message)s",
@@ -25,10 +28,13 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+#------------------------------------------------------------------Loading the tokens/templates/token---------------------------------------------------------------------------------------------------
+
+
 bot_token = environ.get("BOT_API_TOKEN")
 openAI_api_key = environ.get("OPENAI_API_KEY")
 developer_chat_IDs = environ.get("DEVELOPER_CHAT_IDS")
-if not all((bot_token, openAI_api_key)):
+if not all((bot_token, openAI_api_key)):                    #Got it or not
     logger.error(
         "Failed to load OPENAI_API_KEY or BOT_API_TOKEN from environment, exiting..."
     )
@@ -38,8 +44,10 @@ if not developer_chat_IDs:
 else:
     developer_chat_IDs = developer_chat_IDs.split(",")
 
+
 templates = load_templates("templates\\")
 
+#initial api_key
 openai.api_key = openAI_api_key
 
 
@@ -74,6 +82,9 @@ def error_handler(func):
     return wrapper
 
 
+
+#---------------------------------------------------------------Functions------------------------------------------------------------------------------------------------------------
+
 def send_file(path, id):
     with open(path, "rb") as file:
         bot.send_document(id, file)
@@ -89,6 +100,9 @@ def send_to_developers(msg, file=False):
                     id,
                     msg,
                 )
+
+
+#---------------------------------------------------------------------Bot_messages-----------------------------------------------------------------------------------------------------------------
 
 
 # --- Help ---
