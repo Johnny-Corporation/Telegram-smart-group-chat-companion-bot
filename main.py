@@ -8,17 +8,18 @@ from telebot import TeleBot
 from templates_loader import load_templates
 from Johnny import Johnny
 from internet_access import *
+import GPT_FUNCS as gpt
 
 # Other
 from dotenv import load_dotenv
-from os import environ
+from os import environ, getenv
 import logging
 import traceback
 import json  # groups.json write groups in file !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 load_dotenv(".env")
 
-#----------------------------------------------------Register the users?-----------------------------
+#---------------------------------Register the users?-----------------------------
 
 
 logging.basicConfig(
@@ -28,12 +29,13 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-#------------------------------------------------------------------Loading the tokens/templates/token---------------------------------------------------------------------------------------------------
+#---------------------------------Loading the tokens/templates/token---------------------------------------------------------------------------------------------------
 
 
 bot_token = environ.get("BOT_API_TOKEN")
 openAI_api_key = environ.get("OPENAI_API_KEY")
 developer_chat_IDs = environ.get("DEVELOPER_CHAT_IDS")
+
 if not all((bot_token, openAI_api_key)):                    #Got it or not
     logger.error(
         "Failed to load OPENAI_API_KEY or BOT_API_TOKEN from environment, exiting..."
@@ -43,6 +45,7 @@ if not developer_chat_IDs:
     logger.warning("Developers chat ids is not set!")
 else:
     developer_chat_IDs = developer_chat_IDs.split(",")
+
 
 
 templates = load_templates("templates\\")
@@ -109,6 +112,7 @@ def send_to_developers(msg, file=False):
 @bot.message_handler(commands=["help"])
 @error_handler
 def error_command(message):
+    print(message)
     bot.reply_to(
         message, templates["help.txt"]
     )  # finish here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -177,6 +181,12 @@ def handle_new_chat_members(message):
             bot.send_message(
                 message.chat.id, "Initializing..."
             )  # Will be replaced with sticker
+
+
+@bot.message_handler(content_types=['question_to_bot'])
+@error_handler
+def handle_start(message):
+    bot.send_message(message.chat.id, gpt.question_to_bot(message.text))
 
 
 logger.info("Bot started")
