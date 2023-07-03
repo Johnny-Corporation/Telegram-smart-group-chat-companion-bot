@@ -11,7 +11,6 @@ openAI_api_key = environ.get("OPENAI_API_KEY")
 developer_chat_IDs = environ.get("DEVELOPER_CHAT_IDS")
 
 openai_organization = environ.get("OPENAI_ORGANIZATION")
-openai.api_key = openAI_api_key
 model = "gpt-3.5-turbo"               #------------------------------------------
 #print(openai.Model.list())
 
@@ -23,7 +22,7 @@ def question_to_bot(gpt_token,organization_token,message):
     message_to_gpt = ''
 
     try:
-        message_to_gpt.index(' ')
+        message.index(' ')
     except:
         return 'You sent an empty message to gpt'
 
