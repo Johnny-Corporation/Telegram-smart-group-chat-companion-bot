@@ -33,7 +33,8 @@ logger = logging.getLogger(__name__)
 
 
 bot_token = environ.get("BOT_API_TOKEN")
-openAI_api_key = environ.get("OPENAI_API_KEY")
+openAI_api_key = environ.get("OPENAI_API_KEY1")
+openAI_organization_key = environ.get("OPENAI_ORGANIZATION")
 developer_chat_IDs = environ.get("DEVELOPER_CHAT_IDS")
 
 if not all((bot_token, openAI_api_key)):                    #Got it or not
@@ -183,10 +184,11 @@ def handle_new_chat_members(message):
             )  # Will be replaced with sticker
 
 
-@bot.message_handler(content_types=['question_to_bot'])
+@bot.message_handler(commands=['question_to_bot'])
 @error_handler
 def handle_start(message):
-    bot.send_message(message.chat.id, gpt.question_to_bot(message.text))
+    
+    bot.send_message(message.chat.id, gpt.question_to_bot(openAI_api_key,openAI_organization_key,message.text))
 
 
 logger.info("Bot started")

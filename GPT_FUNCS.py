@@ -18,10 +18,7 @@ model = "gpt-3.5-turbo"               #-----------------------------------------
 
 
 
-def question_to_bot(message):
-
-    openAI_api_key = environ.get("OPENAI_API_KEY")  #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    openAI_organization = environ.get("OPENAI_ORGANIZATION")    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+def question_to_bot(gpt_token,organization_token,message):
 
     message_to_gpt = ''
 
@@ -31,11 +28,11 @@ def question_to_bot(message):
     model = "gpt-3.5-turbo" #!!!!!!!!!!!!!!!!!!!!!!!!!1Can be changed (connect with more global)!!!!!!!!!!!!!!!!!
     system_content = 'Answer the question' #!!!!!!!!!!!!!!!!!!!!!Can be changed!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    return get_response(message_to_ai(openAI_api_key,openAI_organization,model,system_content,message_to_gpt))
+    return get_response(message_to_ai(gpt_token,organization_token,model,system_content,message_to_gpt))
 
 def message_to_ai(gpt_token, organization_token ,model, system_content, user_content):
     
-    openai.api_key = gpt_token
+    openai.api_key = str(gpt_token)
     openai.organization = organization_token
 
 
