@@ -101,14 +101,46 @@ def about_command(message):
 @bot.message_handler(commands=["report_bug"])
 @error_handler
 def report_bug_command(message):
-    bot.reply_to(message, templates["report_bug.txt"])
+    bot_reply = bot.reply_to(message, templates["report_bug.txt"])
+
+    @error_handler
+    def reply_handler(inner_message):
+        user = inner_message.from_user
+        print(inner_message)
+        send_to_developers(
+            f"User {user.first_name} {user.last_name} ({user.username}) from group with name {inner_message.chat.title} reported a bug! \n Here is what he said: \n {inner_message.text}",
+            bot,
+            developer_chat_IDs,
+        )
+        bot.reply_to(
+            inner_message,
+            "Thank you for reporting a bug, developers have been already notified!",
+        )
+
+    bot.register_for_reply(bot_reply, reply_handler)
 
 
 # --- Request feature ---
 @bot.message_handler(commands=["request_feature"])
 @error_handler
 def request_feature_command(message):
-    bot.reply_to(message, templates["request_feature"])
+    bot_reply = bot.reply_to(message, templates["request_feature.txt"])
+
+    @error_handler
+    def reply_handler(inner_message):
+        user = inner_message.from_user
+        print(inner_message)
+        send_to_developers(
+            f"User {user.first_name} {user.last_name} ({user.username}) from group with name {inner_message.chat.title} requested a feature! \n Here is what he said: \n {inner_message.text}",
+            bot,
+            developer_chat_IDs,
+        )
+        bot.reply_to(
+            inner_message,
+            "Thank you for requesting this feature, developers have been already notified!",
+        )
+
+    bot.register_for_reply(bot_reply, reply_handler)
 
 
 # --- Enable ---
