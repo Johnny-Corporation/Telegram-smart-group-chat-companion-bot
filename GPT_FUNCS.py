@@ -22,6 +22,12 @@ def question_to_bot(gpt_token,organization_token,message):
 
     message_to_gpt = ''
 
+    try:
+        message_to_gpt.index(' ')
+    except:
+        return 'You sent an empty message to gpt'
+
+
     for i in range(message.index(' ')+1, len(message)):
         message_to_gpt = message_to_gpt + message[i]
 
