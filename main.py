@@ -11,13 +11,13 @@ from internet_access import *
 import GPT_FUNCS as gpt
 
 # Other
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 from os import environ, getenv
 import logging
 import traceback
 import json  # groups.json write groups in file !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-load_dotenv(".env")
+load_dotenv('.env')
 
 #---------------------------------Register the users?-----------------------------
 
@@ -35,6 +35,8 @@ logger = logging.getLogger(__name__)
 bot_token = environ.get("BOT_API_TOKEN")
 openAI_api_key = environ.get("OPENAI_API_KEY")
 developer_chat_IDs = environ.get("DEVELOPER_CHAT_IDS")
+
+print(bot_token)
 
 if not all((bot_token, openAI_api_key)):                    #Got it or not
     logger.error(

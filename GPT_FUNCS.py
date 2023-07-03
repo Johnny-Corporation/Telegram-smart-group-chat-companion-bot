@@ -25,6 +25,8 @@ def question_to_bot(message):
     system_content = 'Answer the question' #!!!!!!!!!!!!!!!!!!!!!Can be changed!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     return get_response(message_to_ai(model,system_content,message_to_gpt))
+
+
     
     
     
