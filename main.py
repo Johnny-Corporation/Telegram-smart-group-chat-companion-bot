@@ -8,13 +8,13 @@ from telebot import TeleBot
 from templates_loader import load_templates
 from Johnny import Johnny
 from internet_access import *
+from functions import *
 
 # Other
 from dotenv import load_dotenv
-from os import environ
+from os import environ, path, mkdir
 import logging
 import traceback
-import json  # groups.json write groups in file !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 load_dotenv(".env")
 
@@ -40,11 +40,10 @@ else:
 
 templates = load_templates("templates\\")
 
+if not path.exists("groups_info"):
+    mkdir("groups_info")
+
 openai.api_key = openAI_api_key
-
-
-def tokens_to_dollars(model, tokens):
-    return "Not implemented"
 
 
 bot = TeleBot(bot_token)
@@ -62,9 +61,11 @@ def error_handler(func):
                 "Sorry, unexpected error occurred, developer has been already notified!",
             )
             send_to_developers(
-                f"Error occurred!!!: \n -----------\n {traceback.format_exc()}\n ---------- "
+                f"Error occurred!!!: \n -----------\n {traceback.format_exc()}\n ---------- ",
+                bot,
+                developer_chat_IDs,
             )
-            send_to_developers("logs.log", file=True)
+            send_to_developers("logs.log", bot, developer_chat_IDs, file=True)
         else:
             logger.info(
                 f"Command {message.text} executed in chat with id {message.chat.id}"
@@ -74,30 +75,11 @@ def error_handler(func):
     return wrapper
 
 
-def send_file(path, id):
-    with open(path, "rb") as file:
-        bot.send_document(id, file)
-
-
-def send_to_developers(msg, file=False):
-    for id in developer_chat_IDs:
-        if id:
-            if file:
-                send_file(msg, id)
-            else:
-                bot.send_message(
-                    id,
-                    msg,
-                )
-
-
 # --- Help ---
 @bot.message_handler(commands=["help"])
 @error_handler
 def error_command(message):
-    bot.reply_to(
-        message, templates["help.txt"]
-    )  # finish here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    bot.reply_to(message, templates["help.txt"], parse_mode="Markdown")
 
 
 # --- Tokens info ---
@@ -163,6 +145,12 @@ def handle_new_chat_members(message):
             bot.send_message(
                 message.chat.id, "Initializing..."
             )  # Will be replaced with sticker
+            with open(
+                f"groups_info\\{bot.get_chat(message.chat.id).title}.json",
+                "w",
+                encoding="utf-8",
+            ) as f:
+                f.write(convert_to_json(str(bot.get_chat(message.chat.id))))
 
 
 logger.info("Bot started")

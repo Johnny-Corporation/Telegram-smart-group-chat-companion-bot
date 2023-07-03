@@ -1,4 +1,5 @@
 *.env
 **/__pycache__/
 logs.log
-groups.json
+groups_info/
+.vscode/
