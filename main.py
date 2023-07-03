@@ -155,6 +155,8 @@ def enable_command(message):
     # logic
     bot.reply_to(message, templates["enabled.txt"])
 
+    
+
 
 # --- Disable ---
 @bot.message_handler(commands=["disable"])
@@ -184,7 +186,20 @@ def handle_new_chat_members(message):
             )  # Will be replaced with sticker
 
 
+#--------------------------GPT_Handlers--------------------------------------------------------------
+
 @bot.message_handler(commands=['question_to_bot'])
+@error_handler
+def handle_start(message):
+    
+    bot.send_message(message.chat.id, gpt.question_to_bot(openAI_api_key,openAI_organization_key,message.text))
+
+
+logger.info("Bot started")
+bot.polling()
+
+
+@bot.message_handler(commands=['start_conservation'])
 @error_handler
 def handle_start(message):
     

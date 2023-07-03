@@ -1,6 +1,16 @@
 import os
 import openai
 
+def start_conservation(gpt_token,organization_token,message):
+    message_to_gpt = ''
+    try:
+        message.index(' ')
+    except:
+        return 'You sent an empty message to gpt'
+    
+    
+
+
 def question_to_bot(gpt_token,organization_token,message):
 
     message_to_gpt = ''
