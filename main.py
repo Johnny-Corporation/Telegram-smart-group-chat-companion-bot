@@ -36,8 +36,6 @@ bot_token = environ.get("BOT_API_TOKEN")
 openAI_api_key = environ.get("OPENAI_API_KEY")
 developer_chat_IDs = environ.get("DEVELOPER_CHAT_IDS")
 
-print(bot_token)
-
 if not all((bot_token, openAI_api_key)):                    #Got it or not
     logger.error(
         "Failed to load OPENAI_API_KEY or BOT_API_TOKEN from environment, exiting..."
