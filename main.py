@@ -39,7 +39,9 @@ else:
 
 templates = load_templates("templates\\")
 stickers = load_stickers("stickers.json")
-language_code = "ru"
+language_code = "en"
+blacklist = {}  # chat_id:[messages_ids] needed for filtering messages
+reply_blacklist = {}  # chat_id:[messages_ids] needed for filtering replies to messages
 
 if not path.exists("groups_info"):
     mkdir("groups_info")
@@ -105,7 +107,7 @@ def about_command(message):
 def feature_request_reply_handler(inner_message):
     user = inner_message.from_user
     send_to_developers(
-        f"""User {user.first_name} {user.last_name} ({user.username}) 
+        f"""User {user.first_name} {user.last_name} (@{user.username}) 
             from group with name {inner_message.chat.title} requested a feature! 
             Here is what he said: 
             {inner_message.text}""",
@@ -123,7 +125,7 @@ def feature_request_reply_handler(inner_message):
 def bug_report_reply_handler(inner_message):
     user = inner_message.from_user
     send_to_developers(
-        f"""User {user.first_name} {user.last_name} ({user.username}) 
+        f"""User {user.first_name} {user.last_name} (@{user.username}) 
             from group with name {inner_message.chat.title} reported a bug! 
             Here is what he said: 
             {inner_message.text}""",
@@ -141,7 +143,10 @@ def bug_report_reply_handler(inner_message):
 @error_handler
 def report_bug_command(message):
     bot_reply = bot.reply_to(message, templates[language_code]["report_bug.txt"])
-
+    if message.chat.id not in reply_blacklist:
+        reply_blacklist[message.chat.id] = [bot_reply.message_id]
+    else:
+        reply_blacklist.append(bot_reply.message_id)
     bot.register_for_reply(bot_reply, bug_report_reply_handler)
 
 
@@ -150,7 +155,10 @@ def report_bug_command(message):
 @error_handler
 def request_feature_command(message):
     bot_reply = bot.reply_to(message, templates[language_code]["request_feature.txt"])
-
+    if message.chat.id not in reply_blacklist:
+        reply_blacklist[message.chat.id] = [bot_reply.message_id]
+    else:
+        reply_blacklist.append(bot_reply.message_id)
     bot.register_for_reply(bot_reply, feature_request_reply_handler)
 
 
@@ -202,15 +210,32 @@ def handle_new_chat_members(message):
 groups = {}  # {id:Johnny object}
 
 
-# @bot.message_handler()
-# def handle_sticker(message):
-#     bot.reply_to
-#     print(sticker_file_id)
-#     # Use the sticker_file_id as needed
+def blacklist_filter(message):
+    if message.chat.id not in blacklist:
+        return True
+    return message.message_id in blacklist.get(message.chat.id)
+
+
+def reply_blacklist_filter(message):
+    if message.chat.id not in reply_blacklist:
+        return True
+    return (message.reply_to_message is None) or (
+        message.reply_to_message.message_id not in reply_blacklist[message.chat.id]
+    )
+
+
+@bot.message_handler(
+    func=lambda message: reply_blacklist_filter(message) and blacklist_filter(message)
+)
+def handle_sticker(message):
+    bot.reply_to(message, message.text)
+    # print(sticker_file_id)
+    # Use the sticker_file_id as needed
+    # initialize black lists
+    # handle case when bot was already i group
 
 
 # check this with reply handling!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 logger.info("Bot started")
 # add ability to change languages by language code suffix
-# send sticker enabled
 bot.polling()
