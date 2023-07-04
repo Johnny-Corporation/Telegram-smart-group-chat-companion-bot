@@ -5,7 +5,6 @@ import openai
 from telebot import TeleBot
 
 # Local modules
-from templates_loader import load_templates
 from Johnny import Johnny
 from internet_access import *
 from functions import *
@@ -39,6 +38,7 @@ else:
     developer_chat_IDs = developer_chat_IDs.split(",")
 
 templates = load_templates("templates\\")
+stickers = load_stickers("stickers.json")
 
 if not path.exists("groups_info"):
     mkdir("groups_info")
@@ -97,27 +97,51 @@ def about_command(message):
     bot.reply_to(message, templates["description.txt"])
 
 
+# --- reply handler for feature requests ---
+@error_handler
+def feature_request_reply_handler(inner_message):
+    user = inner_message.from_user
+    print(inner_message)
+    send_to_developers(
+        f"""User {user.first_name} {user.last_name} ({user.username}) 
+            from group with name {inner_message.chat.title} requested a feature! 
+            Here is what he said: 
+            {inner_message.text}""",
+        bot,
+        developer_chat_IDs,
+    )
+    bot.reply_to(
+        inner_message,
+        "Thank you for requesting this feature, developers have been already notified!",
+    )
+
+
+# --- reply handler for bug reports ---
+@error_handler
+def bug_report_reply_handler(inner_message):
+    user = inner_message.from_user
+    print(inner_message)
+    send_to_developers(
+        f"""User {user.first_name} {user.last_name} ({user.username}) 
+            from group with name {inner_message.chat.title} reported a bug! 
+            Here is what he said: 
+            {inner_message.text}""",
+        bot,
+        developer_chat_IDs,
+    )
+    bot.reply_to(
+        inner_message,
+        "Thank you for reporting a bug, developers have been already notified!",
+    )
+
+
 # --- Report bug ---
 @bot.message_handler(commands=["report_bug"])
 @error_handler
 def report_bug_command(message):
     bot_reply = bot.reply_to(message, templates["report_bug.txt"])
 
-    @error_handler
-    def reply_handler(inner_message):
-        user = inner_message.from_user
-        print(inner_message)
-        send_to_developers(
-            f"User {user.first_name} {user.last_name} ({user.username}) from group with name {inner_message.chat.title} reported a bug! \n Here is what he said: \n {inner_message.text}",
-            bot,
-            developer_chat_IDs,
-        )
-        bot.reply_to(
-            inner_message,
-            "Thank you for reporting a bug, developers have been already notified!",
-        )
-
-    bot.register_for_reply(bot_reply, reply_handler)
+    bot.register_for_reply(bot_reply, bug_report_reply_handler)
 
 
 # --- Request feature ---
@@ -126,21 +150,7 @@ def report_bug_command(message):
 def request_feature_command(message):
     bot_reply = bot.reply_to(message, templates["request_feature.txt"])
 
-    @error_handler
-    def reply_handler(inner_message):
-        user = inner_message.from_user
-        print(inner_message)
-        send_to_developers(
-            f"User {user.first_name} {user.last_name} ({user.username}) from group with name {inner_message.chat.title} requested a feature! \n Here is what he said: \n {inner_message.text}",
-            bot,
-            developer_chat_IDs,
-        )
-        bot.reply_to(
-            inner_message,
-            "Thank you for requesting this feature, developers have been already notified!",
-        )
-
-    bot.register_for_reply(bot_reply, reply_handler)
+    bot.register_for_reply(bot_reply, feature_request_reply_handler)
 
 
 # --- Enable ---
@@ -148,7 +158,7 @@ def request_feature_command(message):
 @error_handler
 def enable_command(message):
     # logic
-    bot.reply_to(message, templates["enabled.txt"])
+    bot.send_sticker(message.chat.id, stickers["enable"])
 
 
 # --- Disable ---
