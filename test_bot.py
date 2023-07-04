@@ -15,6 +15,7 @@ def about_command(message):
 
 
 messages = []
+i = 0
 
 @bot.message_handler(commands=["start_conservation"])
 def about_command(message):

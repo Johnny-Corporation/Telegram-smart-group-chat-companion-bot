@@ -1,12 +1,30 @@
 import os
 import openai
 
-def start_conservation(gpt_token,organization_token,message):
-    message_to_gpt = ''
-    try:
-        message.index(' ')
-    except:
-        return 'You sent an empty message to gpt'
+def conservation(gpt_token, organization_token ,model, system_content, user_content, memory):
+    
+    openai.api_key = str(gpt_token)
+    openai.organization = organization_token
+
+    #transform previous messages to gpt_supported view
+    previous_messages = [
+        {"role": "system", "content": system_content},
+        ]
+
+    for i in range(1,len(memory)):
+        previous_messages.append({"role": "user", "content": memory[i][0]})
+        previous_messages.append({"role": "assistant", "content": memory[i][1]})
+
+    #add last user message to gpt
+    previous_messages.append({"role": "user", "content": user_content})
+
+
+    completion = openai.ChatCompletion.create(
+        model=model,
+        messages=previous_messages
+    )
+    
+    return completion
     
     
 

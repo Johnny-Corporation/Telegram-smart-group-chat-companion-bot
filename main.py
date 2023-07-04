@@ -192,18 +192,65 @@ def handle_new_chat_members(message):
 @error_handler
 def handle_start(message):
     
-    bot.send_message(message.chat.id, gpt.question_to_bot(openAI_api_key,openAI_organization_key,message.text))
+     bot.send_message(message.chat.id, gpt.question_to_bot(openAI_api_key,openAI_organization_key,message.text))
 
 
-logger.info("Bot started")
-bot.polling()
 
 
-@bot.message_handler(commands=['start_conservation'])
-@error_handler
-def handle_start(message):
+
+model = "gpt-3.5-turbo"
+temporary_memory = []
+
+@bot.message_handler(commands=["start_conservation"])
+def about_command(message):
+
+    full_message = message.text
+    message_to_gpt = ''
+    system_content = 'Have a dialogue, be a friendly helper'    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Can be changed!!!!!!!!!!!!!
     
-    bot.send_message(message.chat.id, gpt.question_to_bot(openAI_api_key,openAI_organization_key,message.text))
+    bot.send_message(message.chat.id, "Your conservation was started.\nIf you want to end it write\n/end_conservation")     #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Can be changed!!!!!!!!!!!!!!
+
+    #Split the command /start and 'message after this' - message_to_gpt
+    temporary_memory.append('/start')
+    try:
+        for i in range(full_message.index(' ')+1, len(full_message)):
+            message_to_gpt = message_to_gpt + full_message[i]
+
+        response = gpt.get_response(gpt.message_to_ai(openAI_api_key,openAI_organization_key,model,system_content,message_to_gpt))
+
+        temporary_memory.append([message_to_gpt,response])
+
+        bot.send_message(message.chat.id, response)
+
+    except:
+        print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+
+    
+
+@bot.message_handler(commands=["end_conservation"])
+def about_command(message):
+    bot.send_message(message.chat.id, "The conservation ended")     #!!!!!!!!!!!!!!!!!!!!!!!!!!!!Can be changed!!!!!!!!!!!!!!!!
+    temporary_memory.clear()
+    
+
+@bot.message_handler(content_types='text')
+def about_command(message):
+
+
+    system_content = 'Have a dialogue, be a friendly helper'    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Can be changed!!!!!!!!!!!!!
+    if '/start' in temporary_memory and message.text[0] != '/':                    
+            
+        response = gpt.get_response(gpt.conservation(openAI_api_key,openAI_organization_key,model,system_content,message.text,temporary_memory))
+
+        temporary_memory.append([message.text,response])
+
+        bot.send_message(message.chat.id, response)
+
+    else:
+        bot.send_message(message.chat.id, 'Out of conservation')
+        if '/start' in temporary_memory:
+            bot.send_message(message.chat.id, 'Your conservation is still going')
+
 
 
 logger.info("Bot started")
