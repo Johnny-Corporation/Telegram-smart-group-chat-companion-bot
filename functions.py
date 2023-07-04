@@ -4,12 +4,16 @@ import json
 
 def load_templates(dir):
     file_dict = {}
-    for file_name in listdir(dir):
-        if file_name.endswith(".txt"):
-            file_path = path.join(dir, file_name)
-            with open(file_path, "r") as file:
-                content = file.read()
-                file_dict[file_name] = content
+    for language_code in listdir(dir):
+        for file_name in listdir(path.join(dir, language_code)):
+            if file_name.endswith(".txt"):
+                file_path = path.join(dir, language_code, file_name)
+                with open(file_path, "r", encoding="utf-8") as file:
+                    content = file.read()
+                    if language_code not in file_dict:
+                        file_dict[language_code] = {file_name: content}
+                    else:
+                        file_dict[language_code][file_name] = content
     return file_dict
 
 
