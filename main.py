@@ -19,7 +19,7 @@ import json  # groups.json write groups in file !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 load_dotenv('.env')
 
-#---------------------------------Register the users?-----------------------------
+#---------------------------------laying-----------------------------
 
 
 logging.basicConfig(
@@ -115,7 +115,15 @@ def send_to_developers(msg, file=False):
 def error_command(message):
     print(message)
     bot.reply_to(
-        message, templates["help.txt"]
+        message, templates["help.txt"],parse_mode='HTML'
+    )  # finish here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+@bot.message_handler(commands=["commands"])
+@error_handler
+def error_command(message):
+    print(message)
+    bot.reply_to(
+        message, templates["commands.txt"],parse_mode='HTML'
     )  # finish here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
@@ -124,28 +132,28 @@ def error_command(message):
 @error_handler
 def tokens_info_command(message):
     # bot.reply_to(message, templates["help.txt"])
-    bot.reply_to(message, "Not implemented")
+    bot.reply_to(message, "Not implemented",parse_mode='HTML')
 
 
 # --- About ---
 @bot.message_handler(commands=["about", "start"])
 @error_handler
 def about_command(message):
-    bot.reply_to(message, templates["description.txt"])
+    bot.reply_to(message, templates["description.txt"],parse_mode='HTML')
 
 
 # --- Report bug ---
 @bot.message_handler(commands=["report_bug"])
 @error_handler
 def report_bug_command(message):
-    bot.reply_to(message, templates["report_bug.txt"])
+    bot.reply_to(message, templates["report_bug.txt"],parse_mode='HTML')
 
 
 # --- Request feature ---
 @bot.message_handler(commands=["request_feature"])
 @error_handler
 def request_feature_command(message):
-    bot.reply_to(message, templates["request_feature"])
+    bot.reply_to(message, templates["request_feature"],parse_mode='HTML')
 
 
 # --- Enable ---
@@ -153,7 +161,7 @@ def request_feature_command(message):
 @error_handler
 def enable_command(message):
     # logic
-    bot.reply_to(message, templates["enabled.txt"])
+    bot.reply_to(message, templates["enabled.txt"],parse_mode='HTML')
 
     
 
@@ -163,7 +171,7 @@ def enable_command(message):
 @error_handler
 def handle_start(message):
     # logic
-    bot.reply_to(message, templates["disabled.txt"])
+    bot.reply_to(message, templates["disabled.txt"],parse_mode='HTML')
 
 
 # --- Set temp ---
@@ -171,7 +179,7 @@ def handle_start(message):
 @error_handler
 def set_temp_command(message):
     # logic (check val from 0 to 1!)
-    bot.reply_to(message, "Not implemented")
+    bot.reply_to(message, "Not implemented",parse_mode='HTML')
 
 
 # --- Handling new groups ---
@@ -180,7 +188,7 @@ def set_temp_command(message):
 def handle_new_chat_members(message):
     for new_chat_member in message.new_chat_members:
         if new_chat_member.id == bot_id:
-            bot.send_message(message.chat.id, templates["new_group_welcome.txt"])
+            bot.send_message(message.chat.id, templates["new_group_welcome.txt"],parse_mode='HTML')
             bot.send_message(
                 message.chat.id, "Initializing..."
             )  # Will be replaced with sticker
@@ -192,7 +200,7 @@ def handle_new_chat_members(message):
 @error_handler
 def handle_start(message):
     
-     bot.send_message(message.chat.id, gpt.question_to_bot(openAI_api_key,openAI_organization_key,message.text))
+     bot.send_message(message.chat.id, gpt.question_to_bot(openAI_api_key,openAI_organization_key,message.text),parse_mode='HTML')
 
 
 
@@ -208,7 +216,7 @@ def about_command(message):
     message_to_gpt = ''
     system_content = 'Have a dialogue, be a friendly helper'    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Can be changed!!!!!!!!!!!!!
     
-    bot.send_message(message.chat.id, "Your conservation was started.\nIf you want to end it write\n/end_conservation")     #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Can be changed!!!!!!!!!!!!!!
+    bot.send_message(message.chat.id, "Your conservation was started.\nIf you want to end it write\n/end_conservation",parse_mode='HTML')     #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Can be changed!!!!!!!!!!!!!!
 
     #Split the command /start and 'message after this' - message_to_gpt
     temporary_memory.append('/start')
@@ -220,7 +228,7 @@ def about_command(message):
 
         temporary_memory.append([message_to_gpt,response])
 
-        bot.send_message(message.chat.id, response)
+        bot.send_message(message.chat.id, response,parse_mode='HTML')
 
     except:
         print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
@@ -229,7 +237,7 @@ def about_command(message):
 
 @bot.message_handler(commands=["end_conservation"])
 def about_command(message):
-    bot.send_message(message.chat.id, "The conservation ended")     #!!!!!!!!!!!!!!!!!!!!!!!!!!!!Can be changed!!!!!!!!!!!!!!!!
+    bot.send_message(message.chat.id, "The conservation ended",parse_mode='HTML')     #!!!!!!!!!!!!!!!!!!!!!!!!!!!!Can be changed!!!!!!!!!!!!!!!!
     temporary_memory.clear()
     
 
@@ -238,18 +246,22 @@ def about_command(message):
 
 
     system_content = 'Have a dialogue, be a friendly helper'    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Can be changed!!!!!!!!!!!!!
-    if '/start' in temporary_memory and message.text[0] != '/':                    
+    if '/start' in temporary_memory:                    
             
         response = gpt.get_response(gpt.conservation(openAI_api_key,openAI_organization_key,model,system_content,message.text,temporary_memory))
 
         temporary_memory.append([message.text,response])
 
-        bot.send_message(message.chat.id, response)
+        bot.send_message(message.chat.id, response,parse_mode='HTML')
+
+    elif message.text[0] == '/':
+        bot.reply_to(message, "Incorrect command.\n/help for list of messages")
+        if'/start' in temporary_memory:
+            bot.send_message(message.chat.id, 'Your conservation is still going',parse_mode='HTML')
 
     else:
-        bot.send_message(message.chat.id, 'Out of conservation')
-        if '/start' in temporary_memory:
-            bot.send_message(message.chat.id, 'Your conservation is still going')
+        bot.send_message(message.chat.id, 'Out of conservation',parse_mode='HTML')
+        
 
 
 
