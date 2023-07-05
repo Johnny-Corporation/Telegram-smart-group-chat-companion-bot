@@ -206,7 +206,7 @@ def handle_start(message):
 
 
 
-model = "gpt-3.5-turbo"
+model = "gpt-3.5-turbo"     
 temporary_memory = []
 
 @bot.message_handler(commands=["start_conservation"])
