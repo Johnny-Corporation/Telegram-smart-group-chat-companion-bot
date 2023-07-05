@@ -3,6 +3,8 @@ from os import path
 
 
 class Controller:
+
+
     def __init__(self, db_name: str = "MessageEvents") -> None:
         self.sqlite_name = db_name
         if not path.exists(f"{db_name}.sqlite"):
@@ -16,9 +18,9 @@ class Controller:
         cursor.execute(
             """
             CREATE TABLE MessageEvents (
-                ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                ID INTEGER PRIMARY KEY AUTOINCREMENT,       
                 ChatID INTEGER,
-                MessageText TEXT,
+                MessageTextAutoMode TEXT,
                 Time TEXT,
                 SenderFirstName TEXT,
                 SenderLastName TEXT,
@@ -46,7 +48,7 @@ class Controller:
     ):
         self.cursor.execute(
             f"""
-            INSERT INTO MessageEvents (ChatID, MessageText, Time, SenderFirstName, SenderLastName, SenderUsername, TokensTotal, TokensTotal)
+            INSERT INTO MessageEvents (ChatID, MessageTextAutoMode, Time, SenderFirstName, SenderLastName, SenderUsername, TokensTotal, TokensTotal)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (

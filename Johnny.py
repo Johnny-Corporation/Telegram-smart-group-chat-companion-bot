@@ -10,11 +10,17 @@ from logging import Logger
 
 load_dotenv(".env")
 
-openAI_api_key = environ.get("OPENAI_API_KEY")
-if not openAI_api_key:
+gpt_token = environ.get("OPENAI_API_KEY")
+organization_token = environ.get("OPENAI_ORGANIZATION")
+
+if not gpt_token:
     print("Failed to load OpenAI API key from environment, exiting...")
     exit()
-openai.api_key = openAI_api_key
+if not organization_token:
+    print("Failed to load Organization key from environment, exiting...")
+
+
+openai.api_key = gpt_token     # !!!!!!!Don't sure!!!!!!!!!!
 
 db_controller = Controller()
 
@@ -45,9 +51,11 @@ class Johnny:
         self.messages_count = 0  # incremented by one each message, think() function is called when hit trigger_messages_count
         self.enabled = False
 
-    def think(self):
+    def read_last(self):
         """reads last"""
 
+
+    # --- gpt answer in automatic mode ---
     def new_message(self, message: Message) -> str:
         if not self.enabled:
             return
@@ -75,7 +83,8 @@ class Johnny:
             )
         ):
             self.messages_count = 0
-            return "[GPT-answer]"
+            return "[GPT-answer]"           #!!!!!!!!!!!!!!!!Do!!!!!!!!!!!!!!!!!!!!!!
+
 
     def load_data(self):
         recent_events = db_controller.get_last_n_message_events_from_chat(
