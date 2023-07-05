@@ -5,6 +5,10 @@ import json
 def load_templates(dir):
     file_dict = {}
     for language_code in listdir(dir):
+        if path.isfile(path.join(dir, language_code)):
+            with open(path.join(dir, language_code), "r") as f:
+                file_dict[language_code] = f.read()
+            continue
         for file_name in listdir(path.join(dir, language_code)):
             if file_name.endswith(".txt"):
                 file_path = path.join(dir, language_code, file_name)

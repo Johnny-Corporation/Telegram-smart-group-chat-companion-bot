@@ -1,6 +1,3 @@
-# GPT API
-import openai
-
 # Bot API
 from telebot import TeleBot
 
@@ -14,8 +11,14 @@ from dotenv import load_dotenv
 from os import environ, path, mkdir
 import logging
 import traceback
+from datetime import datetime
 
 load_dotenv(".env")
+
+# Needed for filtering messages when bot was offline
+start_time = datetime.now()
+skip_old_messages = True
+ignored_messages = 0  # count number of ignored messages when bot was offline for logs
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -25,12 +28,10 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 bot_token = environ.get("BOT_API_TOKEN")
-openAI_api_key = environ.get("OPENAI_API_KEY")
+
 developer_chat_IDs = environ.get("DEVELOPER_CHAT_IDS")
-if not all((bot_token, openAI_api_key)):
-    logger.error(
-        "Failed to load OPENAI_API_KEY or BOT_API_TOKEN from environment, exiting..."
-    )
+if not bot_token:
+    logger.error("Failed to load BOT_API_TOKEN from environment, exiting...")
     exit()
 if not developer_chat_IDs:
     logger.warning("Developers chat ids is not set!")
@@ -46,11 +47,10 @@ reply_blacklist = {}  # chat_id:[messages_ids] needed for filtering replies to m
 if not path.exists("groups_info"):
     mkdir("groups_info")
 
-openai.api_key = openAI_api_key
-
 
 bot = TeleBot(bot_token)
 bot_id = bot.get_me().id
+bot_username = bot.get_me().username
 
 
 def error_handler(func):
@@ -78,15 +78,32 @@ def error_handler(func):
     return wrapper
 
 
+def time_filter(message):
+    """Filters message which were sent before bot start"""
+    global skip_old_messages, ignored_messages
+    if not skip_old_messages:
+        return True
+    message_time = datetime.fromtimestamp(message.date)
+    if start_time < message_time:
+        skip_old_messages = False
+        logger.warning(
+            f"{ignored_messages} messages have been ignored since last start."
+        )
+        return True
+    else:
+        ignored_messages += 1
+        return False
+
+
 # --- Help ---
-@bot.message_handler(commands=["help"])
+@bot.message_handler(commands=["help"], func=time_filter)
 @error_handler
 def error_command(message):
     bot.reply_to(message, templates[language_code]["help.txt"], parse_mode="Markdown")
 
 
 # --- Tokens info ---
-@bot.message_handler(commands=["tokens_info"])
+@bot.message_handler(commands=["tokens_info"], func=time_filter)
 @error_handler
 def tokens_info_command(message):
     bot.reply_to(
@@ -96,7 +113,7 @@ def tokens_info_command(message):
 
 
 # --- About ---
-@bot.message_handler(commands=["about", "start"])
+@bot.message_handler(commands=["about", "start"], func=time_filter)
 @error_handler
 def about_command(message):
     bot.reply_to(message, templates[language_code]["description.txt"])
@@ -139,7 +156,7 @@ def bug_report_reply_handler(inner_message):
 
 
 # --- Report bug ---
-@bot.message_handler(commands=["report_bug"])
+@bot.message_handler(commands=["report_bug"], func=time_filter)
 @error_handler
 def report_bug_command(message):
     bot_reply = bot.reply_to(message, templates[language_code]["report_bug.txt"])
@@ -151,7 +168,7 @@ def report_bug_command(message):
 
 
 # --- Request feature ---
-@bot.message_handler(commands=["request_feature"])
+@bot.message_handler(commands=["request_feature"], func=time_filter)
 @error_handler
 def request_feature_command(message):
     bot_reply = bot.reply_to(message, templates[language_code]["request_feature.txt"])
@@ -163,25 +180,25 @@ def request_feature_command(message):
 
 
 # --- Enable ---
-@bot.message_handler(commands=["enable"])
+@bot.message_handler(commands=["enable"], func=time_filter)
 @error_handler
 def enable_command(message):
-    # logic
+    groups[message.chat.id].enabled = True
     if language_code == "en":
         return bot.reply_to(message, templates[language_code]["enabled.txt"])
     bot.send_sticker(message.chat.id, stickers["enable"])
 
 
 # --- Disable ---
-@bot.message_handler(commands=["disable"])
+@bot.message_handler(commands=["disable"], func=time_filter)
 @error_handler
-def handle_start(message):
-    # logic
+def disable_command(message):
+    groups[message.chat.id].enabled = False
     bot.reply_to(message, templates[language_code]["disabled.txt"])
 
 
 # --- Set temp ---
-@bot.message_handler(commands=["set_temperature"])
+@bot.message_handler(commands=["set_temperature"], func=time_filter)
 @error_handler
 def set_temp_command(message):
     # logic (check val from 0 to 1!)
@@ -189,31 +206,42 @@ def set_temp_command(message):
 
 
 # --- Handling new groups ---
-@bot.message_handler(content_types=["new_chat_members"])
+@bot.message_handler(content_types=["new_chat_members"], func=time_filter)
 @error_handler
 def handle_new_chat_members(message):
     for new_chat_member in message.new_chat_members:
         if new_chat_member.id == bot_id:
-            bot.send_message(message.chat.id, templates["new_group_welcome.txt"])
-            bot.send_message(
-                message.chat.id,
-                "Initializing..." if language_code == "en" else "Инициализация...",
-            )  # Will be replaced with sticker
-            with open(
-                f"groups_info\\{bot.get_chat(message.chat.id).title}.json",
-                "w",
-                encoding="utf-8",
-            ) as f:
-                f.write(convert_to_json(str(bot.get_chat(message.chat.id))))
+            init_new_group(message.chat.id)
 
 
 groups = {}  # {id:Johnny object}
 
 
+def init_new_group(chat_id):
+    bot.send_message(chat_id, templates["new_group_welcome.txt"])
+    send_sticker(chat_id, stickers["initializing"], bot)
+    bot.send_message(
+        chat_id,
+        "Initializing...",
+    )
+    with open(
+        f"groups_info\\{bot.get_chat(chat_id).title}.json",
+        "w",
+        encoding="utf-8",
+    ) as f:
+        f.write(convert_to_json(str(bot.get_chat(chat_id))))
+    blacklist[chat_id] = []
+    reply_blacklist[chat_id] = []
+
+    johnny = Johnny(bot, chat_id, logger, bot_username)
+    groups[chat_id] = johnny
+    return johnny
+
+
 def blacklist_filter(message):
     if message.chat.id not in blacklist:
         return True
-    return message.message_id in blacklist.get(message.chat.id)
+    return not (message.message_id in blacklist.get(message.chat.id))
 
 
 def reply_blacklist_filter(message):
@@ -225,17 +253,19 @@ def reply_blacklist_filter(message):
 
 
 @bot.message_handler(
-    func=lambda message: reply_blacklist_filter(message) and blacklist_filter(message)
+    func=lambda message: reply_blacklist_filter(message)
+    and blacklist_filter(message)
+    and time_filter(message)
 )
-def handle_sticker(message):
-    bot.reply_to(message, message.text)
-    # print(sticker_file_id)
-    # Use the sticker_file_id as needed
-    # initialize black lists
-    # handle case when bot was already i group
+def main_messages_handler(message):
+    if message.chat.id not in groups:
+        bot.send_message(message.chat.id, templates[language_code]["after_restart.txt"])
+        johnny = init_new_group(message.chat.id)
+        johnny.load_data()
+    else:
+        if response := groups[message.chat.id].new_message(message):
+            bot.send_message(message.chat.id, response)
 
 
-# check this with reply handling!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 logger.info("Bot started")
-# add ability to change languages by language code suffix
 bot.polling()
