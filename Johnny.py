@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from telebot import TeleBot
 from telebot.types import Message
 from db_controller import Controller
-import openai
+import gpt_interface
 from dotenv import load_dotenv
 from os import environ
 from datetime import datetime
@@ -10,11 +10,6 @@ from logging import Logger
 
 load_dotenv(".env")
 
-openAI_api_key = environ.get("OPENAI_API_KEY")
-if not openAI_api_key:
-    print("Failed to load OpenAI API key from environment, exiting...")
-    exit()
-openai.api_key = openAI_api_key
 
 db_controller = Controller()
 
@@ -43,6 +38,7 @@ class Johnny:
     def __post_init__(self):
         self.messages_history = []
         self.messages_count = 0  # incremented by one each message, think() function is called when hit trigger_messages_count
+        self.lang_code = None
         self.enabled = False
 
     def think(self):
@@ -94,3 +90,6 @@ class Johnny:
 # [x] always reply when tagging or replying
 # [ ] language change
 # [ ] Add gpt
+# [ ] Count tokens
+# [ ] Ask question to bot (via reply)
+# [ ] test adding to group
