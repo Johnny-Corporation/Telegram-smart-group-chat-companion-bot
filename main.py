@@ -54,6 +54,16 @@ bot = TeleBot(bot_token)
 bot_id = bot.get_me().id
 bot_username = bot.get_me().username
 
+# Init quick access keyboard
+keyboard = types.ReplyKeyboardMarkup()
+buttons = [
+    types.KeyboardButton(text=lang)
+    for lang in ["English", "Spanish", "French", "German"]
+]  # create buttons
+keyboard.add(
+    *[types.KeyboardButton(text="/enable"), types.KeyboardButton(text="/disable")]
+)
+
 
 def error_handler(func):
     def wrapper(message):
@@ -270,6 +280,7 @@ def handle_language_change(call):
         bot.send_message(
             call.message.chat.id,
             ("Initializing..." if language_code == "en" else "Инициализация..."),
+            reply_markup=keyboard,
         )
 
         groups[call.message.chat.id].load_data()
@@ -298,7 +309,11 @@ def init_new_group(chat_id):
             Use /change_language for changing language""",
         )
         language_code = "en"
-        bot.send_message(chat_id, templates[language_code]["new_group_welcome.txt"])
+        bot.send_message(
+            chat_id,
+            templates[language_code]["new_group_welcome.txt"],
+            reply_markup=keyboard,
+        )
         bot.send_message(
             chat_id,
             ("Initializing..." if language_code == "en" else "ru"),
