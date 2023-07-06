@@ -5,6 +5,7 @@ from telebot import TeleBot
 from Johnny import Johnny
 from internet_access import *
 from functions import *
+import gpt_functions as gpt
 
 # Other
 from dotenv import load_dotenv
@@ -12,6 +13,9 @@ from os import environ, path, mkdir
 import logging
 import traceback
 from datetime import datetime
+
+
+
 
 load_dotenv(".env")
 
@@ -28,9 +32,18 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-bot_token = environ.get("BOT_API_TOKEN")
 
+
+
+#------------------------------------------------------------------Loading the tokens/templates/token---------------------------------------------------------------------------------------------------
+
+# --- loading tokens ---
+
+bot_token = environ.get("BOT_API_TOKEN")
 developer_chat_IDs = environ.get("DEVELOPER_CHAT_IDS")
+gpt_token = environ.get("OPEN_API_TOKEN")
+organization_token = environ.get("OPENAI_ORGANIZATION")
+
 if not bot_token:
     logger.error("Failed to load BOT_API_TOKEN from environment, exiting...")
     exit()
@@ -38,23 +51,35 @@ if not developer_chat_IDs:
     logger.warning("Developers chat ids is not set!")
 else:
     developer_chat_IDs = developer_chat_IDs.split(",")
+if not gpt_token:
+    logger.error("Failed to load OPEN_API_TOKEN from environment, exiting...")
+if not organization_token:
+    logger.error("Failed to load OPENAI_ORGANIZATION from environment, exiting...")
 
 
+# --- loading templates/stickers ---
 templates = load_templates("templates\\")
 stickers = load_stickers("stickers.json")
 language_code = "en"
+
+
+# --- blacklist ---
 blacklist = {}  # chat_id:[messages_ids] needed for filtering messages
 reply_blacklist = {}  # chat_id:[messages_ids] needed for filtering replies to messages
 
+
+#??????????????????????????????
 if not path.exists("groups_info"):
     mkdir("groups_info")
 
 
+# --- Initialazing a bot ----
 bot = TeleBot(bot_token)
 bot_id = bot.get_me().id
 bot_username = bot.get_me().username
 
 
+# --- error handler ---
 def error_handler(func):
     def wrapper(message):
         try:
@@ -80,6 +105,7 @@ def error_handler(func):
     return wrapper
 
 
+# --- filter messages which sent not in working bot ---
 def time_filter(message):
     """Filters message which were sent before bot start"""
     global skip_old_messages, ignored_messages
@@ -181,24 +207,6 @@ def request_feature_command(message):
     bot.register_for_reply(bot_reply, feature_request_reply_handler)
 
 
-# --- Enable ---
-@bot.message_handler(commands=["enable"], func=time_filter)
-@error_handler
-def enable_command(message):
-    groups[message.chat.id].enabled = True
-    if language_code == "en":
-        return bot.reply_to(message, templates[language_code]["enabled.txt"])
-    bot.send_sticker(message.chat.id, stickers["enable"])
-
-
-# --- Disable ---
-@bot.message_handler(commands=["disable"], func=time_filter)
-@error_handler
-def disable_command(message):
-    groups[message.chat.id].enabled = False
-    bot.reply_to(message, templates[language_code]["disabled.txt"])
-
-
 # --- Set temp ---
 @bot.message_handler(commands=["set_temperature"], func=time_filter)
 @error_handler
@@ -240,6 +248,7 @@ def init_new_group(chat_id):
     return johnny
 
 
+# --- blacklist filters ---
 def blacklist_filter(message):
     if message.chat.id not in blacklist:
         return True
@@ -267,6 +276,103 @@ def main_messages_handler(message):
     else:
         if response := groups[message.chat.id].new_message(message):
             bot.send_message(message.chat.id, response)
+
+
+
+
+# ------------------------- Gameplay functions ----------------------------
+
+# --- Enable automatic setting up --- (work through Johnny)
+@bot.message_handler(commands=["enable"], func=time_filter)
+@error_handler
+def enable_command(message):
+    groups[message.chat.id].enabled = True
+    if language_code == "en":
+        return bot.reply_to(message, templates[language_code]["enabled.txt"])
+    bot.send_sticker(message.chat.id, stickers["enable"])
+
+# --- Disable automatic setting up ---
+@bot.message_handler(commands=["disable"], func=time_filter)
+@error_handler
+def disable_command(message):
+    groups[message.chat.id].enabled = False
+    bot.reply_to(message, templates[language_code]["disabled.txt"])
+
+
+# --- ask one question to bot ---
+@bot.message_handler(commands=['question'])
+@error_handler
+def question_to_bot(message):
+    
+     bot.send_message(message.chat.id, gpt.question_to_bot(gpt_token,organization_token,message.text),parse_mode='HTML')
+
+
+model = "gpt-3.5-turbo"
+temporary_memory = []
+
+# --- turn on dialog mode ---
+@bot.message_handler(commands=["start_dialog"])
+def start_dialog(message):
+
+    full_message = message.text
+    message_to_gpt = ''
+    system_content = 'Have a dialogue, be a friendly helper'    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Can be changed!!!!!!!!!!!!!
+    
+    bot.send_message(message.chat.id, "Dialog was started.\nIf you want to end it write\n/end_conservation",parse_mode='HTML')     #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Can be changed!!!!!!!!!!!!!!
+
+    #Split the command /start and 'message after this' - message_to_gpt
+    temporary_memory.append('/start')
+    try:
+        for i in range(full_message.index(' ')+1, len(full_message)):
+            message_to_gpt = message_to_gpt + full_message[i]
+
+        response = gpt.get_response(gpt.message_to_ai(gpt_token,organization_token,model,system_content,message_to_gpt))
+
+        temporary_memory.append([message_to_gpt,response])
+
+        bot.send_message(message.chat.id, response,parse_mode='HTML')
+
+    except:
+        print('')
+ 
+# --- turn off dialog mode ---
+@bot.message_handler(commands=["end_dialog"])
+def end_dialog(message):
+    bot.send_message(message.chat.id, "The conservation ended",parse_mode='HTML')     #!!!!!!!!!!!!!!!!!!!!!!!!!!!!Can be changed!!!!!!!!!!!!!!!!
+    temporary_memory.clear()
+    
+
+# --- just messages in turning on gpt ---
+@bot.message_handler(content_types='text')
+def message_filter(message):
+
+
+    system_content = 'Have a dialogue, be a friendly helper'    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Can be changed!!!!!!!!!!!!!
+
+    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    if '/start' in temporary_memory:                    
+            
+        response = gpt.get_response(gpt.conservation(gpt_token,organization_token,model,system_content,message.text,temporary_memory))
+
+        temporary_memory.append([message.text,response])
+
+        bot.send_message(message.chat.id, response,parse_mode='HTML')
+
+
+    # --- command filter ---
+    elif message.text[0] == '/':
+
+        bot.reply_to(message, "Incorrect command.\n/help for list of messages")
+
+        if'/start' in temporary_memory:
+            bot.send_message(message.chat.id, 'Your dialog is still going', parse_mode='HTML')
+
+
+
+
+
+
+
 
 
 logger.info("Bot started")
