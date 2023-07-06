@@ -33,10 +33,6 @@ logger = logging.getLogger(__name__)
 
 
 
-
-
-#------------------------------------------------------------------Loading the tokens/templates/token---------------------------------------------------------------------------------------------------
-
 # --- loading tokens ---
 bot_token = environ.get("BOT_API_TOKEN")
 developer_chat_IDs = environ.get("DEVELOPER_CHAT_IDS")
@@ -61,16 +57,18 @@ templates = load_templates("templates\\")
 stickers = load_stickers("stickers.json")
 language_code = "en"
 
+# --- blacklist ---
+blacklist = {}  # chat_id:[messages_ids] needed for filtering messages
+reply_blacklist = {}  # chat_id:[messages_ids] needed for filtering replies to messages
+
 
 # --- blacklist ---
 blacklist = {}  # chat_id:[messages_ids] needed for filtering messages
 reply_blacklist = {}  # chat_id:[messages_ids] needed for filtering replies to messages
 
 
-#??????????????????????????????
 if not path.exists("groups_info"):
     mkdir("groups_info")
-
 
 # --- Initialazing a bot ----
 bot = TeleBot(bot_token)
@@ -120,12 +118,6 @@ def time_filter(message):
     else:
         ignored_messages += 1
         return False
-
-
-
-
-
-#---------------------------------------------------------------------Bot_messages-----------------------------------------------------------------------------------------------------------------
 
 
 # --- Help ---
