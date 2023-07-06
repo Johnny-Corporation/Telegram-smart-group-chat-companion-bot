@@ -13,6 +13,7 @@ import logging
 import traceback
 from datetime import datetime
 
+
 load_dotenv(".env")
 
 # Needed for filtering messages when bot was offline
@@ -73,7 +74,7 @@ def error_handler(func):
             logger.error(f"Unexpected error: {traceback.format_exc()}")
             bot.send_message(
                 message.chat.id,
-                "Sorry, unexpected error occurred, developer has been already notified!",
+                "Sorry, unexpected error occurred, developers have been already notified!",
             )
             send_to_developers(
                 f"Error occurred!!!: \n -----------\n {traceback.format_exc()}\n ---------- ",
@@ -139,9 +140,12 @@ def help_command(message):
 @error_handler
 def tokens_info_command(message):
     language_code = groups[message.chat.id].lang_code
+    total_tokens = groups[message.chat.id].total_spent_tokens
     bot.reply_to(
         message,
-        templates[language_code]["tokens.txt"].format(dollars=0, spent_tokens=0),
+        templates[language_code]["tokens.txt"].format(
+            dollars=tokens_to_dollars("", total_tokens), spent_tokens=total_tokens
+        ),
     )
 
 
@@ -151,6 +155,20 @@ def tokens_info_command(message):
 def about_command(message):
     language_code = groups[message.chat.id].lang_code
     bot.reply_to(message, templates[language_code]["description.txt"])
+
+
+# --- Dynamic generation ---
+@bot.message_handler(commands=["dynamic_generation"], func=time_filter)
+@error_handler
+def dynamic_generation_command(message):
+    language_code = groups[message.chat.id].lang_code
+    groups[message.chat.id].dynamic_gen = not groups[message.chat.id].dynamic_gen
+    bot.reply_to(
+        message,
+        templates[language_code]["dynamic_generation.txt"].format(
+            groups[message.chat.id].dynamic_gen
+        ),
+    )
 
 
 # --- reply handler for feature requests ---

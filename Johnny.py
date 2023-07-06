@@ -40,6 +40,8 @@ class Johnny:
         self.messages_count = 0  # incremented by one each message, think() function is called when hit trigger_messages_count
         self.lang_code = None
         self.enabled = False
+        self.total_spent_tokens = 0
+        self.dynamic_gen = True
 
     def think(self):
         """reads last"""
@@ -71,6 +73,17 @@ class Johnny:
             )
         ):
             self.messages_count = 0
+            db_controller.add_message_event(
+                self.chat_id,
+                "[GPT-answer]",
+                datetime.now(),
+                "JOHNNYBOT",
+                "JOHNNYBOT",
+                "JOHNNYBOT",
+                1,
+                1,
+                2,
+            )
             return "[GPT-answer]"
 
     def load_data(self):
@@ -82,14 +95,19 @@ class Johnny:
         self.messages_history = db_controller.get_last_n_messages_from_chat(
             self.chat_id, self.temporary_memory_size
         )
+        for i in recent_events[::-1]:
+            if i[5] == "JOHNNYBOT":
+                self.total_spent_tokens = i[-1]
+                break
 
 
 # TODO
 # [ ] log events
 # [ ] dynamically change trigger count
 # [x] always reply when tagging or replying
-# [ ] language change
+# [x] language change
 # [ ] Add gpt
 # [ ] Count tokens
 # [ ] Ask question to bot (via reply)
-# [ ] test adding to group
+# [x] test adding to group
+# [ ] dynamic generation 
