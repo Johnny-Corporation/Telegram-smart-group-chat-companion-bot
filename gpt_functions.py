@@ -6,16 +6,17 @@ def conservation(gpt_token, organization_token ,model, system_content, user_cont
     openai.api_key = str(gpt_token)
     openai.organization = organization_token
 
-    #transform previous messages to gpt_supported view
+    # --- transform previous messages to gpt_supported view ---
     previous_messages = [
-        {"role": "system", "content": system_content},
+        {"role": "system", "content": system_content}
         ]
 
+    # --- add previous messages to gpt ---
     for i in range(1,len(memory)):
         previous_messages.append({"role": "user", "content": memory[i][0]})
         previous_messages.append({"role": "assistant", "content": memory[i][1]})
 
-    #add last user message to gpt
+    # --- add last user message to gpt ---
     previous_messages.append({"role": "user", "content": user_content})
 
 

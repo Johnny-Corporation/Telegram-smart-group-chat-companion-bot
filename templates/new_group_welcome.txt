@@ -1,1 +1,5 @@
 Thank you for adding me to this group! I am a Johnny - smart group chat companion bot, you can use /about@SmartGroupParticipant_bot to know more!
+
+USE /change_language to change language
+
+Bot is diasbled now, use /enable for activation automatic mode

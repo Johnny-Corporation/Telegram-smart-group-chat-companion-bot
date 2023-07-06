@@ -1,5 +1,7 @@
 *.env
 **/__pycache__/
 logs.log
-groups.json
-tokens.sh
+groups_info/
+.vscode/
+MessageEvents.sqlite
+MessageEvents.db
