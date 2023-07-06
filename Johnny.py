@@ -131,3 +131,4 @@ class Johnny:
 # [x] always reply when tagging or replying
 # [ ] language change
 # [ ] Add gpt
+# [ ] Count tokens
