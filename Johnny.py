@@ -2,16 +2,21 @@ from dataclasses import dataclass
 from telebot import TeleBot
 from telebot.types import Message
 from db_controller import Controller
+import gpt_functions as gpt
 import openai
+
 from dotenv import load_dotenv
 from os import environ
 from datetime import datetime
 from logging import Logger
 
+
 load_dotenv(".env")
 
 gpt_token = environ.get("OPENAI_API_KEY")
 organization_token = environ.get("OPENAI_ORGANIZATION")
+
+model = "gpt-3.5-turbo"
 
 if not gpt_token:
     print("Failed to load OpenAI API key from environment, exiting...")
@@ -37,6 +42,10 @@ class Johnny:
     temporary_memory_size: int = 30
     allow_dynamically_change_message_trigger_count: bool = True
     language_code: str = "eng"
+    gpt_token: str = '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'
+    organization_token: str = 'org-pQuAcA9nvf69dTMuXLO1cRNo'
+    model: str = 'gpt-3.5-turbo'
+
     """
     Args:
         id_ (int): chat id
@@ -47,43 +56,62 @@ class Johnny:
     """
 
     def __post_init__(self):
-        self.messages_history = []
+        self.temporary_memory = []
         self.messages_count = 0  # incremented by one each message, think() function is called when hit trigger_messages_count
         self.enabled = False
+        self.dialog_enabled = False
+        self.qustion_enabled = False
 
-    def read_last(self):
-        """reads last"""
+    # def read_last(self):
+    #     """reads last"""
 
 
     # --- gpt answer in automatic mode ---
     def new_message(self, message: Message) -> str:
+        
+
+
+        # --- check the turning on the automode ---
         if not self.enabled:
-            return
+            return 
+        
+        # # --- add messages to database ---
         text = message.text
-        db_controller.add_message_event(
-            self.chat_id,
-            text,
-            datetime.now(),
-            message.from_user.first_name,
-            message.from_user.last_name,
-            message.from_user.username,
-        )
-        if len(self.messages_history) == self.temporary_memory_size:
-            self.messages_history.pop(0)
-            self.messages_history.append(text)
+        # db_controller.add_message_event(
+        #     self.chat_id,
+        #     text,
+        #     datetime.now(),
+        #     message.from_user.first_name,
+        #     message.from_user.last_name,
+        #     message.from_user.username,
+        # )
+
+        # --------- Work with temporary memory ---------
+
+        self.temporary_memory.append(text)
+
+        # --- checking the step up of temporary memory ---
+        if len(self.temporary_memory) == self.temporary_memory_size:
+            self.temporary_memory.pop(0)
+            self.temporary_memory.append(text)
 
         self.messages_count += 1
 
+        # --- Automode handlers ---
         if (
             (self.messages_count == self.trigger_messages_count)
             or ("@" + self.bot_username in text)
-            or (
+        ):
+            
+            self.messages_count = 0
+            return gpt.get_response(gpt.automode(self.gpt_token, self.organization_token, self.model, self.temporary_memory))         #!!!!!!!!!!!!!!!!Do!!!!!!!!!!!!!!!!!!!!!!
+        
+        if (
                 message.reply_to_message
                 and message.reply_to_message.from_user.username == self.bot_username
-            )
-        ):
-            self.messages_count = 0
-            return "[GPT-answer]"           #!!!!!!!!!!!!!!!!Do!!!!!!!!!!!!!!!!!!!!!!
+            ):
+            
+            return gpt.get_response(gpt.reply_to_message(self.gpt_token, self.organization_token, self.model, self.temporary_memory))
 
 
     def load_data(self):
@@ -92,7 +120,7 @@ class Johnny:
         )
         if not recent_events:
             return
-        self.messages_history = db_controller.get_last_n_messages_from_chat(
+        self.temporary_memory = db_controller.get_last_n_messages_from_chat(
             self.chat_id, self.temporary_memory_size
         )
 

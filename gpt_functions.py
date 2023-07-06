@@ -1,6 +1,56 @@
 import os
 import openai
 
+def automode(gpt_token, organization_token, model, memory):
+
+    openai.api_key = str(gpt_token)
+    openai.organization = organization_token
+
+    system_content = 'Read the previous messages and write something useful'
+
+    # --- transform previous messages to gpt_supported view ---
+    previous_messages = [
+        {"role": "system", "content": system_content}
+        ]
+
+    # --- add messages to gpt ---
+    for i in range(1,len(memory)):
+        previous_messages.append({"role": "user", "content": memory[i]})
+
+
+    completion = openai.ChatCompletion.create(
+        model=model,
+        messages=previous_messages
+    )
+    
+    return completion
+
+
+def reply_to_message(gpt_token, organization_token, model, memory):
+
+    openai.api_key = str(gpt_token)
+    openai.organization = organization_token
+
+    system_content = 'Write the answer or suggestions to the last message'
+
+    # --- transform previous messages to gpt_supported view ---
+    previous_messages = [
+        {"role": "system", "content": system_content}
+        ]
+
+    # --- add messages to gpt ---
+    for i in range(1,len(memory)):
+        previous_messages.append({"role": "user", "content": memory[i]})
+
+
+    completion = openai.ChatCompletion.create(
+        model=model,
+        messages=previous_messages
+    )
+    
+    return completion
+
+
 def conservation(gpt_token, organization_token ,model, system_content, user_content, memory):
     
     openai.api_key = str(gpt_token)
@@ -30,7 +80,7 @@ def conservation(gpt_token, organization_token ,model, system_content, user_cont
     
 
 
-def question_to_bot(gpt_token,organization_token,message):
+def question_to_bot(gpt_token,organization_token,model,message):
 
     message_to_gpt = ''
 
@@ -43,8 +93,7 @@ def question_to_bot(gpt_token,organization_token,message):
     for i in range(message.index(' ')+1, len(message)):
         message_to_gpt = message_to_gpt + message[i]
 
-    model = "gpt-3.5-turbo" #!!!!!!!!!!!!!!!!!!!!!!!!!1Can be changed (connect with more global)!!!!!!!!!!!!!!!!!
-    system_content = 'Answer the question' #!!!!!!!!!!!!!!!!!!!!!Can be changed!!!!!!!!!!!!!!!!!!!!!!!!!!
+    system_content = 'Answer the question or suggest your solution' #!!!!!!!!!!!!!!!!!!!!!Can be changed!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     return get_response(message_to_ai(gpt_token,organization_token,model,system_content,message_to_gpt))
 
