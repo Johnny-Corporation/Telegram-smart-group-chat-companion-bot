@@ -320,6 +320,11 @@ def init_new_group(chat_id):
         )
         groups[chat_id].load_data()
 
+        bot.send_message(
+            chat_id,
+            ("Done!" if language_code == "en" else "Готово!"),
+        )
+
     else:
         with open(
             f"groups_info\\{bot.get_chat(chat_id).title}.json",
