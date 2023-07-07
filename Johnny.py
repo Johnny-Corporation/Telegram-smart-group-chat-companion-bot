@@ -5,6 +5,7 @@ from db_controller import Controller
 import gpt_interface as gpt
 from dotenv import load_dotenv
 from datetime import datetime
+from random import random
 
 load_dotenv(".env")
 
@@ -33,7 +34,8 @@ class Johnny:
         temporary_memory_size (int): sets number of messages given to GPT (eg: if set to 5, gpt will read only 5 last messages;
         This does not affect persistent memory! Persistent memory keeps whole conversation.)
         language_code (str): Language
-        random_trigger (bool) If set to True, bot triggers randomly
+        random_trigger (bool) If set to True, bot triggers randomly. When enabled, trigger_messages_count is ignored
+        random_trigger_probability (float from 0 to 1) = Triggering probability on each message. Works only when random trigger is True 
         
     """
 
@@ -88,6 +90,7 @@ class Johnny:
                 message.reply_to_message
                 and message.reply_to_message.from_user.username == self.bot_username
             )
+            or (self.random_trigger and (random() < self.random_trigger_probability))
         ):
             self.messages_count = 0
 
