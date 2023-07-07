@@ -24,6 +24,7 @@ For the development of our bot, please [support us](#supporting-soon)
   * [Opportunities](#writing-your-first-bot)
     * [System_content](#prerequisites)
     * [Modes](#a-simple-echo-bot)
+    * [Customization](#a-simple-echo-bot)
   * [Limits](#a-simple-echo-bot)
   * [Pricing](#a-simple-echo-bot)
   * [Report](#a-simple-echo-bot)
@@ -54,6 +55,11 @@ This bot provides features of AI-hepler in different types:
   * ## Question Mode
 
   You just ask one question to bot. Without other previous messages.
+
+
+## Customization
+
+Dynamic generate etp
 
 ## Limits (maybe)
 
