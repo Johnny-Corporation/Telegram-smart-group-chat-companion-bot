@@ -5,11 +5,12 @@ from telebot import TeleBot, types
 from Johnny import Johnny
 from internet_access import *
 from functions import *
+from logger import logger
+from gpt_interface import one_question
 
 # Other
 from dotenv import load_dotenv
 from os import environ, path, mkdir
-import logging
 import traceback
 from datetime import datetime
 
@@ -20,13 +21,6 @@ load_dotenv(".env")
 start_time = datetime.now()
 skip_old_messages = True
 ignored_messages = 0  # count number of ignored messages when bot was offline for logs
-
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[logging.FileHandler("logs.log"), logging.StreamHandler()],
-)
-logger = logging.getLogger(__name__)
 
 
 bot_token = environ.get("BOT_API_TOKEN")
@@ -140,11 +134,16 @@ def help_command(message):
 @error_handler
 def tokens_info_command(message):
     language_code = groups[message.chat.id].lang_code
-    total_tokens = groups[message.chat.id].total_spent_tokens
+    prompt_completion_tokens = groups[message.chat.id].prompt_completion_tokens
     bot.reply_to(
         message,
         templates[language_code]["tokens.txt"].format(
-            dollars=tokens_to_dollars("", total_tokens), spent_tokens=total_tokens
+            dollars=tokens_to_dollars(
+                "gpt-3.5-turbo",
+                prompt_completion_tokens[0],
+                prompt_completion_tokens[1],
+            ),
+            spent_tokens=groups[message.chat.id].total_spent_tokens,
         ),
     )
 
@@ -209,16 +208,29 @@ def bug_report_reply_handler(inner_message):
     )
 
 
+# --- reply handler for question to bot
+@error_handler
+def question_to_bot_reply_handler(inner_message):
+    bot.reply_to(inner_message, groups[inner_message.chat.id].one_answer(inner_message))
+
+
+# --- Question to bot  ------
+@bot.message_handler(commands=["question_to_bot"], func=time_filter)
+@error_handler
+def question_to_bot_command(message):
+    language_code = groups[message.chat.id].lang_code
+    bot_reply = bot.reply_to(message, templates[language_code]["question_to_bot.txt"])
+    reply_blacklist[message.chat.id].append(bot_reply.message_id)
+    bot.register_for_reply(bot_reply, question_to_bot_reply_handler)
+
+
 # --- Report bug ---
 @bot.message_handler(commands=["report_bug"], func=time_filter)
 @error_handler
 def report_bug_command(message):
     language_code = groups[message.chat.id].lang_code
     bot_reply = bot.reply_to(message, templates[language_code]["report_bug.txt"])
-    if message.chat.id not in reply_blacklist:
-        reply_blacklist[message.chat.id] = [bot_reply.message_id]
-    else:
-        reply_blacklist.append(bot_reply.message_id)
+    reply_blacklist[message.chat.id].append(bot_reply.message_id)
     bot.register_for_reply(bot_reply, bug_report_reply_handler)
 
 
@@ -228,10 +240,7 @@ def report_bug_command(message):
 def request_feature_command(message):
     language_code = groups[message.chat.id].lang_code
     bot_reply = bot.reply_to(message, templates[language_code]["request_feature.txt"])
-    if message.chat.id not in reply_blacklist:
-        reply_blacklist[message.chat.id] = [bot_reply.message_id]
-    else:
-        reply_blacklist.append(bot_reply.message_id)
+    reply_blacklist[message.chat.id].append(bot_reply.message_id)
     bot.register_for_reply(bot_reply, feature_request_reply_handler)
 
 
@@ -295,11 +304,13 @@ def handle_language_change(call):
         bot.send_message(
             call.message.chat.id, templates[language_code]["new_group_welcome.txt"]
         )
-        bot.send_message(
-            call.message.chat.id,
-            ("Initializing..." if language_code == "en" else "Инициализация..."),
-            reply_markup=keyboard,
-        )
+        if language_code == "en":
+            bot.send_message(
+                call.message.chat.id,
+                "Initializing...",
+            )
+        elif language_code == "ru":
+            send_sticker(call.message.chat.id, stickers["initializing"], bot)
 
         groups[call.message.chat.id].load_data()
 
@@ -332,10 +343,13 @@ def init_new_group(chat_id):
             templates[language_code]["new_group_welcome.txt"],
             reply_markup=keyboard,
         )
-        bot.send_message(
-            chat_id,
-            ("Initializing..." if language_code == "en" else "ru"),
-        )
+        if language_code == "en":
+            bot.send_message(
+                chat_id,
+                "Initializing...",
+            )
+        elif language_code == "ru":
+            send_sticker(chat_id, stickers["initializing"], bot)
         groups[chat_id].load_data()
 
         bot.send_message(
@@ -351,7 +365,7 @@ def init_new_group(chat_id):
         ) as f:
             f.write(convert_to_json(str(bot.get_chat(chat_id))))
 
-        groups[chat_id] = Johnny(bot, chat_id, logger, bot_username)
+        groups[chat_id] = Johnny(bot, chat_id, bot_username)
 
         blacklist[chat_id] = []
         reply_blacklist[chat_id] = []

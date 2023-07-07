@@ -2,11 +2,9 @@ from dataclasses import dataclass
 from telebot import TeleBot
 from telebot.types import Message
 from db_controller import Controller
-import gpt_interface
+import gpt_interface as gpt
 from dotenv import load_dotenv
-from os import environ
 from datetime import datetime
-from logging import Logger
 
 load_dotenv(".env")
 
@@ -20,7 +18,6 @@ class Johnny:
 
     bot: TeleBot
     chat_id: int
-    logger: Logger
     bot_username: str
     trigger_messages_count: int = 5
     temporary_memory_size: int = 30
@@ -41,14 +38,22 @@ class Johnny:
         self.lang_code = None
         self.enabled = False
         self.total_spent_tokens = 0
+        self.prompt_completion_tokens = [0, 0]
         self.dynamic_gen = True
 
     def think(self):
         """reads last"""
 
-    def new_message(self, message: Message) -> str:
-        if not self.enabled:
-            return
+    def one_answer(self, message: Message):
+        answer = gpt.one_question(message.text)
+        self.total_spent_tokens += gpt.get_tokens(answer)[0] + gpt.get_tokens(answer)[1]
+        self.new_message(message)
+        return gpt.get_text(answer)
+
+    def new_message(
+        self,
+        message: Message,
+    ) -> str:
         text = message.text
         db_controller.add_message_event(
             self.chat_id,
@@ -58,9 +63,12 @@ class Johnny:
             message.from_user.last_name,
             message.from_user.username,
         )
+        self.messages_history.append(text)
         if len(self.messages_history) == self.temporary_memory_size:
             self.messages_history.pop(0)
-            self.messages_history.append(text)
+
+        if not self.enabled:
+            return
 
         self.messages_count += 1
 
@@ -73,18 +81,33 @@ class Johnny:
             )
         ):
             self.messages_count = 0
+
+            gpt_answer = gpt.gpt_answer(
+                self.messages_history, bool(message.reply_to_message)
+            )
+
+            self.total_spent_tokens += (
+                gpt.get_tokens(gpt_answer)[0] + gpt.get_tokens(gpt_answer)[1]
+            )
+
+            self.prompt_completion_tokens[0] = (
+                self.prompt_completion_tokens[0] + gpt.get_tokens(gpt_answer)[0]
+            )
+            self.prompt_completion_tokens[1] = (
+                self.prompt_completion_tokens[1] + gpt.get_tokens(gpt_answer)[1]
+            )
+
             db_controller.add_message_event(
                 self.chat_id,
-                "[GPT-answer]",
+                gpt.get_text(gpt_answer),
                 datetime.now(),
                 "JOHNNYBOT",
                 "JOHNNYBOT",
-                "JOHNNYBOT",
-                1,
-                1,
-                2,
+                self.bot_username,
+                self.total_spent_tokens,
             )
-            return "[GPT-answer]"
+            self.messages_history.append(gpt.get_text(gpt_answer))
+            return gpt.get_text(gpt_answer)
 
     def load_data(self):
         recent_events = db_controller.get_last_n_message_events_from_chat(
@@ -102,12 +125,22 @@ class Johnny:
 
 
 # TODO
-# [ ] log events
+# [x] log events
 # [ ] dynamically change trigger count
 # [x] always reply when tagging or replying
 # [x] language change
-# [ ] Add gpt
-# [ ] Count tokens
-# [ ] Ask question to bot (via reply)
+# [x] Add gpt
+# [x] Count tokens
+# [x] Ask question to bot (via reply)
 # [x] test adding to group
-# [ ] dynamic generation 
+# [ ] dynamic generation
+# [ ] Readme for gh    <<---------- Misha
+# [ ] Internet access parameter
+# [ ] write input output tokens to db
+# [ ] refactoring
+# [ ] in question_to_bot make bot react to both ways: reply and in one message with command <<---------- Misha
+# [ ] help command, all commands with descriptions <<---------Misha
+# [ ] Convert templates with parse_html<<---------- Misha
+# [ ] Connect payment system <<---------- Misha
+# [ ] Make support for german and spanish
+# [ ] Make sticker support only for ru

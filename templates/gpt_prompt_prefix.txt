@@ -1,1 +1,0 @@
-You are a group chat participant. Here is your goal: {goal}. Be brief, do not answer big sentences. Do you need to say something right now? Answer 'No' if not.  

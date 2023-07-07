@@ -43,8 +43,13 @@ def send_to_developers(msg, bot, developer_chat_IDs, file=False):
                 )
 
 
-def tokens_to_dollars(model, tokens):
-    return "Not implemented"
+coefficients = {"gpt-3.5-turbo": {"input": 0.0015, "output": 0.002}}
+
+
+def tokens_to_dollars(model, input_tokens, output_tokens):
+    input_price = (input_tokens / 1000) * coefficients[model]["input"]
+    output_price = (output_tokens / 1000) * coefficients[model]["output"]
+    return input_price + output_price
 
 
 def convert_to_json(s):

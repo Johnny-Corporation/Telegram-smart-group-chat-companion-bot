@@ -23,8 +23,6 @@ class Controller:
                 SenderFirstName TEXT,
                 SenderLastName TEXT,
                 SenderUsername TEXT,
-                TokensUsedInput INTEGER,
-                TokensUsedOutput INTEGER,
                 TokensTotal INTEGER
             )
         """
@@ -42,14 +40,12 @@ class Controller:
         first_name,
         last_name,
         username,
-        tokens_spent_input=None,
-        tokens_spent_output=None,
         tokens_total=None,
     ):
         self.cursor.execute(
             f"""
-            INSERT INTO MessageEvents (ChatID, MessageText, Time, SenderFirstName, SenderLastName, SenderUsername, TokensUsedInput, TokensUsedOutput,TokensTotal)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO MessageEvents (ChatID, MessageText, Time, SenderFirstName, SenderLastName, SenderUsername, TokensTotal)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 chat_id,
@@ -58,8 +54,6 @@ class Controller:
                 first_name,
                 last_name,
                 username,
-                tokens_spent_input,
-                tokens_spent_output,
                 tokens_total,
             ),
         )
