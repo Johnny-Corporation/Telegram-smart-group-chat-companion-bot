@@ -220,6 +220,31 @@ def question_to_bot_reply_handler(inner_message):
     bot.reply_to(inner_message, groups[inner_message.chat.id].one_answer(inner_message))
 
 
+# --- reply handler for set temp
+@error_handler
+def set_temp_reply_handler(inner_message):
+    try:
+        val = float(inner_message.text)
+    except ValueError:
+        bot.reply_to(inner_message, "❌")
+        return
+    if (val > 2) or (val < 0):
+        bot.reply_to(inner_message, "❌")
+        return
+
+    groups[inner_message.chat.id].temperature = val
+    bot.reply_to(inner_message, "OK✅")
+
+
+# --- Set temp ---
+@bot.message_handler(commands=["set_temperature"], func=time_filter)
+@error_handler
+def set_temp_command(message):
+    language_code = groups[message.chat.id].lang_code
+    bot_reply = bot.reply_to(message, templates[language_code]["change_temp.txt"])
+    bot.register_for_reply(bot_reply, set_temp_reply_handler)
+
+
 # --- Question to bot  ------
 @bot.message_handler(commands=["question_to_bot"], func=time_filter)
 @error_handler
@@ -268,15 +293,6 @@ def disable_command(message):
     language_code = groups[message.chat.id].lang_code
     groups[message.chat.id].enabled = False
     bot.reply_to(message, templates[language_code]["disabled.txt"])
-
-
-# --- Set temp ---
-@bot.message_handler(commands=["set_temperature"], func=time_filter)
-@error_handler
-def set_temp_command(message):
-    language_code = groups[message.chat.id].lang_code
-    # logic (check val from 0 to 2!)
-    bot.reply_to(message, "Not implemented")
 
 
 # --- Change language ---

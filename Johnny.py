@@ -26,6 +26,7 @@ class Johnny:
     random_trigger: bool = False
     random_trigger_probability: float = None
     model = "gpt-3.5-turbo-16k"
+    temperature: float = 1
     """
     Args:
         id_ (int): chat id
@@ -36,6 +37,7 @@ class Johnny:
         language_code (str): Language
         random_trigger (bool) If set to True, bot triggers randomly. When enabled, trigger_messages_count is ignored
         random_trigger_probability (float from 0 to 1) = Triggering probability on each message. Works only when random trigger is True 
+        temperature (float) temperature value, used in requests to GPT
         
     """
 
@@ -95,7 +97,10 @@ class Johnny:
             self.messages_count = 0
 
             response = gpt.create_chat_completion(
-                self.messages_history, bool(message.reply_to_message), model=self.model
+                self.messages_history,
+                bool(message.reply_to_message),
+                model=self.model,
+                temperature=self.temperature,
             )
             text_answer = gpt.extract_text(response)
 

@@ -1,0 +1,1 @@
+Please enter value from 0 to 2 in reply to this message. Temperature parameter defines how random is GPT responses, where 0 is the most deterministic and 2 is most random
