@@ -328,6 +328,13 @@ def disable_command(message):
 def change_language_command(message):
     change_language(message.chat.id)
 
+# --- Commands list ---
+@bot.message_handler(commands=["commands"], func=time_filter)
+@error_handler
+def change_language_command(message):
+    language_code = groups[message.chat.id].lang_code
+    bot.send_message(message.chat.id, templates[language_code]["commands.txt"], parse_mode='HTML')
+
 
 def change_language(chat_id):
     keyboard = types.InlineKeyboardMarkup()

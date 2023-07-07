@@ -1,0 +1,13 @@
+I can discuss, appeal, answer, suggest solvings to your messsages. If you're new to the JohnnyBot, please see the manual: /description
+
+You can control me by sending these commands:
+
+<b>Set-up functions</b>
+
+<b>GamePlay</b>
+
+<b>Customization</b>
+
+<b>INFO</b>
+
+<b>Support</b>
