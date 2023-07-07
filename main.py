@@ -6,7 +6,6 @@ from Johnny import Johnny
 from internet_access import *
 from functions import *
 from logger import logger
-from gpt_interface import one_question
 
 # Other
 from dotenv import load_dotenv
@@ -14,12 +13,11 @@ from os import environ, path, mkdir
 import traceback
 from datetime import datetime
 
-
 load_dotenv(".env")
 
 # Needed for filtering messages when bot was offline
 start_time = datetime.now()
-skip_old_messages = True
+skip_old_messages = True  # True until message older than bot start time received
 ignored_messages = 0  # count number of ignored messages when bot was offline for logs
 
 
@@ -51,20 +49,22 @@ bot_username = bot.get_me().username
 
 # Init quick access keyboard
 keyboard = types.ReplyKeyboardMarkup()
-buttons = [
-    types.KeyboardButton(text=lang)
-    for lang in ["English", "Spanish", "French", "German"]
-]  # create buttons
 keyboard.add(
     *[types.KeyboardButton(text="/enable"), types.KeyboardButton(text="/disable")]
 )
 
 
 def error_handler(func):
+    """Handles all occurred errors, logs them, sends error and logs.log to developers
+
+    Args:
+        func (function)
+    """
+
     def wrapper(message):
         try:
             func(message)
-        except Exception as e:
+        except Exception:
             logger.error(f"Unexpected error: {traceback.format_exc()}")
             bot.send_message(
                 message.chat.id,
@@ -77,10 +77,14 @@ def error_handler(func):
             )
             send_to_developers("logs.log", bot, developer_chat_IDs, file=True)
         else:
-            logger.info(
-                f"Command {message.text} executed in chat with id {message.chat.id}"
-            )
-            # log gpt responses
+            if message.text[0] == "/":  # command
+                logger.info(
+                    f"Command {message.text} executed in chat with id {message.chat.id}by user with id {message.from_user.id}"
+                )
+            else:
+                logger.info(
+                    f"Message {message.text} sent in chat with id {message.chat.id} by user with id {message.from_user.id}"
+                )
 
     return wrapper
 
@@ -103,13 +107,15 @@ def time_filter(message):
 
 
 def blacklist_filter(message):
+    "Filters message if its id in blacklist"
     if message.chat.id not in blacklist:
         return True
     return not (message.message_id in blacklist.get(message.chat.id))
 
 
 def reply_blacklist_filter(message):
-    if message.chat.id not in reply_blacklist:
+    """Bloscks message if it is a reply to message which is in reply_blacklist"""
+    if message.chat.id not in blacklist:
         return True
     return (message.reply_to_message is None) or (
         message.reply_to_message.message_id not in reply_blacklist[message.chat.id]
@@ -134,16 +140,16 @@ def help_command(message):
 @error_handler
 def tokens_info_command(message):
     language_code = groups[message.chat.id].lang_code
-    prompt_completion_tokens = groups[message.chat.id].prompt_completion_tokens
+    total_tokens = groups[message.chat.id].total_spent_tokens
     bot.reply_to(
         message,
         templates[language_code]["tokens.txt"].format(
             dollars=tokens_to_dollars(
-                "gpt-3.5-turbo",
-                prompt_completion_tokens[0],
-                prompt_completion_tokens[1],
+                groups[message.chat.id].model,
+                total_tokens[0],
+                total_tokens[1],
             ),
-            spent_tokens=groups[message.chat.id].total_spent_tokens,
+            spent_tokens=sum(groups[message.chat.id].total_spent_tokens),
         ),
     )
 
@@ -250,9 +256,9 @@ def request_feature_command(message):
 def enable_command(message):
     language_code = groups[message.chat.id].lang_code
     groups[message.chat.id].enabled = True
-    if language_code == "en":
-        return bot.reply_to(message, templates[language_code]["enabled.txt"])
-    bot.send_sticker(message.chat.id, stickers["enable"])
+    if language_code == "ru":
+        bot.send_sticker(message.chat.id, stickers["enable"])
+    bot.reply_to(message, templates[language_code]["enabled.txt"])
 
 
 # --- Disable ---
@@ -284,6 +290,8 @@ def change_language(chat_id):
     keyboard = types.InlineKeyboardMarkup()
     keyboard.add(types.InlineKeyboardButton(text="Русский", callback_data="ru"))
     keyboard.add(types.InlineKeyboardButton(text="English", callback_data="en"))
+    keyboard.add(types.InlineKeyboardButton(text="Deutsch", callback_data="de"))
+    keyboard.add(types.InlineKeyboardButton(text="Español", callback_data="es"))
     bot.send_message(chat_id, "Choose language", reply_markup=keyboard)
 
 
@@ -299,25 +307,36 @@ def handle_language_change(call):
         groups[call.message.chat.id].lang_code = "ru"
         bot.send_message(call.message.chat.id, "Теперь на родном базарим")
         language_code = "ru"
+    elif call.data == "es":
+        groups[call.message.chat.id].lang_code = "es"
+        bot.send_message(call.message.chat.id, "Ahora en el Bazar nativo")
+        language_code = "es"
+    elif call.data == "de":
+        groups[call.message.chat.id].lang_code = "de"
+        bot.send_message(call.message.chat.id, "Jetzt auf dem Heimatmarkt")
+        language_code = "de"
 
     if not previous_lang:
-        bot.send_message(
-            call.message.chat.id, templates[language_code]["new_group_welcome.txt"]
-        )
-        if language_code == "en":
-            bot.send_message(
-                call.message.chat.id,
-                "Initializing...",
-            )
-        elif language_code == "ru":
-            send_sticker(call.message.chat.id, stickers["initializing"], bot)
+        send_welcome_text_and_load_data(call.message.chat.id, language_code)
 
-        groups[call.message.chat.id].load_data()
 
-        bot.send_message(
-            call.message.chat.id,
-            ("Done!" if language_code == "en" else "Готово!"),
-        )
+def send_welcome_text_and_load_data(chat_id: int, language_code: str = "en") -> None:
+    """Sends initialization messages to group and loads data in group's object
+
+    Args:
+        chat_id (int)
+    """
+    bot.send_message(chat_id, templates[language_code]["new_group_welcome.txt"])
+    bot.send_message(chat_id, templates[language_code]["initialization.txt"])
+    if language_code == "ru":
+        send_sticker(chat_id, stickers["initializing"], bot)
+
+    groups[chat_id].load_data()
+
+    bot.send_message(
+        chat_id,
+        templates[language_code]["done_initializing.txt"],
+    )
 
 
 # --- Handling new groups ---
@@ -337,25 +356,7 @@ def init_new_group(chat_id):
             """You haven't set the language, using english. 
             Use /change_language for changing language""",
         )
-        language_code = "en"
-        bot.send_message(
-            chat_id,
-            templates[language_code]["new_group_welcome.txt"],
-            reply_markup=keyboard,
-        )
-        if language_code == "en":
-            bot.send_message(
-                chat_id,
-                "Initializing...",
-            )
-        elif language_code == "ru":
-            send_sticker(chat_id, stickers["initializing"], bot)
-        groups[chat_id].load_data()
-
-        bot.send_message(
-            chat_id,
-            ("Done!" if language_code == "en" else "Готово!"),
-        )
+        send_welcome_text_and_load_data(chat_id)
 
     else:
         with open(
@@ -365,7 +366,7 @@ def init_new_group(chat_id):
         ) as f:
             f.write(convert_to_json(str(bot.get_chat(chat_id))))
 
-        groups[chat_id] = Johnny(bot, chat_id, bot_username)
+        groups[chat_id] = Johnny(bot, chat_id, str(bot_username))
 
         blacklist[chat_id] = []
         reply_blacklist[chat_id] = []
@@ -378,7 +379,9 @@ def init_new_group(chat_id):
     and blacklist_filter(message)
     and time_filter(message)
 )
+@error_handler
 def main_messages_handler(message):
+    """Handles all messages"""
     if (message.chat.id not in groups) or (not groups[message.chat.id].lang_code):
         init_new_group(message.chat.id)
     else:

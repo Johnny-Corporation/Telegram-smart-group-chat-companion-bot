@@ -1,0 +1,1 @@
+Der Bot ist eingeschaltet und liest Nachrichten, um sie zu beantworten.

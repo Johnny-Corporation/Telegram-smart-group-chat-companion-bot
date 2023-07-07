@@ -1,3 +1,5 @@
+"""Creates main logger """
+
 import logging
 
 logging.basicConfig(

@@ -1,0 +1,1 @@
+Sie haben {spent_tokens} Token ausgegeben. Ungefähr {dollars}$

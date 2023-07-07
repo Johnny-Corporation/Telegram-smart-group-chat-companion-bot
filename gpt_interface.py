@@ -9,79 +9,41 @@ if not openAI_api_key:
 openai.api_key = openAI_api_key
 
 
-def check_negative_answer(text: str) -> bool:
-    """Checks wether input text is negative answer or not"""
-    pass
+def extract_tokens(completion):
+    """Extracts tokens from OpenAI API response"""
+    return [completion.usage.prompt_tokens, completion.usage.completion_tokens]
 
 
-def chat_message(context: list) -> str:
-    pass
-
-
-def one_question(
-    text: str,
-    model="gpt-3.5-turbo",
-    temperature=0,
-    top_p=0.1,
-    n=1,
-    stream=False,
-    stop="\n",
-    frequency_penalty=0,
-    presence_penalty=0,
-) -> dict:
-    response = openai.ChatCompletion.create(
-        model=model,
-        messages=[
-            {"role": "system", "content": "Be brief"},
-            {"role": "user", "content": text},
-        ],
-        # max_tokens=max_tokens,
-        temperature=temperature,
-        top_p=top_p,
-        n=n,
-        stream=stream,
-        stop=stop,
-        frequency_penalty=frequency_penalty,
-        presence_penalty=presence_penalty,
-    )
-    logger.info(
-        f"[Question to bot - request to GPT] Input: {text}; Output: {response.choices[0].message.content} Total tokens used: {response.usage.total_tokens}"
-    )
-    return response
-
-
-def get_tokens(completion):
-    tokens_total = [completion.usage.prompt_tokens,completion.usage.completion_tokens]
-    return tokens_total
-
-
-def get_text(completion):
+def extract_text(completion):
+    """Extracts text from OpenAI API response"""
     return completion.choices[0].message.content
 
 
-def gpt_answer(
-    memory,
-    reply: bool,
-    model="gpt-3.5-turbo",
-    temperature=0,
-    top_p=0.1,
-    n=1,
-    stream=False,
-    stop=None,
-    frequency_penalty=0,
-    presence_penalty=0,
-):
-    # --- check the replying and create ---
-    if reply == True:
-        system_content = "Write the answer or suggestions to the last message"
+def create_chat_completion(
+    messages: list,
+    reply: bool = False,
+    model: str = "gpt-3.5-turbo",
+    temperature: int = 1,
+    top_p: float = 0.5,
+    n: int = 1,
+    stream: bool = False,
+    stop: str = None,
+    frequency_penalty: float = 0,
+    presence_penalty: float = 0,
+) -> openai.Completion:
+    """Creates ChatCompletion
+    messages(list): list of strings
+    reply(bool): True means GPT will consider last message, False means not, None means system input field will be empty
+    """
+    if reply != None:
+        system_content = "Ifr u are not sure u understand context, say 'NO' and i will handle it. Be brief, answer in 1-2 short sentences. Keep up the conversation, ask questions if u want. Message example: 'Matvey:Hey', this means user with name 'Matvey' said 'Hey'. Dont include your name or role in response. '@' sign means tagging and people are waiting reaction"
+        if reply:
+            system_content += " Write the answer or suggestions to the last message"
     else:
-        system_content = "Read previous messages and write something useful"
+        system_content = ""
 
-    # --- transform previous messages to gpt_supported view ---
     previous_messages = [{"role": "system", "content": system_content}]
-
-    # --- add messages to gpt ---
-    for i in memory:
+    for i in messages:
         previous_messages.append({"role": "user", "content": i})
 
     completion = openai.ChatCompletion.create(
