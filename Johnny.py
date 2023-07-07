@@ -157,11 +157,11 @@ class Johnny:
 # [ ] dynamic generation
 # [ ] Readme for gh    <<---------- Misha
 # [ ] Internet access parameter
-# [ ] write input output tokens to db
-# [ ] refactoring
+# [x] write input output tokens to db
+# [x] refactoring
 # [ ] in question_to_bot make bot react to both ways: reply and in one message with command <<---------- Misha
 # [ ] help command, all commands with descriptions <<---------Misha
 # [ ] Convert templates with parse_html<<---------- Misha
 # [ ] Connect payment system <<---------- Misha
-# [ ] Make support for german and spanish
-# [ ] Make sticker support only for ru
+# [x] Make support for german and spanish
+# [x] Make sticker support only for ru
