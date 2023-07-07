@@ -166,3 +166,7 @@ class Johnny:
 # [x] Make support for german and spanish
 # [x] Make sticker support only for ru
 # [ ] Configure gpt for correct answers
+# [ ] 'Tags' mode
+# [ ] Generate system_content
+# [ ] Assistant; User in messages history (refactor temporary memory)
+# [ ] Dialog mode
