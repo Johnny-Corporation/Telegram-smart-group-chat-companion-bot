@@ -1,0 +1,1 @@
+Por favor, introduzca un valor mayor que 0 en respuesta a este mensaje. El Tamaño de la memoria temporal es el número de mensajes que GPT ve en cada solicitud. Con el aumento, el número de tokens consumidos y el tiempo de respuesta aumentarán enormemente, pero al mismo tiempo, Johnny comenzará a comprender mejor el contexto en casos complejos. (20 por defecto)

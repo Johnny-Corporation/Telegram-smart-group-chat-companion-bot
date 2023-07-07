@@ -236,6 +236,22 @@ def set_temp_reply_handler(inner_message):
     bot.reply_to(inner_message, "OK✅")
 
 
+# --- reply handler for set temp memory size
+@error_handler
+def set_memory_size_reply_handler(inner_message):
+    try:
+        val = int(inner_message.text)
+    except ValueError:
+        bot.reply_to(inner_message, "❌")
+        return
+    if val <= 0:
+        bot.reply_to(inner_message, "❌")
+        return
+
+    groups[inner_message.chat.id].change_memory_size(val)
+    bot.reply_to(inner_message, "OK✅")
+
+
 # --- Set temp ---
 @bot.message_handler(commands=["set_temperature"], func=time_filter)
 @error_handler
@@ -243,6 +259,17 @@ def set_temp_command(message):
     language_code = groups[message.chat.id].lang_code
     bot_reply = bot.reply_to(message, templates[language_code]["change_temp.txt"])
     bot.register_for_reply(bot_reply, set_temp_reply_handler)
+
+
+# --- Set memory size ---
+@bot.message_handler(commands=["temporary_memory_size"], func=time_filter)
+@error_handler
+def set_temp_memory_size_command(message):
+    language_code = groups[message.chat.id].lang_code
+    bot_reply = bot.reply_to(
+        message, templates[language_code]["change_temp_memory_size.txt"]
+    )
+    bot.register_for_reply(bot_reply, set_memory_size_reply_handler)
 
 
 # --- Question to bot  ------

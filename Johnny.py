@@ -21,7 +21,7 @@ class Johnny:
     chat_id: int
     bot_username: str
     trigger_messages_count: int = 5
-    temporary_memory_size: int = 30
+    temporary_memory_size: int = 20
     language_code: str = "eng"
     random_trigger: bool = False
     random_trigger_probability: float = None
@@ -122,6 +122,12 @@ class Johnny:
             )
             self.messages_history.append(f"Bot: {text_answer}")
             return text_answer
+
+    def change_memory_size(self, size):
+        self.temporary_memory_size = size
+        self.messages_history = self.messages_history[
+            len(self.messages_history) - size - 1 :
+        ]
 
     def load_data(self) -> None:
         """Loads data from to object from db"""
