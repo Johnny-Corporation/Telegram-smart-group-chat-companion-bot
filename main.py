@@ -429,10 +429,9 @@ def manual_answer_command(message):
         if message.reply_to_message is not None:
             groups[message.chat.id].manual_history.append('U: ' + message.reply_to_message.text)
 
-        response = groups[message.chat.id].new_message(message)
+        threading.Thread(target=groups[message.chat.id].new_message(message))
         groups[message.chat.id].manual_answer_enabled = False
-
-        bot.send_message(message.chat.id,response)
+        
 
         
 

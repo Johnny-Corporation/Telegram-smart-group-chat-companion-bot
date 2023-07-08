@@ -115,9 +115,8 @@ class Johnny:
                 self.total_spent_tokens[1],
             )
 
-            return text_answer
+            self.bot.send_message(message.chat.id, text_answer)
         
-
         # --- manual mode ---
         if self.manual_answer_enabled:
             response = gpt.manual_mode(
@@ -142,8 +141,8 @@ class Johnny:
                 self.total_spent_tokens[0],
                 self.total_spent_tokens[1],
             )
-
-            return text_answer
+            
+            self.bot.send_message(message.chat.id, text_answer)
 
 
         # --- Auto mode ---
@@ -255,13 +254,13 @@ class Johnny:
 # [x] write input output tokens to db
 # [x] refactoring
 # [ ] in question_to_bot make bot react to both ways: reply and in one message with command <<---------- Misha
-# [ ] help command, all commands with descriptions <<---------Misha
+# [x] help command, all commands with descriptions <<---------Misha
 # [ ] Convert templates with parse_html<<---------- Misha
 # [ ] Connect payment system <<---------- Misha
 # [x] Make support for german and spanish
 # [x] Make sticker support only for ru
 # [ ] Configure gpt for correct answers
-# [ ] manual mode <<--------------- Misha
+# [x] manual mode <<--------------- Misha
 # [ ] Generate system_content <<--------- Misha
 # [ ] Assistant; User in messages history (refactor temporary memory)
 # [ ] Dialog mode <<------ Misha

@@ -119,6 +119,7 @@ def manual_mode(
         ]
 
     # --- add previous messages to gpt ---
+    
     for i in messages:
         if 'U: ' in i[0:3]:
             previous_messages.append({"role": "user", "content": i[3:]})
