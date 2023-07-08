@@ -122,3 +122,14 @@ def send_sticker(chat_id: int, sticker_id: str, bot) -> None:
         bot (_type_): Telebot object
     """
     bot.send_sticker(chat_id, sticker_id)
+
+
+def tokenize(text: str) -> int:
+    """Takes text and returns number of tokens
+
+    Args:
+        text (str)
+    Returns:
+        tokens (int)
+    """
+    raise NotImplementedError("Make this please")

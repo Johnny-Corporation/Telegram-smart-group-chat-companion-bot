@@ -61,7 +61,7 @@ def create_chat_completion(
     return completion
 
 
-def dialog_mode(    
+def dialog_mode(
     messages: list,
     last_message: str,
     model: str = "gpt-3.5-turbo",
@@ -73,12 +73,9 @@ def dialog_mode(
     frequency_penalty: float = 0,
     presence_penalty: float = 0,
 ) -> openai.Completion:
-    
     system_content = "You are helpful assistant"
 
-    previous_messages = [
-        {"role": "system", "content": system_content}
-        ]
+    previous_messages = [{"role": "system", "content": system_content}]
 
     # --- add previous messages to gpt ---
     for i in messages:

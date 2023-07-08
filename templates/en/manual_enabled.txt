@@ -1,6 +1,6 @@
 Manual mode was enabled.
 
 /remember in reply_to to message - memorize message. Bot will keep in mind him.
-/answer - bot gives an response to added message. Also you can reply to message, it will consider too.
+/answer - bot give you a suggestion to your memorized messages. Also you can reply to message, it will consider too.
 
 /clean_memory - clean a memory
