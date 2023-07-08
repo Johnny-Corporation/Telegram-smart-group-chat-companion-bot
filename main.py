@@ -272,16 +272,6 @@ def set_temp_memory_size_command(message):
     bot.register_for_reply(bot_reply, set_memory_size_reply_handler)
 
 
-# --- Question to bot  ------
-@bot.message_handler(commands=["question_to_bot"], func=time_filter)
-@error_handler
-def question_to_bot_command(message):
-    language_code = groups[message.chat.id].lang_code
-    bot_reply = bot.reply_to(message, templates[language_code]["question_to_bot.txt"])
-    reply_blacklist[message.chat.id].append(bot_reply.message_id)
-    bot.register_for_reply(bot_reply, question_to_bot_reply_handler)
-
-
 # --- Report bug ---
 @bot.message_handler(commands=["report_bug"], func=time_filter)
 @error_handler
@@ -302,15 +292,39 @@ def request_feature_command(message):
     bot.register_for_reply(bot_reply, feature_request_reply_handler)
 
 
+# ---------- GamePlay funcs ----------
+
+
+# --- Question to bot  ------
+@bot.message_handler(commands=["question_to_bot"], func=time_filter)
+@error_handler
+def question_to_bot_command(message):
+    language_code = groups[message.chat.id].lang_code
+
+    if ' ' in message.text:
+        response = groups[message.chat.id].one_answer(message)
+        bot.reply_to(message, response)
+    else:
+        bot_reply = bot.reply_to(message, templates[language_code]["question_to_bot.txt"])
+        reply_blacklist[message.chat.id].append(bot_reply.message_id)
+        bot.register_for_reply(message, question_to_bot_reply_handler)
+
 # --- Enable ---
 @bot.message_handler(commands=["enable"], func=time_filter)
 @error_handler
 def enable_command(message):
-    language_code = groups[message.chat.id].lang_code
-    groups[message.chat.id].enabled = True
-    if language_code == "ru":
-        bot.send_sticker(message.chat.id, stickers["enable"])
-    bot.reply_to(message, templates[language_code]["enabled.txt"])
+
+    #Check the working of another mode
+    if groups[message.chat.id].dialog_enabled == True:
+        bot.send_message(message.chat.id,"Dialog Mode is still running.\nIf you want to switch mode: \n/disable_dialog and /enable")
+
+    else:
+        language_code = groups[message.chat.id].lang_code
+        groups[message.chat.id].enabled = True
+
+        if language_code == "ru":
+            bot.send_sticker(message.chat.id, stickers["enable"])
+        bot.reply_to(message, templates[language_code]["enabled.txt"])
 
 
 # --- Disable ---
@@ -319,7 +333,35 @@ def enable_command(message):
 def disable_command(message):
     language_code = groups[message.chat.id].lang_code
     groups[message.chat.id].enabled = False
+
     bot.reply_to(message, templates[language_code]["disabled.txt"])
+
+
+# --- Dialog mode enable ---
+@bot.message_handler(commands=["enable_dialog"], func=time_filter)
+@error_handler
+def dialog_enable_command(message):
+
+    #Check the working of another mode
+    if groups[message.chat.id].enabled == True:
+        bot.send_message(message.chat.id,"Auto Mode is still running.\nIf you want to switch mode: \n/disable AutoMode and /enable_dilog")
+
+    else:
+        language_code = groups[message.chat.id].lang_code
+        groups[message.chat.id].dialog_enabled = True
+
+        bot.reply_to(message, templates[language_code]["dialog_enabled.txt"])
+
+
+# --- Dialog mode disable ---
+@bot.message_handler(commands=["disable_dialog"], func=time_filter)
+@error_handler
+def dialog_enable_command(message):
+    language_code = groups[message.chat.id].lang_code
+    groups[message.chat.id].dialog_enabled = False
+    groups[message.chat.id].dialog_history = []
+
+    bot.reply_to(message, templates[language_code]["dialog_disabled.txt"])
 
 
 # --- Change language ---

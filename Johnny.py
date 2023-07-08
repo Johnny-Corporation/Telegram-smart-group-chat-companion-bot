@@ -43,9 +43,11 @@ class Johnny:
 
     def __post_init__(self):
         self.messages_history = []
+        self.dialog_history = []
         self.messages_count = 0  # incremented by one each message, think() function is called when hit trigger_messages_count
         self.lang_code = None
         self.enabled = False
+        self.dialog_enabled = False
         self.total_spent_tokens = [0, 0]  # prompt and completion tokens
         self.dynamic_gen = True
 
@@ -73,12 +75,42 @@ class Johnny:
             message.from_user.first_name,
             message.from_user.last_name,
             message.from_user.username,
+            self.total_spent_tokens[0],
+            self.total_spent_tokens[1],
         )
 
         self.messages_history.append(f"{message.from_user.first_name}: {text}")
 
         if len(self.messages_history) == self.temporary_memory_size:
             self.messages_history.pop(0)
+
+        if self.dialog_enabled:
+            response = gpt.dialog_mode(
+                self.dialog_history,
+                text,
+                model=self.model,
+                temperature=self.temperature,
+            )
+
+            text_answer = gpt.extract_text(response)
+
+            self.dialog_history.append([text, gpt.extract_text(response)])
+
+            self.total_spent_tokens[0] += gpt.extract_tokens(response)[0]
+            self.total_spent_tokens[1] += gpt.extract_tokens(response)[1]
+
+            db_controller.add_message_event(
+                self.chat_id,
+                text_answer,
+                datetime.now(),
+                "JOHNNYBOT",
+                "JOHNNYBOT",
+                self.bot_username,
+                self.total_spent_tokens[0],
+                self.total_spent_tokens[1],
+            )
+
+            return text_answer
 
         if not self.enabled:
             return
@@ -166,7 +198,7 @@ class Johnny:
 # [x] Make support for german and spanish
 # [x] Make sticker support only for ru
 # [ ] Configure gpt for correct answers
-# [ ] 'Tags' mode
-# [ ] Generate system_content
+# [ ] 'Tags' mode 
+# [ ] Generate system_content <<--------- Misha
 # [ ] Assistant; User in messages history (refactor temporary memory)
-# [ ] Dialog mode
+# [ ] Dialog mode <<------ Misha

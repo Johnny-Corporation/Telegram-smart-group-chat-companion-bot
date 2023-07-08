@@ -48,8 +48,8 @@ class Controller:
         first_name: str,
         last_name: str,
         username: str,
-        prompt_tokens_total: int = None,
-        completion_tokens_total: int = None,
+        prompt_tokens_total: int,
+        completion_tokens_total: int,
     ):
         """Adds new row to db
 
