@@ -101,3 +101,45 @@ def dialog_mode(
     )
 
     return completion
+
+
+def manual_mode(
+    messages: list,
+    model: str = "gpt-3.5-turbo",
+    temperature: int = 1,
+    top_p: float = 0.5,
+    n: int = 1,
+    stream: bool = False,
+    stop: str = None,
+    frequency_penalty: float = 0,
+    presence_penalty: float = 0,
+) -> openai.Completion:
+    
+    system_content = "You are helpful assistant"
+
+    previous_messages = [
+        {"role": "system", "content": system_content}
+        ]
+
+    # --- add previous messages to gpt ---
+    for i in messages:
+        if 'U: ' in i[0:3]:
+            previous_messages.append({"role": "user", "content": i[3:]})
+        elif 'B: 'in i[0:3]:
+            previous_messages.append({"role": "assistant", "content": i[3:]})
+        else:
+            previous_messages.append({"role": "user", "content": i})
+
+    completion = openai.ChatCompletion.create(
+        model=model,
+        messages=previous_messages,
+        temperature=temperature,
+        top_p=top_p,
+        n=n,
+        stream=stream,
+        stop=stop,
+        frequency_penalty=frequency_penalty,
+        presence_penalty=presence_penalty,
+    )
+
+    return completion

@@ -1,0 +1,4 @@
+Manual mode was enabled.
+
+/remember in reply_to to message - memorize message. Bot will keep in mind him.
+/answer - bot gives an response
