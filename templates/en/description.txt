@@ -1,10 +1,11 @@
-Introducing Johnny, your versatile and intelligent group chat bot! Johnny goes beyond the ordinary, leveraging the power of OpenAI's embeddings API to implement a robust memory system. With its ability to remember entire conversations, Johnny brings a new level of context and continuity to your group chats.
+Introducing Johnny, your versatile and intelligent group chat bot! Johnny goes beyond the ordinary, leveraging the power of OpenAI's embeddings API to implement a robust memory system. With its ability to remember entire conversations.
 
-Johnny is not just a passive observer; it actively participates in group discussions, offering insightful ideas and helping people figure things out. Need suggestions for a movie night? Johnny's got you covered. Planning a weekend getaway? Johnny will provide destination recommendations based on past conversations. No matter the topic, Johnny is there to lend a helping hand.
+Johnny is not just a passive observer; it actively participates in group discussions, offering insightful ideas and helping people figure things out. 
 
-But Johnny doesn't stop there. It offers a range of useful features to enhance your group chat experience. Want to check Johnny's status? Simply ask, and it will provide real-time updates on its availability and performance. Need to tweak some settings? Johnny understands special commands to modify its behavior to suit your preferences. And if you ever need to refer back to previous conversations, Johnny provides logs for your convenience.
+<i>Need suggestions for a movie night? Johnny's got you covered.</i>
+<i>Planning a weekend getaway? Johnny will provide destination recommendations based on past conversations.</i>
 
-The beauty of Johnny lies in its seamless integration with your group chat. It effortlessly adapts to the ongoing conversation, ensuring its responses are relevant and contextually appropriate. It respects user privacy and maintains strict adherence to data protection guidelines, so you can chat with peace of mind.
+The beauty of Johnny lies in its seamless integration with your group chat. It effortlessly adapts to the ongoing conversation, ensuring its responses are relevant and contextually appropriate.
 
 Unleash the power of Johnny, the bot that remembers and engages. Invite Johnny to your Telegram group and experience the joy of conversing with an intelligent companion who's always there to assist and inspire.
 

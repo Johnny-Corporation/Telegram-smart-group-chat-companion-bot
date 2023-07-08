@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 from os import environ, path, mkdir
 import traceback
 from datetime import datetime
+import threading
 
 load_dotenv(".env")
 
@@ -159,7 +160,9 @@ def tokens_info_command(message):
 @error_handler
 def about_command(message):
     language_code = groups[message.chat.id].lang_code
-    bot.reply_to(message, templates[language_code]["description.txt"])
+    bot.reply_to(
+        message, templates[language_code]["description.txt"], parse_mode="HTML"
+    )
 
 
 # --- Dynamic generation ---
@@ -301,22 +304,27 @@ def request_feature_command(message):
 def question_to_bot_command(message):
     language_code = groups[message.chat.id].lang_code
 
-    if ' ' in message.text:
+    if " " in message.text:
         response = groups[message.chat.id].one_answer(message)
         bot.reply_to(message, response)
     else:
-        bot_reply = bot.reply_to(message, templates[language_code]["question_to_bot.txt"])
+        bot_reply = bot.reply_to(
+            message, templates[language_code]["question_to_bot.txt"]
+        )
         reply_blacklist[message.chat.id].append(bot_reply.message_id)
         bot.register_for_reply(message, question_to_bot_reply_handler)
+
 
 # --- Enable ---
 @bot.message_handler(commands=["enable"], func=time_filter)
 @error_handler
 def enable_command(message):
-
-    #Check the working of another mode
+    # Check the working of another mode
     if groups[message.chat.id].dialog_enabled == True:
-        bot.send_message(message.chat.id,"Dialog Mode is still running.\nIf you want to switch mode: \n/disable_dialog and /enable")
+        bot.send_message(
+            message.chat.id,
+            "Dialog Mode is still running.\nIf you want to switch mode: \n/disable_dialog and then /enable",
+        )
 
     else:
         language_code = groups[message.chat.id].lang_code
@@ -341,10 +349,12 @@ def disable_command(message):
 @bot.message_handler(commands=["enable_dialog"], func=time_filter)
 @error_handler
 def dialog_enable_command(message):
-
-    #Check the working of another mode
+    # Check the working of another mode
     if groups[message.chat.id].enabled == True:
-        bot.send_message(message.chat.id,"Auto Mode is still running.\nIf you want to switch mode: \n/disable AutoMode and /enable_dilog")
+        bot.send_message(
+            message.chat.id,
+            "Auto Mode is still running.\nIf you want to switch mode: \n/disable AutoMode and then /enable_dialog",
+        )
 
     else:
         language_code = groups[message.chat.id].lang_code
@@ -364,18 +374,65 @@ def dialog_enable_command(message):
     bot.reply_to(message, templates[language_code]["dialog_disabled.txt"])
 
 
+@bot.message_handler(commands=["enable_manual_mode"], func=time_filter)
+@error_handler
+def dialog_enable_command(message):
+    # Check the working of another mode
+    if groups[message.chat.id].enabled == True:
+        bot.send_message(
+            message.chat.id,
+            "Auto Mode is still running.\nIf you want to switch mode: \n/disable AutoMode and then /enable_manual_mode",
+        )
+    elif groups[message.chat.id].dialog_enabled == True:
+        bot.send_message(
+            message.chat.id,
+            "Dialog Mode is still running.\nIf you want to switch mode: \n/disable_dialog and then /enable_manual_mode",
+        )
+
+    else:
+        language_code = groups[message.chat.id].lang_code
+        groups[message.chat.id].manual_enabled = True
+
+        bot.reply_to(message, templates[language_code]["manual_enabled.txt"])
+
+
+@bot.message_handler(commands=["remember"], func=time_filter)
+@error_handler
+def dialog_enable_command(message):
+    # Check the working of another mode
+    if groups[message.chat.id].manual_enabled == False:
+        bot.send_message(
+            message.chat.id,
+            "Manual mode disabled. To use him opportunities write: /enable_manual_mode",
+        )
+
+
+# --- Dialog mode disable ---
+@bot.message_handler(commands=["disable_manual_mode"], func=time_filter)
+@error_handler
+def dialog_enable_command(message):
+    language_code = groups[message.chat.id].lang_code
+    groups[message.chat.id].manual_enabled = False
+    groups[message.chat.id].dialog_history = []
+
+    bot.reply_to(message, templates[language_code]["dialog_disabled.txt"])
+
+
 # --- Change language ---
 @bot.message_handler(commands=["change_language"], func=time_filter)
 @error_handler
 def change_language_command(message):
     change_language(message.chat.id)
 
+
 # --- Commands list ---
 @bot.message_handler(commands=["commands"], func=time_filter)
 @error_handler
 def change_language_command(message):
     language_code = groups[message.chat.id].lang_code
-    bot.send_message(message.chat.id, templates[language_code]["commands.txt"], parse_mode='HTML')
+    bot.send_message(
+        message.chat.id, templates[language_code]["commands.txt"], parse_mode="HTML"
+    )
 
 
 def change_language(chat_id):
@@ -477,8 +534,7 @@ def main_messages_handler(message):
     if (message.chat.id not in groups) or (not groups[message.chat.id].lang_code):
         init_new_group(message.chat.id)
     else:
-        if response := groups[message.chat.id].new_message(message):
-            bot.send_message(message.chat.id, response)
+        threading.Thread(target=groups[message.chat.id].new_message(message))
 
 
 logger.info("Bot started")

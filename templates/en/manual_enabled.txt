@@ -1,0 +1,3 @@
+Manual mode was enabled.
+/remember in reply to message - add this message to memory. It will be considered in answer of JohnnyBot
+/answer - bot give you a suggestion to your memorized messages

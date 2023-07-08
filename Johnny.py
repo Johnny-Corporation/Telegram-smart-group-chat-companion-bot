@@ -25,7 +25,7 @@ class Johnny:
     language_code: str = "eng"
     random_trigger: bool = False
     random_trigger_probability: float = None
-    model = "gpt-3.5-turbo-16k"
+    model = "gpt-3.5-turbo"
     temperature: float = 1
     """
     Args:
@@ -44,12 +44,14 @@ class Johnny:
     def __post_init__(self):
         self.messages_history = []
         self.dialog_history = []
+        self.manual_history = []
         self.messages_count = 0  # incremented by one each message, think() function is called when hit trigger_messages_count
         self.lang_code = None
         self.enabled = False
         self.dialog_enabled = False
+        self.manual_enabled = False
         self.total_spent_tokens = [0, 0]  # prompt and completion tokens
-        self.dynamic_gen = True
+        self.dynamic_gen = False
 
     def think(self):
         """reads last"""
@@ -112,6 +114,9 @@ class Johnny:
 
             return text_answer
 
+        if self.manual_enabled:
+            ...
+
         if not self.enabled:
             return
 
@@ -133,14 +138,43 @@ class Johnny:
                 bool(message.reply_to_message),
                 model=self.model,
                 temperature=self.temperature,
+                stream=self.dynamic_gen,
             )
-            text_answer = gpt.extract_text(response)
+            if self.dynamic_gen:
+                text_answer = ""  # stores whole answer
 
-            self.total_spent_tokens[0] += gpt.extract_tokens(response)[0]
-            self.total_spent_tokens[1] += gpt.extract_tokens(response)[1]
+                # count tokens!!!!
 
-            if text_answer == "NO":  # filtering messages
-                return None
+                for i in response:
+                    try:
+                        if not text_answer:
+                            text_answer += str(i["choices"][0]["delta"]["content"])
+                            if text_answer:
+                                bot_message = self.bot.send_message(
+                                    message.chat.id, text_answer
+                                )
+                            continue
+                        text_answer += i["choices"][0]["delta"]["content"]
+                        self.bot.edit_message_text(
+                            chat_id=message.chat.id,
+                            message_id=bot_message.message_id,
+                            text=text_answer,
+                        )
+                    except KeyError as e:
+                        pass
+                if text_answer == "NO":  # filtering messages
+                    return
+
+            else:
+                text_answer = gpt.extract_text(response)
+
+                self.total_spent_tokens[0] += gpt.extract_tokens(response)[0]
+                self.total_spent_tokens[1] += gpt.extract_tokens(response)[1]
+
+                if text_answer == "NO":  # filtering messages
+                    return
+
+                self.bot.send_message(message.chat.id, text_answer)
 
             db_controller.add_message_event(
                 self.chat_id,
@@ -153,7 +187,6 @@ class Johnny:
                 self.total_spent_tokens[1],
             )
             self.messages_history.append(f"Bot: {text_answer}")
-            return text_answer
 
     def change_memory_size(self, size):
         self.temporary_memory_size = size
@@ -198,7 +231,10 @@ class Johnny:
 # [x] Make support for german and spanish
 # [x] Make sticker support only for ru
 # [ ] Configure gpt for correct answers
-# [ ] 'Tags' mode 
+# [ ] manual mode <<--------------- Misha
 # [ ] Generate system_content <<--------- Misha
 # [ ] Assistant; User in messages history (refactor temporary memory)
 # [ ] Dialog mode <<------ Misha
+# [ ] translate all templates
+# [ ] different languages of command
+# [ ] interface of changing all parameters + customization
