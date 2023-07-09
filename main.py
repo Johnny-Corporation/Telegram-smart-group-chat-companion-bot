@@ -79,6 +79,8 @@ def error_handler(func):
             )
             send_to_developers("logs.log", bot, developer_chat_IDs, file=True)
         else:
+            if not message.text:
+                return
             if message.text[0] == "/":  # command
                 logger.info(
                     f"Command {message.text} executed in chat with id {message.chat.id}by user with id {message.from_user.id}"

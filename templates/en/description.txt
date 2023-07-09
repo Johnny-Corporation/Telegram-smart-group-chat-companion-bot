@@ -3,7 +3,9 @@ You can chat as in privte messages, as in group chats - just add it to group!
 
 /enable - <b>turn on</b> the bot in <b>automode</b> and get unique expirence!
 
-You can 
+You can do a such bot as you want:
+
+/set_system_content
 
 You can do <b>customization</b>!
 

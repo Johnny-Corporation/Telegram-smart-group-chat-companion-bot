@@ -209,7 +209,6 @@ class Johnny:
 # [x] Dialog mode <<------ Misha
 # [ ] translate all templates <<------ Misha
 # [x] interface of changing all parameters + customization
-# [ ] personal dialog mode
 # [ ] account info command
 
 # ------------ for today (9 july 23) -------------
@@ -227,3 +226,4 @@ class Johnny:
 # [ ] Audio messages support (maybe do one of element of customization)
 # [ ] games with gpt (entertainment part)
 # [ ] gpt answers to message by sticker or emoji
+# [ ] activation keys for discount
