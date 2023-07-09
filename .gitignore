@@ -5,3 +5,4 @@ groups_info/
 .vscode/
 MessageEvents.sqlite
 MessageEvents.db
+logs/

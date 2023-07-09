@@ -1,0 +1,1 @@
+Enter float value from 0 to to 1 in reply to this message. Bot will answer more often if this value is high, bot will will answer after each message if set to 1 (dialog mode)

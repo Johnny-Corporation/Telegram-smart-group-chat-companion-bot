@@ -1,5 +1,6 @@
 from os import path, listdir
 import json
+import re
 
 
 def load_templates(dir: str) -> dict:
@@ -133,3 +134,13 @@ def tokenize(text: str) -> int:
         tokens (int)
     """
     raise NotImplementedError("Make this please")
+
+
+def remove_utf8_chars(string: str) -> str:
+    """Removes all strange chars, if all symbols were removed, returns "empty" """
+    # Use a regular expression to remove non-alphanumeric characters
+    cleaned_string = re.sub(r"[^a-zA-Z0-9]", "", string).replace(".", "")
+
+    if not cleaned_string:
+        cleaned_string = "empty"
+    return cleaned_string

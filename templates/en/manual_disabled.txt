@@ -1,1 +1,1 @@
-Manual was disabled.
+Manual mode is disabled.

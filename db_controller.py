@@ -114,7 +114,7 @@ class Controller:
         """
         message_events = self.get_last_n_message_events_from_chat(n, chat_id)
 
-        # Extract the text of the messages
-        messages = [event[2] for event in message_events]
+        # Extract the text and names from events
+        messages = [[event[4], event[2]] for event in message_events]
 
         return messages

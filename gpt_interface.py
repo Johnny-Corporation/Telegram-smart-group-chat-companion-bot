@@ -1,6 +1,7 @@
 import openai
 from os import environ
 from logger import logger
+import functions
 
 openAI_api_key = environ.get("OPENAI_API_KEY")
 if not openAI_api_key:
@@ -9,12 +10,12 @@ if not openAI_api_key:
 openai.api_key = openAI_api_key
 
 
-def extract_tokens(completion):
+def extract_tokens(completion: openai.ChatCompletion) -> int:
     """Extracts tokens from OpenAI API response"""
     return [completion.usage.prompt_tokens, completion.usage.completion_tokens]
 
 
-def extract_text(completion):
+def extract_text(completion: openai.ChatCompletion) -> str:
     """Extracts text from OpenAI API response"""
     return completion.choices[0].message.content
 
@@ -30,62 +31,30 @@ def create_chat_completion(
     stop: str = None,
     frequency_penalty: float = 0,
     presence_penalty: float = 0,
-) -> openai.Completion:
+) -> openai.ChatCompletion:
     """Creates ChatCompletion
-    messages(list): list of strings
+    messages(list): list of dicts, where key is users name and value is his message
     reply(bool): True means GPT will consider last message, False means not, None means system input field will be empty
     """
     if reply != None:
-        system_content = "Ifr u are not sure u understand context, say 'NO' and i will handle it. Be brief, answer in 1-2 short sentences. Keep up the conversation, ask questions if u want. Message example: 'Matvey:Hey', this means user with name 'Matvey' said 'Hey'. Dont include your name or role in response. '@' sign means tagging and people are waiting reaction"
+        system_content = "If u are not sure u understand context, say 'NO' and i will handle it. Be brief, answer in 1-2 short sentences. Keep up the conversation, ask questions if u want"
         if reply:
             system_content += " Write the answer or suggestions to the last message"
     else:
-        system_content = "be a polite helper"
-
-    previous_messages = [{"role": "system", "content": system_content}]
-    for i in messages:
-        previous_messages.append({"role": "user", "content": i})
-
-    completion = openai.ChatCompletion.create(
-        model=model,
-        messages=previous_messages,
-        temperature=temperature,
-        top_p=top_p,
-        n=n,
-        stream=stream,
-        stop=stop,
-        frequency_penalty=frequency_penalty,
-        presence_penalty=presence_penalty,
-    )
-
-    return completion
-
-
-def manual_mode(
-    messages: list,
-    model: str = "gpt-3.5-turbo",
-    temperature: int = 1,
-    top_p: float = 0.5,
-    n: int = 1,
-    stream: bool = False,
-    stop: str = None,
-    frequency_penalty: float = 0,
-    presence_penalty: float = 0,
-) -> openai.Completion:
-    system_content = "You are helpful assistant"
+        system_content = "You are helpful assistant"
 
     previous_messages = [{"role": "system", "content": system_content}]
 
-    # --- add previous messages to gpt ---
+    for m in messages:
+        previous_messages.append(
+            {
+                "role": ("assistant" if m[0] == "assistant" else "user"),
+                "content": m[1],
+                "name": functions.remove_utf8_chars(m[0]),
+            }
+        )
 
-    for i in messages:
-        if "U: " in i[0:3]:
-            previous_messages.append({"role": "user", "content": i[3:]})
-        elif "B: " in i[0:3]:
-            previous_messages.append({"role": "assistant", "content": i[3:]})
-        else:
-            previous_messages.append({"role": "user", "content": i})
-
+    print(previous_messages)
     completion = openai.ChatCompletion.create(
         model=model,
         messages=previous_messages,
