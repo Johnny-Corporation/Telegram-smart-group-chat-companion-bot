@@ -1,22 +1,28 @@
 import telebot
+from telebot import types
 
-TOKEN = "5918531073:AAF1q4o2WIkBuee4CTSc95XIWexUox9-Xw4"
-bot = telebot.TeleBot(TOKEN)
+bot_token = "5918531073:AAF1q4o2WIkBuee4CTSc95XIWexUox9-Xw4"
+bot = telebot.TeleBot(bot_token)
 
-
-# get_custom_emoji_stickers(custom_emoji_ids: List[str]) → List[Sticker]
-
-
-@bot.message_handler(commands=["start"])
+@bot.message_handler(commands=['start'])
 def send_welcome(message):
-    # get_custom_emoji_stickers
-    custom_emoji = "https://t.me/addemoji/CreepyEmoji"
-    bot.send_message(message.chat.id, "AAAA")
+    markup = types.InlineKeyboardMarkup()
+    button = types.InlineKeyboardButton(text="Нажми меня", callback_data='b')
+    button1 = types.InlineKeyboardButton(text="Нажми меня1", callback_data='a')
+    button2 = types.InlineKeyboardButton(text="Нажми меня2", callback_data='c')
+    markup.add(button)
+    markup.add(button1)
+    markup.add(button2)
+    bot.send_message(message.chat.id, "Привет! Нажми на кнопку:", reply_markup=markup)
+
+@bot.callback_query_handler(func=lambda call: call.data == 'a' or call.data == 'b')
+def action(call):
+    bot.send_message(call.message.chat.id, "Вы нажали на кнопку!")
+
+@bot.callback_query_handler(func=lambda call: call.data == 'c')
+def action(call):
+    bot.send_message(call.message.chat.id, "Вы нажали на кнопку!1")
+
+bot.polling()
 
 
-@bot.message_handler(content_types="emoji")
-def main_messages_handler(message):
-    bot.send_message(message.chat.id, str(message.file.id))
-
-
-bot.polling(none_stop=True)

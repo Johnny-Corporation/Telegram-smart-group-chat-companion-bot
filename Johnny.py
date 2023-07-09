@@ -211,6 +211,7 @@ class Johnny:
 # [ ] interface of changing all parameters + customization
 # [ ] account info command\
 # [ ] conservations in private messages
+# [ ] /start fix
 
 # ------------ for today (9 july 23) -------------
 # [x] fix dynamic generation
@@ -229,3 +230,4 @@ class Johnny:
 # [ ] gpt answers to message by sticker or emoji
 # [ ] activation keys for discount
 # [ ] conservations in private messages
+# [ ] automtic calling functions

@@ -139,6 +139,113 @@ def help_command(message):
     )
 
 
+# --- report functions ---
+@bot.message_handler(commands=["report"], func=time_filter)
+@error_handler
+def report_command(message):
+
+    report_markup = types.InlineKeyboardMarkup()
+    report_button = types.InlineKeyboardButton(text="Report bug", callback_data='report_bug')
+    req_button = types.InlineKeyboardButton(text="Suggest new feature to bot", callback_data='request_feature')
+
+    report_markup.add(report_button)
+    report_markup.add(req_button)
+
+    language_code = groups[message.chat.id].lang_code
+    bot.send_message(
+        message.chat.id,
+        templates[language_code]["report.txt"]
+    )
+@bot.callback_query_handler(func=lambda call: call.data == 'report_bug' or call.data == "request_feature")
+def handler_report_buttons(call):
+    if call.data == 'report_bug':
+        report_bug_command(call.message)
+    elif call.data == 'request_feature':
+        request_feature_command(call.message)
+
+
+# --- set_up functions ---
+@bot.message_handler(commands=["set_up"], func=time_filter)
+@error_handler
+def set_up_command(message):
+
+    set_up_markup = types.InlineKeyboardMarkup()
+    temp_button = types.InlineKeyboardButton(text="Change bot's answer length", callback_data='set_temp')
+    ans_button = types.InlineKeyboardButton(text="Change frequency of bot's answers", callback_data='set_ans')
+    memory_button = types.InlineKeyboardButton(text="Change the size of your messages-memory", callback_data='set_memory')
+
+    set_up_markup.add(temp_button)
+    set_up_markup.add(ans_button)
+    set_up_markup.add(memory_button)
+
+    language_code = groups[message.chat.id].lang_code
+    bot.send_message(
+        message.chat.id,
+        templates[language_code]["set_up_functions.txt"], 
+        parse_mode='HTML'
+    )
+@bot.callback_query_handler(func=lambda call: call.data == 'set_temp' or call.data == "set_ans" or call.data == "set_memory")
+def handler_report_buttons(call):
+    if call.data == 'set_temp':
+        set_temp_command(call.message)
+    elif call.data == 'set_ans':
+        set_probability_command(call.message)
+    elif call.data == 'set_memory':
+        set_temp_memory_size_command(call.message)
+
+
+# --- customizations functions ---
+@bot.message_handler(commands=["customization"], func=time_filter)
+@error_handler
+def customization_command(message):
+
+    customization_markup = types.InlineKeyboardMarkup()
+    dyn_gen_button = types.InlineKeyboardButton(text="Enable/disable dynamic generation", callback_data='dyn_gen')
+    change_lang_button = types.InlineKeyboardButton(text="Change the language", callback_data='change_lang')
+
+    customization_markup.add(dyn_gen_button)
+    customization_markup.add(change_lang_button)
+
+    language_code = groups[message.chat.id].lang_code
+    bot.send_message(
+        message.chat.id,
+        templates[language_code]["customization.txt"],
+        parse_mode = 'HTML'
+    )
+@bot.callback_query_handler(func=lambda call: call.data == "change_lang" or call.data == "dyn_gen")
+def handler_report_buttons(call):
+    if call.data == 'change_lang':
+        set_temp_command(call.message)
+    elif call.data == 'dyn_gen':
+        set_probability_command(call.message)
+
+
+# --- view mode ---
+@bot.message_handler(commands=["view_mode"], func=time_filter)
+@error_handler
+def view_mode_command(message):
+
+    if groups[message.chat.id].enabled == True:
+        on_off = 'enabled'
+    if groups[message.chat.id].trigger_probability == 1:
+        mode = 'dialog'
+    elif groups[message.chat.id].trigger_probability == 0:
+        mode = 'manual'
+    else:
+        mode = 'auto'
+
+    language_code = groups[message.chat.id].lang_code
+    bot.send_message(
+
+        message.chat.id,
+        templates[language_code]["view_mode.txt"].format(
+            on_off = on_off,
+            mode = mode
+        )
+    )
+
+
+
 # --- Tokens info ---
 @bot.message_handler(commands=["tokens_info"], func=time_filter)
 @error_handler
@@ -155,6 +262,48 @@ def tokens_info_command(message):
             ),
             spent_tokens=sum(groups[message.chat.id].total_spent_tokens),
         ),
+    )
+
+
+# --- Group info ---
+@bot.message_handler(commands=["group_info"], func=time_filter)
+@error_handler
+def group_info_command(message):
+
+    language_code = groups[message.chat.id].lang_code
+    total_tokens = groups[message.chat.id].total_spent_tokens
+    if groups[message.chat.id].dynamic_gen==False:
+        dynamic_gen_en = 'disabled'
+    else:
+        dynamic_gen_en = 'enabled'
+    if groups[message.chat.id].lang_code == 'en':
+        language_code = 'english'
+    elif groups[message.chat.id].lang_code == 'ru':
+        language_code = 'русский'
+    elif groups[message.chat.id].lang_code == 'es':
+        language_code = 'español'
+    elif groups[message.chat.id].lang_code == 'de':
+        language_code = 'deutsch'
+
+
+    bot.send_message(
+        message.chat.id,
+        templates[language_code]["group_info.txt"].format(
+            group_name = message.chat.title,
+            temperature = groups[message.chat.id].temperature,
+            answers_frequency = groups[message.chat.id].trigger_probability,
+            temporary_memory_size = groups[message.chat.id].temporary_memory_size,
+            dollars=tokens_to_dollars(
+                groups[message.chat.id].model,
+                total_tokens[0],
+                total_tokens[1],
+            ),
+            spent_tokens=sum(groups[message.chat.id].total_spent_tokens),
+            dynamic_gen_en = dynamic_gen_en,
+            language = language_code
+            
+        ),
+        parse_mode='HTML'
     )
 
 
@@ -443,7 +592,7 @@ def change_language(chat_id):
 
 
 # --- callback handler ---
-@bot.callback_query_handler(func=lambda call: True)
+@bot.callback_query_handler(func=lambda call: call.data == "ru" or call.data == "en" or call.data == "de" or call.data == "es")
 def handle_language_change(call):
     previous_lang = groups[call.message.chat.id].lang_code
     if call.data == "en":

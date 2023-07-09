@@ -1,0 +1,35 @@
+<i>Group {group_name}</i>
+
+<b>Subscription</b>
+Not implemented
+
+
+<b>Set-up functions</b>
+
+<b>{temperature}</b> - Response length
+/set_temperature - for change bot's answer length
+
+<b>{answers_frequency}</b> - Frequency of bot's answers in AutoMode
+/set_answer_probability - for change frequency of bot's answers
+
+<b>{temporary_memory_size}</b> - Bot considers {temporary_memory_size} previous messages.
+/temporary_memory_size - for change frequency of bot's answers
+
+
+<b>Tokens</b>
+Group have spent <b>{spent_tokens} tokens</b>.
+It is approximately <b>{dollars}$</b>
+
+
+<b>Customization</b>
+
+Dynamic generation is {dynamic_gen_en}.
+/dynamic_generation - for enable/disable it
+
+Bot works on {language} language.
+/change_language - for change the language
+
+
+<b>Tokens last</b>
+Not implemented
+

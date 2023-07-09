@@ -1,8 +1,0 @@
-Name of something:
-
-Subscription:
-{ubscription}
-Tokens spent:
-{tokens_spent}
-Tokens last:
-{}
