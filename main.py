@@ -605,13 +605,12 @@ def main_messages_handler(message):
     if (message.chat.id not in groups) or (not groups[message.chat.id].lang_code):
         init_new_group(message.chat.id)
     else:
-        # print(threading.active_count())
         threading.Thread(
-            target=groups[message.chat.id].new_message(message)
-        ).start()  # giving result not func!!!!!!!!
-        print(threading.active_count())
-        for t in threading.enumerate():
-            print(t.name)
+            target=groups[message.chat.id].new_message, args=(message,)
+        ).start()
+        logger.info(
+            f"Created new thread for handling message, now threads running: {threading.active_count()}"
+        )
 
 
 logger.info("Bot started")
