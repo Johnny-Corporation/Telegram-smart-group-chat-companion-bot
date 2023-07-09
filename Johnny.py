@@ -50,7 +50,6 @@ class Johnny:
         self.enabled = False
         self.dialog_enabled = False
         self.manual_enabled = False
-        self.manual_answer_enabled = False
         self.total_spent_tokens = [0, 0]  # prompt and completion tokens
         self.dynamic_gen = False
 
@@ -70,6 +69,10 @@ class Johnny:
         self,
         message: Message,
     ) -> str:
+        from time import sleep
+
+        sleep(10)
+        return
         text = message.text
         db_controller.add_message_event(
             self.chat_id,
@@ -87,8 +90,6 @@ class Johnny:
         if len(self.messages_history) == self.temporary_memory_size:
             self.messages_history.pop(0)
 
-
-        # --- dialog mode ---
         if self.dialog_enabled:
             response = gpt.dialog_mode(
                 self.dialog_history,
@@ -115,37 +116,11 @@ class Johnny:
                 self.total_spent_tokens[1],
             )
 
-            self.bot.send_message(message.chat.id, text_answer)
-        
-        # --- manual mode ---
-        if self.manual_answer_enabled:
-            response = gpt.manual_mode(
-                self.manual_history,
-                model=self.model,
-                temperature=self.temperature,
-            )
-            text_answer = gpt.extract_text(response)
+            return text_answer
 
-            self.manual_history.append('B: '+ text_answer)
+        if self.manual_enabled:
+            ...
 
-            self.total_spent_tokens[0] += gpt.extract_tokens(response)[0]
-            self.total_spent_tokens[1] += gpt.extract_tokens(response)[1]
-
-            db_controller.add_message_event(
-                self.chat_id,
-                text_answer,
-                datetime.now(),
-                "JOHNNYBOT",
-                "JOHNNYBOT",
-                self.bot_username,
-                self.total_spent_tokens[0],
-                self.total_spent_tokens[1],
-            )
-            
-            self.bot.send_message(message.chat.id, text_answer)
-
-
-        # --- Auto mode ---
         if not self.enabled:
             return
 
@@ -254,13 +229,13 @@ class Johnny:
 # [x] write input output tokens to db
 # [x] refactoring
 # [ ] in question_to_bot make bot react to both ways: reply and in one message with command <<---------- Misha
-# [x] help command, all commands with descriptions <<---------Misha
+# [ ] help command, all commands with descriptions <<---------Misha
 # [ ] Convert templates with parse_html<<---------- Misha
 # [ ] Connect payment system <<---------- Misha
 # [x] Make support for german and spanish
 # [x] Make sticker support only for ru
 # [ ] Configure gpt for correct answers
-# [x] manual mode <<--------------- Misha
+# [ ] manual mode <<--------------- Misha
 # [ ] Generate system_content <<--------- Misha
 # [ ] Assistant; User in messages history (refactor temporary memory)
 # [ ] Dialog mode <<------ Misha

@@ -13,6 +13,7 @@ from os import environ, path, mkdir
 import traceback
 from datetime import datetime
 import threading
+from typing import Dict
 
 load_dotenv(".env")
 
@@ -38,7 +39,7 @@ templates = load_templates("templates\\")
 stickers = load_stickers("stickers.json")
 blacklist = {}  # chat_id:[messages_ids] needed for filtering messages
 reply_blacklist = {}  # chat_id:[messages_ids] needed for filtering replies to messages
-groups = {}  # {id:Johnny object}
+groups: Dict[int, Johnny] = {}  # {group chat_id:Johnny object}
 
 if not path.exists("groups_info"):
     mkdir("groups_info")
@@ -84,7 +85,7 @@ def error_handler(func):
                 )
             else:
                 logger.info(
-                    f"Message {message.text} sent in chat with id {message.chat.id} by user with id {message.from_user.id}"
+                    f'Message "{message.text}" sent in chat with id {message.chat.id} by user with id {message.from_user.id}'
                 )
 
     return wrapper
@@ -319,7 +320,7 @@ def question_to_bot_command(message):
 @bot.message_handler(commands=["enable"], func=time_filter)
 @error_handler
 def enable_command(message):
-    # Check the working of another mode
+    # Check if another mode is working
     if groups[message.chat.id].dialog_enabled == True:
         bot.send_message(
             message.chat.id,
@@ -327,7 +328,10 @@ def enable_command(message):
         )
 
     elif groups[message.chat.id].manual_enabled == True:
-        bot.send_message(message.chat.id,"Manual Mode is still running.\nIf you want to switch mode: \n/disable_manual and /enable")
+        bot.send_message(
+            message.chat.id,
+            "Manual Mode is still running.\nIf you want to switch mode: \n/disable_manual and /enable",
+        )
     else:
         language_code = groups[message.chat.id].lang_code
         groups[message.chat.id].enabled = True
@@ -353,10 +357,16 @@ def disable_command(message):
 def dialog_enable_command(message):
     # Check the working of another mode
     if groups[message.chat.id].enabled == True:
-        bot.send_message(message.chat.id,"Auto Mode is still running.\nIf you want to switch mode: \n/disable AutoMode and /enable_dialog")
+        bot.send_message(
+            message.chat.id,
+            "Auto Mode is still running.\nIf you want to switch mode: \n/disable AutoMode and /enable_dialog",
+        )
 
     elif groups[message.chat.id].manual_enabled == True:
-        bot.send_message(message.chat.id,"Manual Mode is still running.\nIf you want to switch mode: \n/disable_manual and /enable_dialog")
+        bot.send_message(
+            message.chat.id,
+            "Manual Mode is still running.\nIf you want to switch mode: \n/disable_manual and /enable_dialog",
+        )
 
     else:
         language_code = groups[message.chat.id].lang_code
@@ -380,13 +390,18 @@ def dialog_enable_command(message):
 @bot.message_handler(commands=["enable_manual"], func=time_filter)
 @error_handler
 def manual_enable_command(message):
-
-    #Check the working of another mode
+    # Check the working of another mode
     if groups[message.chat.id].enabled == True:
-        bot.send_message(message.chat.id,"Auto Mode is still running.\nIf you want to switch mode: \n/disable AutoMode and /enable_manual")
+        bot.send_message(
+            message.chat.id,
+            "Auto Mode is still running.\nIf you want to switch mode: \n/disable AutoMode and /enable_manual",
+        )
 
     elif groups[message.chat.id].dialog_enabled == True:
-        bot.send_message(message.chat.id,"Dialog Mode is still running.\nIf you want to switch mode: \n/disable_dialog and /enable_manual")
+        bot.send_message(
+            message.chat.id,
+            "Dialog Mode is still running.\nIf you want to switch mode: \n/disable_dialog and /enable_manual",
+        )
 
     else:
         language_code = groups[message.chat.id].lang_code
@@ -399,54 +414,68 @@ def manual_enable_command(message):
 @bot.message_handler(commands=["remember"], func=time_filter)
 @error_handler
 def manual_remember_command(message):
-    #Check the working of another mode
+    # Check the working of another mode
     if groups[message.chat.id].manual_enabled == False:
-        bot.send_message(message.chat.id,"Manual Mode isn't running.\nTurn on manual mode: /enable_manual")
+        bot.send_message(
+            message.chat.id,
+            "Manual Mode isn't running.\nTurn on manual mode: /enable_manual",
+        )
 
     elif message.reply_to_message is None:
-        bot.send_message(message.chat.id,"Do a reply to message, which you want to add")
+        bot.send_message(
+            message.chat.id, "Do a reply to message, which you want to add"
+        )
     else:
-        groups[message.chat.id].manual_history.append('U: '+ message.reply_to_message.text)
-        bot.send_message(message.chat.id, 'A message was memorized.')
-
+        groups[message.chat.id].manual_history.append(
+            "U: " + message.reply_to_message.text
+        )
+        bot.send_message(message.chat.id, "A message was memorized.")
 
 
 # --- GPT answer ---
 @bot.message_handler(commands=["answer"], func=time_filter)
 @error_handler
 def manual_answer_command(message):
-
-    #Check the working of another mode
+    # Check the working of another mode
     if groups[message.chat.id].manual_enabled == False:
-        bot.send_message(message.chat.id,"Manual Mode isn't running.\nTurn on manual mode: /enable_manual")
+        bot.send_message(
+            message.chat.id,
+            "Manual Mode isn't running.\nTurn on manual mode: /enable_manual",
+        )
 
-    elif message.reply_to_message is None and groups[message.chat.id].manual_history == []:
-        bot.send_message(message.chat.id,"The memory is empty and you didn't do reply in /answer, so input info is empty.")
+    elif (
+        message.reply_to_message is None
+        and groups[message.chat.id].manual_history == []
+    ):
+        bot.send_message(
+            message.chat.id,
+            "The memory is empty and you didn't do reply in /answer, so input info is empty.",
+        )
     else:
-        
         groups[message.chat.id].manual_answer_enabled = True
 
         if message.reply_to_message is not None:
-            groups[message.chat.id].manual_history.append('U: ' + message.reply_to_message.text)
+            groups[message.chat.id].manual_history.append(
+                "U: " + message.reply_to_message.text
+            )
 
         threading.Thread(target=groups[message.chat.id].new_message(message))
         groups[message.chat.id].manual_answer_enabled = False
-        
-
-        
 
 
 # --- GPT answer ---
 @bot.message_handler(commands=["clean_memory"], func=time_filter)
 @error_handler
 def manual_clean_memory_command(message):
-
-    #Check the working of another mode
+    # Check the working of another mode
     if groups[message.chat.id].manual_enabled == False:
-        bot.send_message(message.chat.id,"Manual Mode isn't running.\nTurn on manual mode: /enable_manual")
+        bot.send_message(
+            message.chat.id,
+            "Manual Mode isn't running.\nTurn on manual mode: /enable_manual",
+        )
     else:
         groups[message.chat.id].manual_history = []
-        bot.send_message(message.chat.id, 'Memory was cleaned')
+        bot.send_message(message.chat.id, "Memory was cleaned")
 
 
 # --- Manual mode disable ---
@@ -576,7 +605,13 @@ def main_messages_handler(message):
     if (message.chat.id not in groups) or (not groups[message.chat.id].lang_code):
         init_new_group(message.chat.id)
     else:
-        threading.Thread(target=groups[message.chat.id].new_message(message))
+        # print(threading.active_count())
+        threading.Thread(
+            target=groups[message.chat.id].new_message(message)
+        ).start()  # giving result not func!!!!!!!!
+        print(threading.active_count())
+        for t in threading.enumerate():
+            print(t.name)
 
 
 logger.info("Bot started")
