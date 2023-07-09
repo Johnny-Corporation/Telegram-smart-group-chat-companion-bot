@@ -267,3 +267,4 @@ class Johnny:
 # [ ] translate all templates
 # [ ] different languages of command
 # [ ] interface of changing all parameters + customization
+# [ ] conservations in private messages
