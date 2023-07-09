@@ -1,1 +1,8 @@
 Bot is turned on now and reading new messsage to debate!
+There are such modes:
+
+Auto mode - it turns on by default
+/enable_dialog - bot will answer on each message
+/enable_manual - here you manually add messages to memory and call a bot
+
+Anytime, you can clean /clean_memory

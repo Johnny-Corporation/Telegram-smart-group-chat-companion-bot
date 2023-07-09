@@ -1,6 +1,1 @@
-Manual mode was enabled.
-
-/remember in reply_to to message - memorize message. Bot will keep in mind him.
-/answer - bot give you a suggestion to your memorized messages. Also you can reply to message, it will consider too.
-
-/clean_memory - clean a memory
+Manual mode is enabled. Now bot only replies when you tag him or reply to his message.

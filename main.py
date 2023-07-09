@@ -13,6 +13,7 @@ from os import environ, path, mkdir
 import traceback
 from datetime import datetime
 import threading
+from typing import Dict
 
 load_dotenv(".env")
 
@@ -38,7 +39,7 @@ templates = load_templates("templates\\")
 stickers = load_stickers("stickers.json")
 blacklist = {}  # chat_id:[messages_ids] needed for filtering messages
 reply_blacklist = {}  # chat_id:[messages_ids] needed for filtering replies to messages
-groups = {}  # {id:Johnny object}
+groups: Dict[int, Johnny] = {}  # {group chat_id:Johnny object}
 
 if not path.exists("groups_info"):
     mkdir("groups_info")
@@ -78,13 +79,15 @@ def error_handler(func):
             )
             send_to_developers("logs.log", bot, developer_chat_IDs, file=True)
         else:
+            if not message.text:
+                return
             if message.text[0] == "/":  # command
                 logger.info(
                     f"Command {message.text} executed in chat with id {message.chat.id}by user with id {message.from_user.id}"
                 )
             else:
                 logger.info(
-                    f"Message {message.text} sent in chat with id {message.chat.id} by user with id {message.from_user.id}"
+                    f'Message "{message.text}" sent in chat with id {message.chat.id} by user with id {message.from_user.id}'
                 )
 
     return wrapper
@@ -236,7 +239,7 @@ def set_temp_reply_handler(inner_message):
         return
 
     groups[inner_message.chat.id].temperature = val
-    bot.reply_to(inner_message, "OK✅")
+    bot.reply_to(inner_message, "✅")
 
 
 # --- reply handler for set temp memory size
@@ -252,7 +255,23 @@ def set_memory_size_reply_handler(inner_message):
         return
 
     groups[inner_message.chat.id].change_memory_size(val)
-    bot.reply_to(inner_message, "OK✅")
+    bot.reply_to(inner_message, "✅")
+
+
+# --- reply handler for set probability
+@error_handler
+def set_probability_reply_handler(inner_message):
+    try:
+        val = float(inner_message.text)
+    except ValueError:
+        bot.reply_to(inner_message, "❌")
+        return
+    if (val < 0) or (val > 1):
+        bot.reply_to(inner_message, "❌")
+        return
+
+    groups[inner_message.chat.id].trigger_probability = val
+    bot.reply_to(inner_message, "✅")
 
 
 # --- Set temp ---
@@ -264,6 +283,18 @@ def set_temp_command(message):
     bot.register_for_reply(bot_reply, set_temp_reply_handler)
 
 
+# --- Set probability ---
+@bot.message_handler(commands=["set_answer_probability"], func=time_filter)
+@error_handler
+def set_probability_command(message):
+    language_code = groups[message.chat.id].lang_code
+    bot_reply = bot.reply_to(
+        message, templates[language_code]["change_probability.txt"]
+    )
+    reply_blacklist[message.chat.id].append(bot_reply.message_id)
+    bot.register_for_reply(bot_reply, set_probability_reply_handler)
+
+
 # --- Set memory size ---
 @bot.message_handler(commands=["temporary_memory_size"], func=time_filter)
 @error_handler
@@ -272,6 +303,7 @@ def set_temp_memory_size_command(message):
     bot_reply = bot.reply_to(
         message, templates[language_code]["change_temp_memory_size.txt"]
     )
+    reply_blacklist[message.chat.id].append(bot_reply.message_id)
     bot.register_for_reply(bot_reply, set_memory_size_reply_handler)
 
 
@@ -319,22 +351,11 @@ def question_to_bot_command(message):
 @bot.message_handler(commands=["enable"], func=time_filter)
 @error_handler
 def enable_command(message):
-    # Check the working of another mode
-    if groups[message.chat.id].dialog_enabled == True:
-        bot.send_message(
-            message.chat.id,
-            "Dialog Mode is still running.\nIf you want to switch mode: \n/disable_dialog and then /enable",
-        )
-
-    elif groups[message.chat.id].manual_enabled == True:
-        bot.send_message(message.chat.id,"Manual Mode is still running.\nIf you want to switch mode: \n/disable_manual and /enable")
-    else:
-        language_code = groups[message.chat.id].lang_code
-        groups[message.chat.id].enabled = True
-
-        if language_code == "ru":
-            bot.send_sticker(message.chat.id, stickers["enable"])
-        bot.reply_to(message, templates[language_code]["enabled.txt"])
+    language_code = groups[message.chat.id].lang_code
+    groups[message.chat.id].enabled = True
+    if language_code == "ru":
+        bot.send_sticker(message.chat.id, stickers["enable"])
+    bot.reply_to(message, templates[language_code]["enabled.txt"])
 
 
 # --- Disable ---
@@ -351,27 +372,18 @@ def disable_command(message):
 @bot.message_handler(commands=["enable_dialog"], func=time_filter)
 @error_handler
 def dialog_enable_command(message):
-    # Check the working of another mode
-    if groups[message.chat.id].enabled == True:
-        bot.send_message(message.chat.id,"Auto Mode is still running.\nIf you want to switch mode: \n/disable AutoMode and /enable_dialog")
+    language_code = groups[message.chat.id].lang_code
+    groups[message.chat.id].trigger_probability = 1
 
-    elif groups[message.chat.id].manual_enabled == True:
-        bot.send_message(message.chat.id,"Manual Mode is still running.\nIf you want to switch mode: \n/disable_manual and /enable_dialog")
-
-    else:
-        language_code = groups[message.chat.id].lang_code
-        groups[message.chat.id].dialog_enabled = True
-
-        bot.reply_to(message, templates[language_code]["dialog_enabled.txt"])
+    bot.reply_to(message, templates[language_code]["dialog_enabled.txt"])
 
 
 # --- Dialog mode disable ---
 @bot.message_handler(commands=["disable_dialog"], func=time_filter)
 @error_handler
-def dialog_enable_command(message):
+def dialog_disable_command(message):
     language_code = groups[message.chat.id].lang_code
-    groups[message.chat.id].dialog_enabled = False
-    groups[message.chat.id].dialog_history = []
+    groups[message.chat.id].trigger_probability = 0.2
 
     bot.reply_to(message, templates[language_code]["dialog_disabled.txt"])
 
@@ -380,73 +392,9 @@ def dialog_enable_command(message):
 @bot.message_handler(commands=["enable_manual"], func=time_filter)
 @error_handler
 def manual_enable_command(message):
-
-    #Check the working of another mode
-    if groups[message.chat.id].enabled == True:
-        bot.send_message(message.chat.id,"Auto Mode is still running.\nIf you want to switch mode: \n/disable AutoMode and /enable_manual")
-
-    elif groups[message.chat.id].dialog_enabled == True:
-        bot.send_message(message.chat.id,"Dialog Mode is still running.\nIf you want to switch mode: \n/disable_dialog and /enable_manual")
-
-    else:
-        language_code = groups[message.chat.id].lang_code
-
-        groups[message.chat.id].manual_enabled = True
-        bot.reply_to(message, templates[language_code]["manual_enabled.txt"])
-
-
-# --- Memorize a message in manual mode
-@bot.message_handler(commands=["remember"], func=time_filter)
-@error_handler
-def manual_remember_command(message):
-    #Check the working of another mode
-    if groups[message.chat.id].manual_enabled == False:
-        bot.send_message(message.chat.id,"Manual Mode isn't running.\nTurn on manual mode: /enable_manual")
-
-    elif message.reply_to_message is None:
-        bot.send_message(message.chat.id,"Do a reply to message, which you want to add")
-    else:
-        groups[message.chat.id].manual_history.append('U: '+ message.reply_to_message.text)
-        bot.send_message(message.chat.id, 'A message was memorized.')
-
-
-
-# --- GPT answer ---
-@bot.message_handler(commands=["answer"], func=time_filter)
-@error_handler
-def manual_answer_command(message):
-
-    #Check the working of another mode
-    if groups[message.chat.id].manual_enabled == False:
-        bot.send_message(message.chat.id,"Manual Mode isn't running.\nTurn on manual mode: /enable_manual")
-
-    elif message.reply_to_message is None and groups[message.chat.id].manual_history == []:
-        bot.send_message(message.chat.id,"The memory is empty and you didn't do reply in /answer, so input info is empty.")
-    else:
-        
-        groups[message.chat.id].manual_answer_enabled = True
-
-        if message.reply_to_message is not None:
-            groups[message.chat.id].manual_history.append('U: ' + message.reply_to_message.text)
-
-        threading.Thread(target=groups[message.chat.id].new_message(message))
-        groups[message.chat.id].manual_answer_enabled = False
-        
-
-        
-
-
-# --- GPT answer ---
-@bot.message_handler(commands=["clean_memory"], func=time_filter)
-@error_handler
-def manual_clean_memory_command(message):
-
-    #Check the working of another mode
-    if groups[message.chat.id].manual_enabled == False:
-        bot.send_message(message.chat.id,"Manual Mode isn't running.\nTurn on manual mode: /enable_manual")
-    else:
-        groups[message.chat.id].manual_history = []
-        bot.send_message(message.chat.id, 'Memory was cleaned')
+    language_code = groups[message.chat.id].lang_code
+    groups[message.chat.id].trigger_probability = 0
+    bot.reply_to(message, templates[language_code]["manual_enabled.txt"])
 
 
 # --- Manual mode disable ---
@@ -454,10 +402,18 @@ def manual_clean_memory_command(message):
 @error_handler
 def manual_disable_command(message):
     language_code = groups[message.chat.id].lang_code
-    groups[message.chat.id].manual_enabled = False
-    groups[message.chat.id].manual_history = []
+    groups[message.chat.id].trigger_probability = 0.2
 
     bot.reply_to(message, templates[language_code]["manual_disabled.txt"])
+
+
+# --- Clean memory ---
+@bot.message_handler(commands=["clean_memory"], func=time_filter)
+@error_handler
+def clean_memory_command(message):
+    language_code = groups[message.chat.id].lang_code
+    groups[message.chat.id].messages_history = []
+    bot.reply_to(message, templates[language_code]["memory_reset.txt"])
 
 
 # --- Change language ---
@@ -544,8 +500,7 @@ def init_new_group(chat_id):
         groups[chat_id].lang_code = "en"
         bot.send_message(
             chat_id,
-            """You haven't set the language, using english. 
-            Use /change_language for changing language""",
+            "You haven't set the language. English sets by default.\nUse /change_language for changing language",
         )
         send_welcome_text_and_load_data(chat_id)
 
@@ -562,6 +517,7 @@ def init_new_group(chat_id):
         blacklist[chat_id] = []
         reply_blacklist[chat_id] = []
 
+        logger.info(f"Bot initialized in new group (id: {chat_id})")
         change_language(chat_id)
 
 
@@ -576,7 +532,12 @@ def main_messages_handler(message):
     if (message.chat.id not in groups) or (not groups[message.chat.id].lang_code):
         init_new_group(message.chat.id)
     else:
-        threading.Thread(target=groups[message.chat.id].new_message(message))
+        threading.Thread(
+            target=groups[message.chat.id].new_message, args=(message,)
+        ).start()
+        logger.info(
+            f"Created new thread for handling message, now threads running: {threading.active_count()}"
+        )
 
 
 logger.info("Bot started")

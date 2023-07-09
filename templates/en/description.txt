@@ -1,12 +1,19 @@
-Introducing Johnny, your versatile and intelligent group chat bot! Johnny goes beyond the ordinary, leveraging the power of OpenAI's embeddings API to implement a robust memory system. With its ability to remember entire conversations.
+Hey! I am Johnny - smart AI bot. I can solve problems, suggest solutions, answer questions, expresse his opinion and more.
+You can chat as in privte messages, as in group chats - just add it to group!
 
-Johnny is not just a passive observer; it actively participates in group discussions, offering insightful ideas and helping people figure things out. 
+/enable - <b>turn on</b> the bot in <b>automode</b> and get unique expirence!
 
-<i>Need suggestions for a movie night? Johnny's got you covered.</i>
-<i>Planning a weekend getaway? Johnny will provide destination recommendations based on past conversations.</i>
+You can do a such bot as you want:
 
-The beauty of Johnny lies in its seamless integration with your group chat. It effortlessly adapts to the ongoing conversation, ensuring its responses are relevant and contextually appropriate.
+/set_system_content
 
-Unleash the power of Johnny, the bot that remembers and engages. Invite Johnny to your Telegram group and experience the joy of conversing with an intelligent companion who's always there to assist and inspire.
+You can do <b>customization</b>!
 
-Just add it to group to start!
+/change_language for changing language.
+/dynamic_generation for dynamic typing. Bot prints message in front your eyes!
+
+Don't forget <b>track your account</b>: 
+
+/account_info
+
+Here is your assistant! Try it out!

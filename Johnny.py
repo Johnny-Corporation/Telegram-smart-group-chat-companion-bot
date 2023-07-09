@@ -6,6 +6,8 @@ import gpt_interface as gpt
 from dotenv import load_dotenv
 from datetime import datetime
 from random import random
+from telebot.util import antiflood
+from time import sleep  # needed for waiting telegram timeout for editing messages
 
 load_dotenv(".env")
 
@@ -20,11 +22,9 @@ class Johnny:
     bot: TeleBot
     chat_id: int
     bot_username: str
-    trigger_messages_count: int = 5
     temporary_memory_size: int = 20
     language_code: str = "eng"
-    random_trigger: bool = False
-    random_trigger_probability: float = None
+    trigger_probability: float = 0.2
     model = "gpt-3.5-turbo"
     temperature: float = 1
     """
@@ -42,17 +42,15 @@ class Johnny:
     """
 
     def __post_init__(self):
+        # list of lists, where each list follows format: [senders_name, text]
         self.messages_history = []
-        self.dialog_history = []
-        self.manual_history = []
         self.messages_count = 0  # incremented by one each message, think() function is called when hit trigger_messages_count
         self.lang_code = None
         self.enabled = False
-        self.dialog_enabled = False
-        self.manual_enabled = False
-        self.manual_answer_enabled = False
         self.total_spent_tokens = [0, 0]  # prompt and completion tokens
         self.dynamic_gen = False
+        self.dynamic_gen_chunks_frequency = 20  # when dynamic generation is enabled, this value controls how often to edit telegram message, for example when set to 3, message will be updated each 3 chunks from OpenAI API stream
+        self.edit_message_sleep_time = 7
 
     def think(self):
         """reads last"""
@@ -82,86 +80,22 @@ class Johnny:
             self.total_spent_tokens[1],
         )
 
-        self.messages_history.append(f"{message.from_user.first_name}: {text}")
+        self.messages_history.append([message.from_user.first_name, text])
 
         if len(self.messages_history) == self.temporary_memory_size:
             self.messages_history.pop(0)
 
-
-        # --- dialog mode ---
-        if self.dialog_enabled:
-            response = gpt.dialog_mode(
-                self.dialog_history,
-                text,
-                model=self.model,
-                temperature=self.temperature,
-            )
-
-            text_answer = gpt.extract_text(response)
-
-            self.dialog_history.append([text, gpt.extract_text(response)])
-
-            self.total_spent_tokens[0] += gpt.extract_tokens(response)[0]
-            self.total_spent_tokens[1] += gpt.extract_tokens(response)[1]
-
-            db_controller.add_message_event(
-                self.chat_id,
-                text_answer,
-                datetime.now(),
-                "JOHNNYBOT",
-                "JOHNNYBOT",
-                self.bot_username,
-                self.total_spent_tokens[0],
-                self.total_spent_tokens[1],
-            )
-
-            self.bot.send_message(message.chat.id, text_answer)
-        
-        # --- manual mode ---
-        if self.manual_answer_enabled:
-            response = gpt.manual_mode(
-                self.manual_history,
-                model=self.model,
-                temperature=self.temperature,
-            )
-            text_answer = gpt.extract_text(response)
-
-            self.manual_history.append('B: '+ text_answer)
-
-            self.total_spent_tokens[0] += gpt.extract_tokens(response)[0]
-            self.total_spent_tokens[1] += gpt.extract_tokens(response)[1]
-
-            db_controller.add_message_event(
-                self.chat_id,
-                text_answer,
-                datetime.now(),
-                "JOHNNYBOT",
-                "JOHNNYBOT",
-                self.bot_username,
-                self.total_spent_tokens[0],
-                self.total_spent_tokens[1],
-            )
-            
-            self.bot.send_message(message.chat.id, text_answer)
-
-
-        # --- Auto mode ---
         if not self.enabled:
             return
 
-        self.messages_count += 1
-
         if (
-            (self.messages_count == self.trigger_messages_count)
-            or ("@" + self.bot_username in text)
+            ("@" + self.bot_username in text)
             or (
                 message.reply_to_message
                 and message.reply_to_message.from_user.username == self.bot_username
             )
-            or (self.random_trigger and (random() < self.random_trigger_probability))
+            or (random() < self.trigger_probability)
         ):
-            self.messages_count = 0
-
             response = gpt.create_chat_completion(
                 self.messages_history,
                 bool(message.reply_to_message),
@@ -173,24 +107,30 @@ class Johnny:
                 text_answer = ""  # stores whole answer
 
                 # count tokens!!!!
-
+                update_count = 1
                 for i in response:
-                    try:
-                        if not text_answer:
-                            text_answer += str(i["choices"][0]["delta"]["content"])
-                            if text_answer:
-                                bot_message = self.bot.send_message(
-                                    message.chat.id, text_answer
-                                )
+                    if ("content" in i["choices"][0]["delta"]) and (
+                        text_chunk := i["choices"][0]["delta"]["content"]
+                    ):
+                        if not text_answer:  # message wasn't sent, cant edit
+                            text_answer = text_chunk
+                            bot_message = self.bot.send_message(
+                                message.chat.id, text_answer
+                            )
                             continue
-                        text_answer += i["choices"][0]["delta"]["content"]
-                        self.bot.edit_message_text(
-                            chat_id=message.chat.id,
-                            message_id=bot_message.message_id,
-                            text=text_answer,
-                        )
-                    except KeyError as e:
-                        pass
+
+                        text_answer += text_chunk
+                        update_count += 1
+
+                        if update_count == self.dynamic_gen_chunks_frequency:
+                            update_count = 0
+                            self.bot.edit_message_text(
+                                chat_id=message.chat.id,
+                                message_id=bot_message.message_id,
+                                text=text_answer,
+                            )
+                            sleep(self.edit_message_sleep_time)
+
                 if text_answer == "NO":  # filtering messages
                     return
 
@@ -203,8 +143,16 @@ class Johnny:
                 if text_answer == "NO":  # filtering messages
                     return
 
-                self.bot.send_message(message.chat.id, text_answer)
+                # If message was a reply to bot message, bot will reply to reply
+                if (
+                    message.reply_to_message
+                    and message.reply_to_message.from_user.username == self.bot_username
+                ):
+                    self.bot.reply_to(message, text_answer)
+                else:
+                    self.bot.send_message(message.chat.id, text_answer)
 
+            # Adding GPT answer to db and messages_history
             db_controller.add_message_event(
                 self.chat_id,
                 text_answer,
@@ -215,13 +163,12 @@ class Johnny:
                 self.total_spent_tokens[0],
                 self.total_spent_tokens[1],
             )
-            self.messages_history.append(f"Bot: {text_answer}")
+            self.messages_history.append(["assistant", text_answer])
 
     def change_memory_size(self, size):
         self.temporary_memory_size = size
-        self.messages_history = self.messages_history[
-            len(self.messages_history) - size - 1 :
-        ]
+        self.messages_history = []
+        self.load_data()
 
     def load_data(self) -> None:
         """Loads data from to object from db"""
@@ -248,23 +195,37 @@ class Johnny:
 # [x] Count tokens
 # [x] Ask question to bot (via reply)
 # [x] test adding to group
-# [ ] dynamic generation
-# [ ] Readme for gh    <<---------- Misha
-# [ ] Internet access parameter
+# [x] dynamic generation
 # [x] write input output tokens to db
 # [x] refactoring
-# [ ] in question_to_bot make bot react to both ways: reply and in one message with command <<---------- Misha
 # [x] help command, all commands with descriptions <<---------Misha
-# [ ] Convert templates with parse_html<<---------- Misha
-# [ ] Connect payment system <<---------- Misha
+# [x] Convert templates with parse_html<<---------- Misha
 # [x] Make support for german and spanish
 # [x] Make sticker support only for ru
-# [ ] Configure gpt for correct answers
+# [x] Configure gpt for correct answers
 # [x] manual mode <<--------------- Misha
 # [ ] Generate system_content <<--------- Misha
-# [ ] Assistant; User in messages history (refactor temporary memory)
-# [ ] Dialog mode <<------ Misha
-# [ ] translate all templates
-# [ ] different languages of command
+# [x] Assistant; User in messages history (refactor temporary memory)
+# [x] Dialog mode <<------ Misha
+# [ ] translate all templates <<------ Misha
 # [ ] interface of changing all parameters + customization
+# [ ] account info command\
+# [ ] conservations in private messages
+
+# ------------ for today (9 july 23) -------------
+# [x] fix dynamic generation
+# [x] assign name to messages
+# [ ] Make GPT answer no, when it doesnt understand context
+# [ ] run on sfedu
+# [ ] add to our group
+
+#  ----------- later -----------
+# [ ] Count tokens for dynamic generation via tokenizer <<-----------Misha
+
+# ------------ future features ---------
+# [ ] Internet access parameter
+# [ ] Audio messages support (maybe do one of element of customization)
+# [ ] games with gpt (entertainment part)
+# [ ] gpt answers to message by sticker or emoji
+# [ ] activation keys for discount
 # [ ] conservations in private messages
