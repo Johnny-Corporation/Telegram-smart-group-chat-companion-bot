@@ -1,6 +1,10 @@
 *.env
 **/__pycache__/
 logs.log
+info.log
+debug.log
+info_logs.log
+debug_logs.log
 groups_info/
 .vscode/
 MessageEvents.sqlite

@@ -6,6 +6,7 @@ import gpt_interface as gpt
 from dotenv import load_dotenv
 from datetime import datetime
 from random import random
+
 # from telebot.util import antiflood
 
 from time import sleep  # needed for waiting telegram timeout for editing messages
@@ -218,11 +219,12 @@ class Johnny:
 # [x] fix dynamic generation
 # [x] assign name to messages
 # [ ] Make GPT answer no, when it doesnt understand context
-# [ ] run on sfedu
-# [ ] add to our group
+# [x] run on sfedu
+# [x] add to our group
 
 #  ----------- later -----------
 # [ ] Count tokens for dynamic generation via tokenizer <<-----------Misha
+# [ ] add all params like penalty max_tokens etc
 
 # ------------ future features ---------
 # [ ] Internet access parameter
@@ -232,4 +234,12 @@ class Johnny:
 # [ ] activation keys for discount
 # [ ] conservations in private messages
 # [ ] automtic calling functions
-# [ ] edit trigger
+# [ ] automatic commands detection
+
+# for today (10 july 23)
+# [ ] add commands for developers
+# restart bot
+# db operations
+# Maybe add to TODO
+# get logs
+# [x] separate logs
