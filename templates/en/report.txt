@@ -1,4 +1,1 @@
 Here are commands to do a reports to developers:
-
-/report_bug - for telling the bug to developers
-/request_feature - suggest your idea to this bot

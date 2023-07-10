@@ -1,4 +1,4 @@
-<i>Group {group_name}</i>
+<i>Group: {group_name}</i>
 
 <b>Subscription</b>
 Not implemented
@@ -12,7 +12,7 @@ Not implemented
 <b>{answers_frequency}</b> - Frequency of bot's answers in AutoMode
 /set_answer_probability - for change frequency of bot's answers
 
-<b>{temporary_memory_size}</b> - Bot considers {temporary_memory_size} previous messages.
+<b>{temporary_memory_size}</b> - Bot considers <b>{temporary_memory_size}</b> previous messages.
 /temporary_memory_size - for change frequency of bot's answers
 
 

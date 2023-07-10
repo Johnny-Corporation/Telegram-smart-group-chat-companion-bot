@@ -1,0 +1,3 @@
+Johnny is disabled currently.
+
+/enable to turn on him.

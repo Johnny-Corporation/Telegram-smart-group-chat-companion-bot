@@ -154,7 +154,8 @@ def report_command(message):
     language_code = groups[message.chat.id].lang_code
     bot.send_message(
         message.chat.id,
-        templates[language_code]["report.txt"]
+        templates[language_code]["report.txt"],
+        reply_markup=report_markup
     )
 @bot.callback_query_handler(func=lambda call: call.data == 'report_bug' or call.data == "request_feature")
 def handler_report_buttons(call):
@@ -170,10 +171,12 @@ def handler_report_buttons(call):
 def set_up_command(message):
 
     set_up_markup = types.InlineKeyboardMarkup()
+    system_button = types.InlineKeyboardButton(text="Change the role of bot", callback_data='set_role')
     temp_button = types.InlineKeyboardButton(text="Change bot's answer length", callback_data='set_temp')
     ans_button = types.InlineKeyboardButton(text="Change frequency of bot's answers", callback_data='set_ans')
     memory_button = types.InlineKeyboardButton(text="Change the size of your messages-memory", callback_data='set_memory')
 
+    set_up_markup.add(system_button)
     set_up_markup.add(temp_button)
     set_up_markup.add(ans_button)
     set_up_markup.add(memory_button)
@@ -181,12 +184,15 @@ def set_up_command(message):
     language_code = groups[message.chat.id].lang_code
     bot.send_message(
         message.chat.id,
-        templates[language_code]["set_up_functions.txt"], 
+        templates[language_code]["set_up_functions.txt"],
+        reply_markup=set_up_markup,
         parse_mode='HTML'
     )
 @bot.callback_query_handler(func=lambda call: call.data == 'set_temp' or call.data == "set_ans" or call.data == "set_memory")
 def handler_report_buttons(call):
-    if call.data == 'set_temp':
+    if call.data == 'set_role':
+        set_system_content_command(call.message)
+    elif call.data == 'set_temp':
         set_temp_command(call.message)
     elif call.data == 'set_ans':
         set_probability_command(call.message)
@@ -210,6 +216,7 @@ def customization_command(message):
     bot.send_message(
         message.chat.id,
         templates[language_code]["customization.txt"],
+        reply_markup=customization_markup,
         parse_mode = 'HTML'
     )
 @bot.callback_query_handler(func=lambda call: call.data == "change_lang" or call.data == "dyn_gen")
@@ -227,22 +234,30 @@ def view_mode_command(message):
 
     if groups[message.chat.id].enabled == True:
         on_off = 'enabled'
-    if groups[message.chat.id].trigger_probability == 1:
-        mode = 'dialog'
-    elif groups[message.chat.id].trigger_probability == 0:
-        mode = 'manual'
-    else:
-        mode = 'auto'
+        if groups[message.chat.id].trigger_probability == 1:
+            mode = 'dialog'
+        elif groups[message.chat.id].trigger_probability == 0:
+            mode = 'manual'
+        else:
+            mode = 'auto'
 
-    language_code = groups[message.chat.id].lang_code
-    bot.send_message(
+        language_code = groups[message.chat.id].lang_code
+        bot.send_message(
 
-        message.chat.id,
-        templates[language_code]["view_mode.txt"].format(
-            on_off = on_off,
-            mode = mode
+            message.chat.id,
+            templates[language_code]["view_mode.txt"].format(
+                on_off = on_off,
+                mode = mode
+            )
         )
-    )
+
+    else:
+        language_code = groups[message.chat.id].lang_code
+        bot.send_message(
+
+            message.chat.id,
+            templates[language_code]["view_mode_disabled.txt"]
+        )
 
 
 
@@ -277,13 +292,13 @@ def group_info_command(message):
     else:
         dynamic_gen_en = 'enabled'
     if groups[message.chat.id].lang_code == 'en':
-        language_code = 'english'
+        language_code1 = 'english'
     elif groups[message.chat.id].lang_code == 'ru':
-        language_code = 'русский'
+        language_code1 = 'русский'
     elif groups[message.chat.id].lang_code == 'es':
-        language_code = 'español'
+        language_code1 = 'español'
     elif groups[message.chat.id].lang_code == 'de':
-        language_code = 'deutsch'
+        language_code1 = 'deutsch'
 
 
     bot.send_message(
@@ -300,7 +315,7 @@ def group_info_command(message):
             ),
             spent_tokens=sum(groups[message.chat.id].total_spent_tokens),
             dynamic_gen_en = dynamic_gen_en,
-            language = language_code
+            language = language_code1
             
         ),
         parse_mode='HTML'
@@ -456,6 +471,15 @@ def set_temp_memory_size_command(message):
     bot.register_for_reply(bot_reply, set_memory_size_reply_handler)
 
 
+# --- Set system content ---
+@bot.message_handler(commands=["set_role"], func=time_filter)
+@error_handler
+def set_system_content_command(message):
+    language_code = groups[message.chat.id].lang_code
+    bot.send_message(
+        message.chat.id, 'vbnbhohaffobhasabghwrhpghjwrbjwpjwpvgjpvfrjwpjwpvgrfpvgjpivgwrifjopwrwrig'
+    )
+
 # --- Report bug ---
 @bot.message_handler(commands=["report_bug"], func=time_filter)
 @error_handler
@@ -504,7 +528,7 @@ def enable_command(message):
     groups[message.chat.id].enabled = True
     if language_code == "ru":
         bot.send_sticker(message.chat.id, stickers["enable"])
-    bot.reply_to(message, templates[language_code]["enabled.txt"])
+    bot.reply_to(message, templates[language_code]["enabled.txt"],parse_mode = 'HTML')
 
 
 # --- Disable ---
@@ -514,17 +538,22 @@ def disable_command(message):
     language_code = groups[message.chat.id].lang_code
     groups[message.chat.id].enabled = False
 
-    bot.reply_to(message, templates[language_code]["disabled.txt"])
+    bot.send_message(message.chat.id, templates[language_code]["disabled.txt"])
 
 
 # --- Dialog mode enable ---
 @bot.message_handler(commands=["enable_dialog"], func=time_filter)
 @error_handler
 def dialog_enable_command(message):
-    language_code = groups[message.chat.id].lang_code
-    groups[message.chat.id].trigger_probability = 1
+    
+    if groups[message.chat.id].enabled == False:
+        bot.reply_to(message, "You bot is disbaled.\n/enable to activate him", parse_mode = 'HTML')
+    
+    else:
+        language_code = groups[message.chat.id].lang_code
+        groups[message.chat.id].trigger_probability = 1
 
-    bot.reply_to(message, templates[language_code]["dialog_enabled.txt"])
+        bot.reply_to(message, templates[language_code]["dialog_enabled.txt"])
 
 
 # --- Dialog mode disable ---
@@ -541,9 +570,14 @@ def dialog_disable_command(message):
 @bot.message_handler(commands=["enable_manual"], func=time_filter)
 @error_handler
 def manual_enable_command(message):
-    language_code = groups[message.chat.id].lang_code
-    groups[message.chat.id].trigger_probability = 0
-    bot.reply_to(message, templates[language_code]["manual_enabled.txt"])
+
+    if groups[message.chat.id].enabled == False:
+        bot.reply_to(message, "You bot is disbaled.\n/enable to activate him", parse_mode = 'HTML')
+    
+    else:
+        language_code = groups[message.chat.id].lang_code
+        groups[message.chat.id].trigger_probability = 0
+        bot.reply_to(message, templates[language_code]["manual_enabled.txt"], parse_mode = 'HTML')
 
 
 # --- Manual mode disable ---

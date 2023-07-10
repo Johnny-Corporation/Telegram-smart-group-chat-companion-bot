@@ -1,1 +1,1 @@
-Manual mode is disabled.
+Manual mode is disabled. You are now in Automode.

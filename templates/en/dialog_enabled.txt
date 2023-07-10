@@ -1,1 +1,3 @@
-Dialog mode was enabled. Johnny ready to chat with you. You should enable bot before using dialog mode.
+Dialog mode was enabled. Johnny ready to chat with you.
+
+/disable_dialog - to leave this mode

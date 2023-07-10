@@ -6,7 +6,8 @@ import gpt_interface as gpt
 from dotenv import load_dotenv
 from datetime import datetime
 from random import random
-from telebot.util import antiflood
+# from telebot.util import antiflood
+
 from time import sleep  # needed for waiting telegram timeout for editing messages
 
 load_dotenv(".env")
@@ -231,3 +232,4 @@ class Johnny:
 # [ ] activation keys for discount
 # [ ] conservations in private messages
 # [ ] automtic calling functions
+# [ ] edit trigger

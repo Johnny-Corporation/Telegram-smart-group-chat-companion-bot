@@ -1,1 +1,5 @@
-Manual mode is enabled. Now bot only replies when you tag him or reply to his message.
+Manual mode is enabled. 
+
+Now Bot answers, when you <b>tag</b> him or <b>reply to his message</b>.
+
+/disable_manual to leave this mode.
