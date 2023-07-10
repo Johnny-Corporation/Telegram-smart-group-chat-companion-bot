@@ -211,7 +211,6 @@ class Johnny:
 # [x] Make sticker support only for ru
 # [x] Configure gpt for correct answers
 # [x] manual mode <<--------------- Misha
-# [ ] Generate system_content <<--------- Misha
 # [x] Assistant; User in messages history (refactor temporary memory)
 # [x] Dialog mode <<------ Misha
 # [ ] translate all templates <<------ Misha
@@ -219,11 +218,13 @@ class Johnny:
 # [ ] account info command\
 # [ ] conservations in private messages
 # [ ] /start fix
+# [x] functions set presense + frequency penalties 
 
-# ------------ for today (9 july 23) -------------
+# ------------ for today (11 july 23) -------------
 # [x] fix dynamic generation
 # [x] assign name to messages
 # [ ] Make GPT answer no, when it doesnt understand context
+# [ ] Generate system_content (maybe add some system contents)<<--------- Misha
 # [x] run on sfedu
 # [x] add to our group
 
@@ -241,10 +242,11 @@ class Johnny:
 # [ ] automtic calling functions
 # [ ] automatic commands detection
 
-# for today (10 july 23)
+# for today (11 july 23)
 # [ ] add commands for developers
 # restart bot
 # db operations
 # Maybe add to TODO
 # get logs
 # [x] separate logs
+
