@@ -52,6 +52,7 @@ class Johnny:
         self.dynamic_gen = False
         self.dynamic_gen_chunks_frequency = 20  # when dynamic generation is enabled, this value controls how often to edit telegram message, for example when set to 3, message will be updated each 3 chunks from OpenAI API stream
         self.edit_message_sleep_time = 7
+        self.system_content = ''
 
     def think(self):
         """reads last"""
