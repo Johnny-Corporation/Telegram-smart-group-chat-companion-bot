@@ -2,6 +2,7 @@
 **/__pycache__/
 logs.log
 groups_info/
+clients_info/
 .vscode/
 MessageEvents.sqlite
 MessageEvents.db

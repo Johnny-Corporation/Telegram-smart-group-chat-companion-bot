@@ -44,6 +44,9 @@ groups: Dict[int, Johnny] = {}  # {group chat_id:Johnny object}
 if not path.exists("groups_info"):
     mkdir("groups_info")
 
+if not path.exists("clients_info"):
+    mkdir("clients_info")
+
 
 bot = TeleBot(bot_token)
 bot_id = bot.get_me().id
@@ -124,6 +127,27 @@ def reply_blacklist_filter(message):
     return (message.reply_to_message is None) or (
         message.reply_to_message.message_id not in reply_blacklist[message.chat.id]
     )
+
+
+# --- Start ---
+@bot.message_handler(commands=["start"], func=time_filter)
+@error_handler
+def about_command(message):
+
+    if (message.chat.id not in groups) or (not groups[message.chat.id].lang_code):
+        init_new_group(message.chat.id)
+
+
+# --- About ---
+@bot.message_handler(commands=["about"], func=time_filter)
+@error_handler
+def about_command(message):
+
+    language_code = groups[message.chat.id].lang_code
+    bot.reply_to(
+        message,
+        templates[language_code]["description.txt"]
+        )
 
 
 # --- Help ---
@@ -319,16 +343,6 @@ def group_info_command(message):
             
         ),
         parse_mode='HTML'
-    )
-
-
-# --- About ---
-@bot.message_handler(commands=["about", "start"], func=time_filter)
-@error_handler
-def about_command(message):
-    language_code = groups[message.chat.id].lang_code
-    bot.reply_to(
-        message, templates[language_code]["description.txt"], parse_mode="HTML"
     )
 
 
@@ -689,12 +703,21 @@ def init_new_group(chat_id):
         send_welcome_text_and_load_data(chat_id)
 
     else:
-        with open(
-            f"groups_info\\{bot.get_chat(chat_id).title}.json",
-            "w",
-            encoding="utf-8",
-        ) as f:
-            f.write(convert_to_json(str(bot.get_chat(chat_id))))
+        
+        if type == 'private':
+            with open(
+                f"clients_info\\{bot.get_chat(chat_id).title}.json",
+                "w",
+                encoding="utf-8",
+            ) as f:
+                f.write(convert_to_json(str(bot.get_chat(chat_id))))
+        else:
+            with open(
+                f"groups_info\\{bot.get_chat(chat_id).title}.json",
+                "w",
+                encoding="utf-8",
+            ) as f:
+                f.write(convert_to_json(str(bot.get_chat(chat_id))))
 
         groups[chat_id] = Johnny(bot, chat_id, str(bot_username))
 
