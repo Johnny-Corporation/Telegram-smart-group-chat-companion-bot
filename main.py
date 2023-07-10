@@ -678,6 +678,7 @@ def handle_new_chat_members(message):
             init_new_group(message.chat.id)
 
 
+
 def init_new_group(chat_id):
     if chat_id in groups:
         groups[chat_id].lang_code = "en"
