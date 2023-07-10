@@ -44,6 +44,9 @@ groups: Dict[int, Johnny] = {}  # {group chat_id:Johnny object}
 if not path.exists("groups_info"):
     mkdir("groups_info")
 
+if not path.exists("clients_info"):
+    mkdir("clients_info")
+
 
 bot = TeleBot(bot_token)
 bot_id = bot.get_me().id
@@ -127,17 +130,51 @@ def reply_blacklist_filter(message):
     )
 
 
-# # --- Help ---
-# @bot.message_handler(commands=["help"], func=time_filter)
-# @error_handler
-# def help_command(message):
-#     language_code = groups[message.chat.id].lang_code
-#     bot.send_message(
-#         message.chat.id,
-#         templates[language_code]["help.txt"],
-#         parse_mode="Markdown",
-#         disable_web_page_preview=True,
-#     )
+# --- Start ---
+@bot.message_handler(commands=["start"], func=time_filter)
+@error_handler
+def about_command(message):
+
+    if (message.chat.id not in groups) or (not groups[message.chat.id].lang_code):
+        init_new_group(message.chat.id)
+
+
+# --- About ---
+@bot.message_handler(commands=["about"], func=time_filter)
+@error_handler
+def about_command(message):
+
+    language_code = groups[message.chat.id].lang_code
+    bot.reply_to(
+        message,
+        templates[language_code]["description.txt"]
+        )
+
+
+# --- Help ---
+@bot.message_handler(commands=["help"], func=time_filter)
+@error_handler
+def help_command(message):
+    language_code = groups[message.chat.id].lang_code
+    bot.send_message(
+        message.chat.id,
+        templates[language_code]["help.txt"],
+        parse_mode="Markdown",
+        disable_web_page_preview=True,
+    )
+
+
+# --- Help ---
+@bot.message_handler(commands=["help"], func=time_filter)
+@error_handler
+def help_command(message):
+    language_code = groups[message.chat.id].lang_code
+    bot.send_message(
+        message.chat.id,
+        templates[language_code]["help.txt"],
+        parse_mode="Markdown",
+        disable_web_page_preview=True,
+    )
 
 
 # --- report functions ---
@@ -336,16 +373,6 @@ def group_info_command(message):
             language=language_code1,
         ),
         parse_mode="HTML",
-    )
-
-
-# --- About ---
-@bot.message_handler(commands=["about", "start"], func=time_filter)
-@error_handler
-def about_command(message):
-    language_code = groups[message.chat.id].lang_code
-    bot.reply_to(
-        message, templates[language_code]["description.txt"], parse_mode="HTML"
     )
 
 
@@ -706,6 +733,7 @@ def handle_new_chat_members(message):
             init_new_group(message.chat.id)
 
 
+
 def init_new_group(chat_id):
     if chat_id in groups:
         groups[chat_id].lang_code = "en"
@@ -716,12 +744,21 @@ def init_new_group(chat_id):
         send_welcome_text_and_load_data(chat_id)
 
     else:
-        with open(
-            f"groups_info\\{bot.get_chat(chat_id).title}.json",
-            "w",
-            encoding="utf-8",
-        ) as f:
-            f.write(convert_to_json(str(bot.get_chat(chat_id))))
+        
+        if type == 'private':
+            with open(
+                f"clients_info\\{bot.get_chat(chat_id).title}.json",
+                "w",
+                encoding="utf-8",
+            ) as f:
+                f.write(convert_to_json(str(bot.get_chat(chat_id))))
+        else:
+            with open(
+                f"groups_info\\{bot.get_chat(chat_id).title}.json",
+                "w",
+                encoding="utf-8",
+            ) as f:
+                f.write(convert_to_json(str(bot.get_chat(chat_id))))
 
         groups[chat_id] = Johnny(bot, chat_id, str(bot_username))
 

@@ -6,6 +6,7 @@ debug.log
 info_logs.log
 debug_logs.log
 groups_info/
+clients_info/
 .vscode/
 MessageEvents.sqlite
 MessageEvents.db
