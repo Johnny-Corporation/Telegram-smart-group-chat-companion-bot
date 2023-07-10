@@ -1,1 +1,4 @@
-Enter float value from 0 to to 1 in reply to this message. Bot will answer more often if this value is high, bot will will answer after each message if set to 1 (dialog mode)
+Enter float value <b>from 0</b> (no responses) <b>to 1></b> (responses each message) <b>in reply to this message</b>. 
+Bot will answer as often as this value is high.
+
+<i>Sets {probability} now</i>

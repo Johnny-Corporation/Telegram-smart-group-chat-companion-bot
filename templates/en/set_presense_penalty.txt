@@ -1,0 +1,4 @@
+Enter the value <b>from 0</b> (more looped) <b>to 2</b> (more creative) <b> in reply to message</b>.
+Parameter do a model's likelihood to talk about new topics.
+
+<i>Sets {presense_penalty} now</i>

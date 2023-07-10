@@ -29,6 +29,8 @@ class Johnny:
     trigger_probability: float = 0.2
     model = "gpt-3.5-turbo"
     temperature: float = 1
+    frequency_penalty: float = 0.2
+    presense_penalty: float = 0.2
     """
     Args:
         id_ (int): chat id
@@ -105,6 +107,8 @@ class Johnny:
                 model=self.model,
                 temperature=self.temperature,
                 stream=self.dynamic_gen,
+                frequency_penalty=self.frequency_penalty,
+                presense_penalty=self.presense_penalty
             )
             if self.dynamic_gen:
                 text_answer = ""  # stores whole answer

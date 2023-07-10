@@ -1,1 +1,4 @@
-Please enter a value greater than 0 in response to this message. The size of temporary memory is the number of messages that GPT sees at each request. With an increase, the number of tokens consumed and the response time will greatly increase, but at the same time Johnny will begin to better understand the context in difficult cases. (20 by default)
+Please enter a value <b>more than 0 in reply to this </b>. 
+Temporary memory size in GPT relates to the number of messages it considers per request.
+
+<i>Sets {memory} now</i>

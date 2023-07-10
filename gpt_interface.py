@@ -22,7 +22,8 @@ def extract_text(completion: openai.ChatCompletion) -> str:
 
 def create_chat_completion(
     messages: list,
-    reply: bool = False,
+    system_content: str,
+    reply: bool = False,            #SYS
     model: str = "gpt-3.5-turbo",
     temperature: int = 1,
     top_p: float = 0.5,
@@ -36,12 +37,16 @@ def create_chat_completion(
     messages(list): list of dicts, where key is users name and value is his message
     reply(bool): True means GPT will consider last message, False means not, None means system input field will be empty
     """
+    # System content
     if reply != None:
         system_content = "If u are not sure u understand context, say 'NO' and i will handle it. Be brief, answer in 1-2 short sentences. Keep up the conversation, ask questions if u want"
         if reply:
             system_content += " Write the answer or suggestions to the last message"
     else:
         system_content = "You are helpful assistant"
+
+
+    print(system_content)
 
     previous_messages = [{"role": "system", "content": system_content}]
 
