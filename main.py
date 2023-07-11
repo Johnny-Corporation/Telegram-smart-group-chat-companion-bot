@@ -213,32 +213,39 @@ def handler_report_buttons(call):
 @bot.message_handler(commands=["set_up"], func=time_filter)
 @error_handler
 def set_up_command(message):
+
+    language_code = groups[message.chat.id].lang_code
+
     set_up_markup = types.InlineKeyboardMarkup()
-    system_button = types.InlineKeyboardButton(
-        text="Change the role of bot", callback_data="set_role"
-    )
     temp_button = types.InlineKeyboardButton(
-        text="Change bot's answer length", callback_data="set_temp"
+        text=templates[language_code]["button_set_temp.txt"], callback_data="set_temp"
     )
     ans_button = types.InlineKeyboardButton(
-        text="Change frequency of bot's answers", callback_data="set_ans"
+        text=templates[language_code]["button_set_ans.txt"], callback_data="set_ans"
     )
     memory_button = types.InlineKeyboardButton(
-        text="Change the size of your messages-memory", callback_data="set_memory"
+        text=templates[language_code]["button_set_memory.txt"], callback_data="set_memory"
     )
     freq_penalty_button = types.InlineKeyboardButton(
-        text="Change the variety of bot's answers", callback_data="set_variety"
+        text=templates[language_code]["button_set_variety.txt"], callback_data="set_variety"
     )
     pres_penalty_button = types.InlineKeyboardButton(
-        text="Change the creativity of bot's answers", callback_data="set_creativity"
+        text=templates[language_code]["button_set_creativity.txt"], callback_data="set_creativity"
+    )
+    len_button = types.InlineKeyboardButton(
+        text=templates[language_code]["button_set_length_answer.txt"], callback_data="set_len"
+    )
+    sphere_button = types.InlineKeyboardButton(
+        text=templates[language_code]["button_set_sphere.txt"], callback_data="set_sphere"
     )
 
-    set_up_markup.add(system_button)
     set_up_markup.add(temp_button)
     set_up_markup.add(ans_button)
     set_up_markup.add(memory_button)
     set_up_markup.add(freq_penalty_button)
     set_up_markup.add(pres_penalty_button)
+    set_up_markup.add(len_button)
+    set_up_markup.add(sphere_button)
 
     language_code = groups[message.chat.id].lang_code
     bot.send_message(
@@ -252,14 +259,13 @@ def set_up_command(message):
     func=lambda call: call.data == "set_temp"
     or call.data == "set_ans"
     or call.data == "set_memory" 
-    or call.data == "set_role"
     or call.data == "set_variety"
     or call.data == "set_creativity"
+    or call.data == "set_len"
+    or call.data == "set_sphere"
 )
 def handler_report_buttons(call):
-    if call.data == "set_role":
-        set_system_content_command(call.message)
-    elif call.data == "set_temp":
+    if call.data == "set_temp":
         set_temp_command(call.message)
     elif call.data == "set_ans":
         set_probability_command(call.message)
@@ -269,6 +275,10 @@ def handler_report_buttons(call):
         set_frequency_penalty_command(call.message)
     elif call.data == "set_creativity":
         set_presense_penalty_command(call.message)
+    elif call.data == "set_len":
+        set_length_answer_command(call.message)
+    elif call.data == 'set_sphere':
+        set_sphere_command(call.message)
 
 
 # --- customizations functions ---
@@ -368,6 +378,11 @@ def group_info_command(message):
     elif groups[message.chat.id].lang_code == "de":
         language_code1 = "deutsch"
 
+
+    if groups[message.chat.id].answer_length=='as you need':
+        answer_length='as bot need'
+    else:
+        answer_length='as you need'
     bot.send_message(
         message.chat.id,
         templates[language_code]["group_info.txt"].format(
@@ -375,6 +390,10 @@ def group_info_command(message):
             temperature=groups[message.chat.id].temperature,
             answers_frequency=groups[message.chat.id].trigger_probability,
             temporary_memory_size=groups[message.chat.id].temporary_memory_size,
+            presense_penalty=groups[message.chat.id].presense_penalty,
+            frequency_penalty=groups[message.chat.id].frequency_penalty,
+            length=answer_length,
+            sphere=groups[message.chat.id].sphere,
             dollars=tokens_to_dollars(
                 groups[message.chat.id].model,
                 total_tokens[0],
@@ -449,15 +468,16 @@ def question_to_bot_reply_handler(inner_message):
 # --- reply handler for set temp
 @error_handler
 def set_temp_reply_handler(inner_message):
+    language_code = groups[inner_message.chat.id].lang_code
     try:
         val = float(inner_message.text)
     except ValueError:
         bot.reply_to(inner_message, "❌")
-        bot.send_message(inner_message.chat.id, "The randomness didn't change.")
+        bot.send_message(inner_message.chat.id, templates[language_code]["set_tempe_declined.txt"])
         return
     if (val > 2) or (val < 0):
         bot.reply_to(inner_message, "❌")
-        bot.send_message(inner_message.chat.id, "The randomness didn't change.")
+        bot.send_message(inner_message.chat.id, templates[language_code]["set_tempe_declined.txt"])
         return
 
     groups[inner_message.chat.id].temperature = val
@@ -467,69 +487,88 @@ def set_temp_reply_handler(inner_message):
 # --- reply handler for set frequency penalty
 @error_handler
 def set_frequency_penalty_reply_handler(inner_message):
+    language_code = groups[inner_message.chat.id].lang_code
     try:
         val = int(inner_message.text)
     except ValueError:
         bot.reply_to(inner_message, "❌")
-        bot.send_message(inner_message.chat.id, "The variety didn't change.")
+        bot.send_message(inner_message.chat.id, templates[language_code]["set_variety_declined.txt"])
         return
     if val < 0 or val > 2:
         bot.reply_to(inner_message, "❌")
-        bot.send_message(inner_message.chat.id, "The variety didn't change.")
+        bot.send_message(inner_message.chat.id, templates[language_code]["set_variety_declined.txt"])
         return
 
-    groups[inner_message.chat.id].change_memory_size(val)
+    groups[inner_message.chat.id].frequency_penalty = val
     bot.reply_to(inner_message, "✅")
 
 
 # --- reply handler for set presense penalty
 @error_handler
 def set_presense_penalty_reply_handler(inner_message):
+    language_code = groups[inner_message.chat.id].lang_code
     try:
         val = int(inner_message.text)
     except ValueError:
         bot.reply_to(inner_message, "❌")
-        bot.send_message(inner_message.chat.id, "The creativity didn't change.")
+        bot.send_message(inner_message.chat.id, templates[language_code]["set_creativity_declined.txt"])
         return
     if val < 0 or val > 2:
         bot.reply_to(inner_message, "❌")
-        bot.send_message(inner_message.chat.id, "The creativity didn't change.")
+        bot.send_message(inner_message.chat.id, templates[language_code]["set_creativity_declined.txt"])
         return
 
-    groups[inner_message.chat.id].change_memory_size(val)
+    groups[inner_message.chat.id].presense_penalty = val
+    bot.reply_to(inner_message, "✅")
+
+
+# --- reply handler for set sphere
+@error_handler
+def set_sphere_reply_handler(inner_message):
+    language_code = groups[inner_message.chat.id].lang_code
+    try:
+        val = str(inner_message.text)
+    except ValueError:
+        bot.reply_to(inner_message, "❌")
+        bot.send_message(inner_message.chat.id, templates[language_code]["sphere_declined.txt"])
+        return
+
+    groups[inner_message.chat.id].sphere = val
     bot.reply_to(inner_message, "✅")
 
 
 # --- reply handler for set temp memory size
 @error_handler
 def set_memory_size_reply_handler(inner_message):
+    language_code = groups[inner_message.chat.id].lang_code
     try:
         val = int(inner_message.text)
     except ValueError:
         bot.reply_to(inner_message, "❌")
-        bot.send_message(inner_message.chat.id, "The size of memory didn't change.")
+        bot.send_message(inner_message.chat.id, templates[language_code]["set_memory_declined.txt"])
         return
     if val <= 0:
         bot.reply_to(inner_message, "❌")
-        bot.send_message(inner_message.chat.id, "The size of memory didn't change.")
+        bot.send_message(inner_message.chat.id, templates[language_code]["set_memory_declined.txt"])
         return
 
-    groups[inner_message.chat.id].change_memory_size(val)
+    groups[inner_message.chat.id].change_memory_size = val
     bot.reply_to(inner_message, "✅")
 
 
 # --- reply handler for set probability
 @error_handler
 def set_probability_reply_handler(inner_message):
+    language_code = groups[inner_message.chat.id].lang_code
     try:
         val = float(inner_message.text)
     except ValueError:
         bot.reply_to(inner_message, "❌")
-        bot.send_message(inner_message.chat.id, "The probability didn't change.")
+        bot.send_message(inner_message.chat.id, templates[language_code]["set_probability_declined.txt"])
         return
     if (val < 0) or (val > 1):
         bot.reply_to(inner_message, "❌")
-        bot.send_message(inner_message.chat.id, "The probability didn't change.")
+        bot.send_message(inner_message.chat.id, templates[language_code]["set_probability_declined.txt"])
         return
 
     groups[inner_message.chat.id].trigger_probability = val
@@ -603,50 +642,70 @@ def set_presense_penalty_command(message):
     bot.register_for_reply(bot_reply, set_presense_penalty_reply_handler)
 
 
-# --- Set system content ---
-@bot.message_handler(commands=["set_role"], func=time_filter)
+# --- Set answers' length ---
+@bot.message_handler(commands=["set_length_answer"], func=time_filter)
 @error_handler
-def set_system_content_command(message):
-    
-    system_markup = types.InlineKeyboardMarkup()
-
-    auto_button = types.InlineKeyboardButton(
-        text="Automatically", callback_data="auto"
-    )
-    manual_button = types.InlineKeyboardButton(
-        text="Manually", callback_data="manual"
-    )
-
-    system_markup.add(auto_button)
-    system_markup.add(manual_button)
+def set_length_answer_command(message):
 
     language_code = groups[message.chat.id].lang_code
-    bot.send_message(
-        message.chat.id,
-        templates[language_code]["set_role.txt"],
-        reply_markup=system_markup,
+
+    length_markup = types.InlineKeyboardMarkup()
+
+    long_button = types.InlineKeyboardButton(
+        text=templates[language_code]["button_long.txt"], callback_data="long"
+    )
+    medium_button = types.InlineKeyboardButton(
+        text=templates[language_code]["button_medium.txt"], callback_data="medium"
+    )
+    short_button = types.InlineKeyboardButton(
+        text=templates[language_code]["button_short.txt"], callback_data="short"
+    )
+    any_button = types.InlineKeyboardButton(
+        text=templates[language_code]["button_any_length.txt"], callback_data="any"
+    )
+
+    length_markup.add(long_button)
+    length_markup.add(medium_button)
+    length_markup.add(short_button)
+    length_markup.add(any_button)
+
+    
+    bot.reply_to(
+        message, templates[language_code]["set_length_answer.txt"].format(presense_penalty=groups[message.chat.id].presense_penalty), reply_markup=length_markup, parse_mode='HTML'
     )
 @bot.callback_query_handler(
-    func=lambda call: call.data == "auto" or call.data == "manual"
+    func=lambda call: call.data == "long" or call.data == "medium" or call.data == "short" or call.data == "any"
 )
-def handler_report_buttons(call):
-    if call.data == "auto":
-        report_bug_command(call.message)
-    elif call.data == "manual":
-        manual_set_system_content_command(call.message)
+def handler_length_answer_buttons(call):
+    language_code = groups[call.message.chat.id].lang_code
+    if call.data == "long":
+        groups[call.message.chat.id].answer_length = 'in detail'
+        bot.send_message(call.message.chat.id, templates[language_code]["length_chosen.txt"])
+    elif call.data == "medium":
+        groups[call.message.chat.id].answer_length = 'not in detail, but not briefly'
+        bot.send_message(call.message.chat.id, templates[language_code]["length_chosen.txt"])
+    elif call.data == "short":
+        groups[call.message.chat.id].answer_length = 'brief'
+        bot.send_message(call.message.chat.id, templates[language_code]["length_chosen.txt"])
+    elif call.data == "any":
+        groups[call.messgae.chat.id].answer_length = 'as you need'
+        bot.send_message(call.message.chat.id, templates[language_code]["length_chosen.txt"])
 
-@bot.message_handler(commands=["manual_set_role"], func=time_filter)
+
+# --- Set sphere of conservation ---
+@bot.message_handler(commands=["set_sphere"], func=time_filter)
 @error_handler
-def manual_set_system_content_command(message):
-
-
-
+def set_sphere_command(message):
     language_code = groups[message.chat.id].lang_code
-    bot.send_message(
-        message.chat.id,
-        templates[language_code]["set_role.txt"],
+    if groups[message.chat.id].sphere == '':
+        sphere_in = 'Not implemented'
+    else:
+        sphere_in = groups[message.chat.id].sphere
+    bot_reply = bot.reply_to(
+        message, templates[language_code]["set_sphere.txt"].format(sphere=sphere_in), parse_mode='HTML'
     )
-
+    reply_blacklist[message.chat.id].append(bot_reply.message_id)
+    bot.register_for_reply(bot_reply, set_sphere_reply_handler)
 
 
 # -------------------------- REPORT FUNCS ------------------------
@@ -718,7 +777,7 @@ def disable_command(message):
 def dialog_enable_command(message):
     if groups[message.chat.id].enabled == False:
         bot.reply_to(
-            message, "You bot is disbaled.\n/enable to activate him", parse_mode="HTML"
+            message, templates[language_code]["bot_is_disabled.txt"], parse_mode="HTML"
         )
 
     else:
@@ -744,7 +803,7 @@ def dialog_disable_command(message):
 def manual_enable_command(message):
     if groups[message.chat.id].enabled == False:
         bot.reply_to(
-            message, "You bot is disbaled.\n/enable to activate him", parse_mode="HTML"
+            message, templates[language_code]["bot_is_disabled.txt"], parse_mode="HTML"
         )
 
     else:
@@ -795,8 +854,8 @@ def change_language(chat_id):
     keyboard = types.InlineKeyboardMarkup()
     keyboard.add(types.InlineKeyboardButton(text="Русский", callback_data="ru"))
     keyboard.add(types.InlineKeyboardButton(text="English", callback_data="en"))
-    keyboard.add(types.InlineKeyboardButton(text="Deutsch", callback_data="de"))
-    keyboard.add(types.InlineKeyboardButton(text="Español", callback_data="es"))
+    # keyboard.add(types.InlineKeyboardButton(text="Deutsch", callback_data="de"))
+    # keyboard.add(types.InlineKeyboardButton(text="Español", callback_data="es"))
     bot.send_message(chat_id, "Choose language", reply_markup=keyboard)
 
 

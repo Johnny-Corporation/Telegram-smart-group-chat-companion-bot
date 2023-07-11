@@ -31,6 +31,9 @@ class Johnny:
     temperature: float = 1
     frequency_penalty: float = 0.2
     presense_penalty: float = 0.2
+    answer_length: str = 'as you need'
+    sphere: str = ''
+    system_content: str = ''
     """
     Args:
         id_ (int): chat id
@@ -42,6 +45,8 @@ class Johnny:
         random_trigger (bool) If set to True, bot triggers randomly. When enabled, trigger_messages_count is ignored
         random_trigger_probability (float from 0 to 1) = Triggering probability on each message. Works only when random trigger is True 
         temperature (float) temperature value, used in requests to GPT
+
+        system_content (str) it includes. "answer_length". "spheres of conservation". "user_requests".
         
     """
 
@@ -55,7 +60,6 @@ class Johnny:
         self.dynamic_gen = False
         self.dynamic_gen_chunks_frequency = 20  # when dynamic generation is enabled, this value controls how often to edit telegram message, for example when set to 3, message will be updated each 3 chunks from OpenAI API stream
         self.edit_message_sleep_time = 7
-        self.system_content = ''
 
     def think(self):
         """reads last"""
@@ -68,6 +72,7 @@ class Johnny:
         self.total_spent_tokens[0] += tokens_used[0]
         self.total_spent_tokens[1] += tokens_used[1]
         return gpt.extract_text(response)
+    
 
     def new_message(
         self,
@@ -103,13 +108,19 @@ class Johnny:
         ):
             response = gpt.create_chat_completion(
                 self.messages_history,
-                bool(message.reply_to_message),
+                reply=bool(message.reply_to_message),
+                answer_length=self.answer_length,
+                sphere=self.sphere,
                 model=self.model,
                 temperature=self.temperature,
                 stream=self.dynamic_gen,
                 frequency_penalty=self.frequency_penalty,
                 presense_penalty=self.presense_penalty
             )
+            context_answer = gpt.extract_text(response)
+            if context_answer == "NO":  # filtering messages
+                self.bot.send_message(message.chat.id, context_answer)
+            
             if self.dynamic_gen:
                 text_answer = ""  # stores whole answer
 
@@ -138,17 +149,11 @@ class Johnny:
                             )
                             sleep(self.edit_message_sleep_time)
 
-                if text_answer == "NO":  # filtering messages
-                    return
-
             else:
                 text_answer = gpt.extract_text(response)
 
                 self.total_spent_tokens[0] += gpt.extract_tokens(response)[0]
                 self.total_spent_tokens[1] += gpt.extract_tokens(response)[1]
-
-                if text_answer == "NO":  # filtering messages
-                    return
 
                 # If message was a reply to bot message, bot will reply to reply
                 if (
@@ -214,17 +219,17 @@ class Johnny:
 # [x] Assistant; User in messages history (refactor temporary memory)
 # [x] Dialog mode <<------ Misha
 # [ ] translate all templates <<------ Misha
-# [ ] interface of changing all parameters + customization
+# [x] interface of changing all parameters + customization
 # [ ] account info command\
 # [ ] conservations in private messages
-# [ ] /start fix
+# [x] /start fix
 # [x] functions set presense + frequency penalties 
 
 # ------------ for today (11 july 23) -------------
 # [x] fix dynamic generation
 # [x] assign name to messages
-# [ ] Make GPT answer no, when it doesnt understand context
-# [ ] Generate system_content (maybe add some system contents)<<--------- Misha
+# [x] Make GPT answer no, when it doesnt understand context
+# [x] Generate system_content (maybe add some system contents) <<--------- Misha
 # [x] run on sfedu
 # [x] add to our group
 

@@ -5,15 +5,28 @@ Not implemented
 
 
 <b>Set-up functions</b>
+All of this you can find here: /set_up
 
-<b>{temperature}</b> - Response length
-/set_temperature - for change bot's answer length
+<b>{temperature}</b> - Response randomness
+/set_temperature - for change bot's answer randomness
 
 <b>{answers_frequency}</b> - Frequency of bot's answers in AutoMode
 /set_answer_probability - for change frequency of bot's answers
 
 <b>{temporary_memory_size}</b> - Bot considers <b>{temporary_memory_size}</b> previous messages.
-/temporary_memory_size - for change frequency of bot's answers
+/temporary_memory_size - for change frequency of Bot's answers
+
+<b>{frequency_penalty}</b> - The variety of Bot's answers
+/set_variety - for change the variety of Bot's answers
+
+<b>{presense_penalty}</b> - Model's likelihood to talk about new topics.
+/set_creativity - change model's likelihood to talk about new topics.
+
+<b>{length}</b> - The size of bot's answers back
+/set_length_answer - for change the size of bot's messages back
+
+<b>'{sphere}'</b> - The sphere of your conservation.
+/set_sphere - for add/change the sphere of conservation
 
 
 <b>Tokens</b>
