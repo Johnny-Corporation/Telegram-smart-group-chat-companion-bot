@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from telebot import TeleBot
 from telebot.types import Message
-from db_controller import Controller
-import gpt_interface as gpt
+from utils.db_controller import Controller
+import utils.gpt_interface as gpt
 from dotenv import load_dotenv
 from datetime import datetime
 from random import random
@@ -31,9 +31,9 @@ class Johnny:
     temperature: float = 1
     frequency_penalty: float = 0.2
     presense_penalty: float = 0.2
-    answer_length: str = 'as you need'
-    sphere: str = ''
-    system_content: str = ''
+    answer_length: str = "as you need"
+    sphere: str = ""
+    system_content: str = ""
     """
     Args:
         id_ (int): chat id
@@ -72,7 +72,6 @@ class Johnny:
         self.total_spent_tokens[0] += tokens_used[0]
         self.total_spent_tokens[1] += tokens_used[1]
         return gpt.extract_text(response)
-    
 
     def new_message(
         self,
@@ -115,12 +114,12 @@ class Johnny:
                 temperature=self.temperature,
                 stream=self.dynamic_gen,
                 frequency_penalty=self.frequency_penalty,
-                presense_penalty=self.presense_penalty
+                presense_penalty=self.presense_penalty,
             )
             context_answer = gpt.extract_text(response)
             if context_answer == "NO":  # filtering messages
                 self.bot.send_message(message.chat.id, context_answer)
-            
+
             if self.dynamic_gen:
                 text_answer = ""  # stores whole answer
 
@@ -220,10 +219,10 @@ class Johnny:
 # [x] Dialog mode <<------ Misha
 # [ ] translate all templates <<------ Misha
 # [x] interface of changing all parameters + customization
-# [ ] account info command\
+# [x] account info command\
 # [ ] conservations in private messages
 # [x] /start fix
-# [x] functions set presense + frequency penalties 
+# [x] functions set presense + frequency penalties
 
 # ------------ for today (11 july 23) -------------
 # [x] fix dynamic generation
@@ -244,14 +243,27 @@ class Johnny:
 # [ ] gpt answers to message by sticker or emoji
 # [ ] activation keys for discount
 # [ ] conservations in private messages
-# [ ] automtic calling functions
+# [ ] automatic calling functions
 # [ ] automatic commands detection
 
 # for today (11 july 23)
-# [ ] add commands for developers
-# restart bot
-# db operations
-# Maybe add to TODO
-# get logs
+# [x] add commands for developers
+# [ ] restart bot
+# [x] db operations
+# [x] Maybe add to TODO
+# [x] get logs
 # [x] separate logs
 
+# --- for matvey in train ---
+# [x] separate commands in files
+# [x] fix clients info saving
+# [ ] db for subs
+# [x] commands for developers
+
+
+# [x] tests
+# [x] new private init file
+# [x]
+
+# [ ]  fix dynamic generation
+# [ ] TEST# [ ] ETST

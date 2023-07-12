@@ -144,3 +144,14 @@ def remove_utf8_chars(string: str) -> str:
     if not cleaned_string:
         cleaned_string = "empty"
     return cleaned_string
+
+
+def clean_string(string: str) -> str:
+    """Removes all strange chars, if all symbols were removed, returns "empty" """
+    # Use a regular expression to remove non-alphanumeric characters and non-Russian letters
+    cleaned_string = re.sub(r"[^a-zA-Z0-9а-яА-ЯёЁ]", "", string).replace(".", "")
+
+    if not cleaned_string:
+        cleaned_string = "empty"
+    return cleaned_string
+

@@ -11,3 +11,4 @@ clients_info/
 MessageEvents.sqlite
 MessageEvents.db
 logs/
+output/

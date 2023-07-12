@@ -1,3 +1,6 @@
+from __main__ import *
+
+
 # --- Help ---
 @bot.message_handler(commands=["help"], func=time_filter)
 @error_handler

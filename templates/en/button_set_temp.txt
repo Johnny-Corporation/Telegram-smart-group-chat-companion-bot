@@ -1,1 +1,1 @@
-Change bot's answer length
+Change bot answer style

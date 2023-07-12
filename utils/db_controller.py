@@ -5,20 +5,24 @@ from os import path
 class Controller:
     """Controls all operations with sqlite database"""
 
-    def __init__(self, db_name: str = "MessageEvents") -> None:
+    def __init__(self, db_name: str = "DB") -> None:
         """Creates db if it doesn't exist, connects to db
         Args:
             db_name (str, optional) Defaults to "MessageEvents".
         """
         self.sqlite_name = db_name
-        if not path.exists(f"{db_name}.sqlite"):
+        if not path.exists(f"output\\{db_name}.sqlite"):
             self._create_db()
-        self.conn = sqlite3.connect(f"{db_name}.sqlite", check_same_thread=False)
+        self.conn = sqlite3.connect(
+            f"output\\{db_name}.sqlite", check_same_thread=False
+        )
         self.cursor = self.conn.cursor()
 
     def _create_db(self) -> None:
         """Private method, used to create and init db"""
-        conn = sqlite3.connect(f"{self.sqlite_name}.sqlite", check_same_thread=False)
+        conn = sqlite3.connect(
+            f"output\\{self.sqlite_name}.sqlite", check_same_thread=False
+        )
         cursor = conn.cursor()
         cursor.execute(
             """

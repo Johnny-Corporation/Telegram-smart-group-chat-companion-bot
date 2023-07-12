@@ -1,7 +1,7 @@
 import openai
 from os import environ
-from logger import logger
-import functions
+from utils.logger import logger  # needed for hidden logs, do not remove
+import utils.functions as functions
 
 openAI_api_key = environ.get("OPENAI_API_KEY")
 if not openAI_api_key:
@@ -22,10 +22,10 @@ def extract_text(completion: openai.ChatCompletion) -> str:
 
 def create_chat_completion(
     messages: list,
-    system_content: str="You are helpful assistant",
-    answer_length: str="",
-    sphere: str="",
-    reply: bool = False,            #SYS
+    system_content: str = "You are helpful assistant",
+    answer_length: int = None,
+    sphere: str = "",
+    reply: bool = False,  # SYS
     model: str = "gpt-3.5-turbo",
     temperature: int = 1,
     top_p: float = 0.5,
@@ -33,16 +33,31 @@ def create_chat_completion(
     stream: bool = False,
     stop: str = None,
     frequency_penalty: float = 0,
-    presense_penalty: float = 0
+    presense_penalty: float = 0,
 ) -> openai.ChatCompletion:
     """Creates ChatCompletion
     messages(list): list of dicts, where key is users name and value is his message
     reply(bool): True means GPT will consider last message, False means not, None means system input field will be empty
     """
 
+    # Build the system_content
+    system_content = "If you don't understand context, say 'NO' and i will handle it. "
 
-    #Got memory
-    previous_messages = [{"role": "system", "content": "If u are don't understand understand context, say 'NO' and i will handle it. If you understand context say something else."}]
+    if reply:
+        system_content += "Focus on the last message. "
+
+    system_content += "Keep up the conversation, ask questions if you need. "
+    system_content += f"Your answer should be {answer_length}. "
+    if sphere != "":
+        system_content += "The conservation is about " + sphere + ". "
+
+        # Got memory
+    previous_messages = [
+        {
+            "role": "system",
+            "content": system_content,
+        }
+    ]
 
     for m in messages:
         previous_messages.append(
@@ -52,47 +67,6 @@ def create_chat_completion(
                 "name": functions.remove_utf8_chars(m[0]),
             }
         )
-
-    
-
-
-
-    # System content
-
-    #Check the context
-    if reply != None:
-        understand_context_completion = openai.ChatCompletion.create(
-            model=model,
-            messages=previous_messages,
-            temperature=0,
-            top_p=top_p,
-            n=n,
-            stream=False,
-            stop=stop,
-            frequency_penalty=0,
-            presence_penalty=0,
-        )
-        if extract_text(understand_context_completion) == 'NO':
-            return understand_context_completion
-        
-
-        #Build the system_content
-        system_content = ""
-        
-        if reply:
-            system_content = "Focus on the last message. "
-
-
-    
-        system_content = system_content + "Keep up the conversation, ask questions if u need. "
-        system_content = system_content + "Your answer must be " + answer_length + '. '
-        if sphere != "":
-            system_content = system_content + "The conservation about " + sphere + '. '
-
-    print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!            '  ,reply, '              !!!!!!!!!!!!!!!!!!!!!!')
-
-    previous_messages[0] = {"role": "system", "content": system_content}
-
 
     completion = openai.ChatCompletion.create(
         model=model,
