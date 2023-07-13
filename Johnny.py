@@ -104,10 +104,8 @@ class Johnny:
         ):
             response = gpt.create_chat_completion(
                 self.messages_history,
-                enabled=self.enabled,
                 reply=bool(message.reply_to_message),
                 answer_length=self.answer_length,
-                sphere=self.sphere,
                 model=self.model,
                 temperature=self.temperature,
                 stream=self.dynamic_gen,
@@ -146,10 +144,19 @@ class Johnny:
             else:
                 text_answer = gpt.extract_text(response)
 
+                # Checking context understating
                 if (
                     (self.trigger_probability != 1)
                     and (self.trigger_probability != 0)
                     and (not gpt.check_context_understanding(text_answer))
+                ):
+                    return
+                # Checking model answer is about selected sphere
+                if (
+                    (self.trigger_probability != 1)
+                    and (self.trigger_probability != 0)
+                    and (self.sphere)
+                    and (not gpt.check_theme_context(text_answer, self.sphere))
                 ):
                     return
 

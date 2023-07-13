@@ -10,13 +10,19 @@ def enable_command(message):
     if language_code == "ru":
         bot.send_sticker(message.chat.id, stickers["enable"])
 
-    if message.chat.type == 'private':
+    if message.chat.type == "private":
         groups[message.chat.id].trigger_probability = 1
-        bot.reply_to(message, templates[language_code]["enabled_user.txt"], parse_mode="HTML")
+        bot.reply_to(
+            message, templates[language_code]["enabled_user.txt"], parse_mode="HTML"
+        )
     else:
-        bot.reply_to(message, templates[language_code]["enabled.txt"].format(
-            probability = groups[message.chat.id].trigger_probability
-        ), parse_mode="HTML")
+        bot.reply_to(
+            message,
+            templates[language_code]["enabled.txt"].format(
+                probability=groups[message.chat.id].trigger_probability
+            ),
+            parse_mode="HTML",
+        )
 
 
 # --- Disable ---

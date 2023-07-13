@@ -23,8 +23,7 @@ def extract_text(completion: openai.ChatCompletion) -> str:
 def create_chat_completion(
     messages: list,
     system_content: str = None,
-    answer_length: int = 'as you need',
-    sphere: str = "",
+    answer_length: int = "as you need",
     reply: bool = False,  # SYS
     model: str = "gpt-3.5-turbo",
     temperature: int = 1,
@@ -46,8 +45,6 @@ def create_chat_completion(
 
     system_content += "Ask questions if you need. "
     system_content += f"Your answer should be {answer_length}. "
-    if sphere != "":
-        system_content += "The conservation is about " + sphere + ". "
 
     previous_messages = [
         {
@@ -65,48 +62,6 @@ def create_chat_completion(
             }
         )
 
-
-    #Check the context
-    system_content = "If you don't understand context, say 'NO' and i will handle it. "
-    previous_messages[0] = {
-            "role": "system",
-            "content": system_content,
-        }
-    context_completion = openai.ChatCompletion.create(
-        model=model,
-        messages=previous_messages,
-        temperature=temperature,
-        top_p=top_p,
-        n=n,
-        stream=stream,
-        stop=stop,
-        frequency_penalty=frequency_penalty,
-        presence_penalty=presense_penalty,
-    )
-    if extract_text(context_completion) == "NO":
-        return context_completion
-    
-
-
-
-    # Build the system_content for enable==true
-    system_content = "Keep up the conversation, ask questions if you need. "
-    if reply:
-        system_content += "Focus on the last message. "
-
-    system_content += f"Your answer should be {answer_length}. "
-    if sphere != "":
-        system_content += "The conservation is about " + sphere + ". "
-
-
-    #Change system content on builded
-    previous_messages[0] = {
-            "role": "system",
-            "content": system_content,
-        }
-
-
-
     completion = openai.ChatCompletion.create(
         model=model,
         messages=previous_messages,
@@ -123,6 +78,7 @@ def create_chat_completion(
 
 
 def check_context_understanding(answer):
+    """Returns bool - True if model answer assumes model understands context else False"""
     completion = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
@@ -135,3 +91,19 @@ def check_context_understanding(answer):
         max_tokens=1,
     )
     return extract_text(completion) == "No"
+
+
+def check_theme_context(answer, theme):
+    """Returns bool - True is answer is related to theme, False if not"""
+    completion = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {
+                "role": "user",
+                "content": f"This is text model's answer: {answer}. Is model saying something about {theme}? Answer Yes or No",
+            }
+        ],
+        temperature=0,
+        max_tokens=1,
+    )
+    return extract_text(completion) == "Yes"
