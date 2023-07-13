@@ -7,4 +7,6 @@ from __main__ import *
 def about_command(message):
     language_code = groups[message.chat.id].lang_code
     print("-----------------------")
-    bot.reply_to(message, templates[language_code]["description.txt"])
+    bot.reply_to(message, templates[language_code]["description.txt"].format(
+        probability=groups[message.chat.id].trigger_probability
+    ), parse_mode='HTML')

@@ -107,6 +107,7 @@ class Johnny:
         ):
             response = gpt.create_chat_completion(
                 self.messages_history,
+                enabled=self.enabled,
                 reply=bool(message.reply_to_message),
                 answer_length=self.answer_length,
                 sphere=self.sphere,

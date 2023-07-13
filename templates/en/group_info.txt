@@ -3,6 +3,14 @@
 <b>Subscription</b>
 Not implemented
 
+<b>Tokens</b>
+Group have spent <b>{spent_tokens} tokens</b>.
+It is approximately <b>{dollars}$</b>
+
+
+<b>Tokens last</b>
+Not implemented
+
 
 <b>Set-up functions</b>
 All of this you can find here: /set_up
@@ -29,11 +37,6 @@ All of this you can find here: /set_up
 /set_sphere - for add/change the sphere of conservation
 
 
-<b>Tokens</b>
-Group have spent <b>{spent_tokens} tokens</b>.
-It is approximately <b>{dollars}$</b>
-
-
 <b>Customization</b>
 
 Dynamic generation is {dynamic_gen_en}.
@@ -41,8 +44,3 @@ Dynamic generation is {dynamic_gen_en}.
 
 Bot works on {language} language.
 /change_language - for change the language
-
-
-<b>Tokens last</b>
-Not implemented
-
