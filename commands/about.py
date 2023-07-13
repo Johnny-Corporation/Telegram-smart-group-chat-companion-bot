@@ -6,5 +6,4 @@ from __main__ import *
 @error_handler
 def about_command(message):
     language_code = groups[message.chat.id].lang_code
-    print("-----------------------")
     bot.reply_to(message, templates[language_code]["description.txt"])
