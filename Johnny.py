@@ -8,10 +8,6 @@ from datetime import datetime
 from random import random
 from utils.functions import num_tokens_from_string, num_tokens_from_messages
 
-# from telebot.util import antiflood
-
-from time import sleep  # needed for waiting telegram timeout for editing messages
-
 load_dotenv(".env")
 
 
@@ -59,8 +55,7 @@ class Johnny:
         self.enabled = False
         self.total_spent_tokens = [0, 0]  # prompt and completion tokens
         self.dynamic_gen = False
-        self.dynamic_gen_chunks_frequency = 20  # when dynamic generation is enabled, this value controls how often to edit telegram message, for example when set to 3, message will be updated each 3 chunks from OpenAI API stream
-        self.edit_message_sleep_time = 7
+        self.dynamic_gen_chunks_frequency = 30  # when dynamic generation is enabled, this value controls how often to edit telegram message, for example when set to 3, message will be updated each 3 chunks from OpenAI API stream
 
     def one_answer(self, message: Message):
         response = gpt.create_chat_completion(
@@ -116,19 +111,15 @@ class Johnny:
 
             if self.dynamic_gen:
                 text_answer = ""  # stores whole answer
+                bot_message = self.bot.send_message(
+                    message.chat.id, "Thinking...", parse_mode="Markdown"
+                )
 
                 update_count = 1
                 for i in response:
                     if ("content" in i["choices"][0]["delta"]) and (
                         text_chunk := i["choices"][0]["delta"]["content"]
                     ):
-                        if not text_answer:  # message wasn't sent, cant edit
-                            text_answer = text_chunk
-                            bot_message = self.bot.send_message(
-                                message.chat.id, text_answer, parse_mode="Markdown"
-                            )
-                            continue
-
                         text_answer += text_chunk
                         update_count += 1
 
@@ -139,7 +130,12 @@ class Johnny:
                                 message_id=bot_message.message_id,
                                 text=text_answer,
                             )
-                            sleep(self.edit_message_sleep_time)
+
+                self.bot.edit_message_text(
+                    chat_id=message.chat.id,
+                    message_id=bot_message.message_id,
+                    text=text_answer,
+                )
 
                 # counting tokens
                 self.total_spent_tokens[0] += num_tokens_from_string(text_answer)
@@ -245,8 +241,8 @@ class Johnny:
 # [x] add to our group
 
 #  ----------- later -----------
-# [ ] Count tokens for dynamic generation via tokenizer <<-----------Misha
-# [ ] add all params like penalty max_tokens etc
+# [x] Count tokens for dynamic generation via tokenizer <<-----------Misha
+# [x] add all params like penalty max_tokens etc
 
 # ------------ future features ---------
 # [ ] Internet access parameter
@@ -254,13 +250,12 @@ class Johnny:
 # [ ] games with gpt (entertainment part)
 # [ ] gpt answers to message by sticker or emoji
 # [ ] activation keys for discount
-# [ ] conservations in private messages
+# [x] conservations in private messages
 # [ ] automatic calling functions
 # [ ] automatic commands detection
 
 # for today (11 july 23)
 # [x] add commands for developers
-# [ ] restart bot
 # [x] db operations
 # [x] Maybe add to TODO
 # [x] get logs
@@ -277,6 +272,11 @@ class Johnny:
 # [x] new private init file
 # [x]
 
-# [ ]  fix dynamic generation
+# [x]  fix dynamic generation
 # [ ] internet access
 # [ ] speech to text
+
+# [ ] Fix templates, rephrase strange texts
+
+
+# [ ] Run on server
