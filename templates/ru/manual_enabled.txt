@@ -1,4 +1,5 @@
-Manual mode was enabled.
+Ручной режим был включен. 
 
-/remember in reply_to to message - memorize message. Bot will keep in mind him.
-/answer - bot gives an response
+Сейчас Бот отвечает, когда Вы <b>тэгаете</b> его или <b>отвечаете на его сообщение</b>.
+
+/disable_manual чтобы покинуть этот мод.

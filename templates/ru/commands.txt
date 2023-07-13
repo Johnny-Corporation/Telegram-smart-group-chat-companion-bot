@@ -1,13 +1,38 @@
-I can discuss, appeal, answer, suggest solvings to your messsages. If you're new to the JohnnyBot, please see the manual: /description
+Я JohnnyBot. Я могу обсуждать, отвечать, предлагать решения на ваши сообщения. Если вы новичок в JohnnyBot, пожалуйста, ознакомьтесь с /description
 
-You can control me by sending these commands:
+Вы можете управлять мной, отправляя эти команды:
 
-<b>Set-up functions</b>
+<b>Функции настройки</b>
+/change_language - изменить язык бота
 
-<b>GamePlay</b>
+/set_temperature - установить степень хаоса в ответах
+/temporary_memory_size - установить максимальное значение запоминаемых сообщений
 
-<b>Customization</b>
 
-<b>INFO</b>
+<b>Функции взаимодействия</b>
+/question_to_bot - задать один вопрос, который взят из контекста
 
-<b>Support</b>
+/enable - включить автоматический режим. Бот читает сообщения и решает, когда он должен ответить на сообщения
+/disable - выключить автоматический режим
+
+/enable_dialog - включить режим диалога. Это чат, бот отвечает на каждое ваше сообщение
+/disable_dialog - выключить режим диалога.
+
+
+<b>Настройка</b>
+/dynamic_generation - включить динамическое создание. Бот печатает сообщение на ваших глазах
+
+
+<b>ИНФО</b>
+/description - посмотреть описание бота
+/commands - список всех команд с объяснением
+
+
+<b>Настройки аккаунта</b>
+/tokens_info - сколько токенов вы использовали
+/about - начальное сообщение
+
+
+<b>Поддержка</b>
+/report_bug - отправить разработчикам информацию об ошибке
+/request_feature - предложить новую функцию бота разработчикам

@@ -1,0 +1,46 @@
+<i>Группа: {group_name}</i>
+
+<b>Подписка</b>
+Not implemented
+
+<b>Токены</b>
+Group have spent <b>{spent_tokens} tokens</b>.
+It is approximately <b>{dollars}$</b>
+
+
+<b>Осталось токенов</b>
+Not implemented
+
+
+<b>Настройка Бота</b>
+Всё это вы можете найти по этой команде: /set_up
+
+<b>{temperature}</b> - Случайность ответа
+/set_temperature - для изменения случайности ответа
+
+<b>{answers_frequency}</b> - Частота ответов Бота в автоматическом режиме
+/set_answer_probability - для изменения частоты ответа в автоматическом режиме
+
+<b>{temporary_memory_size}</b> - Бот учитывает <b>{temporary_memory_size}</b> предыдущих сообщений.
+/temporary_memory_size - для изменения временной памяти
+
+<b>{frequency_penalty}</b> - Разнообразность ответов Бота
+/set_variety - для изменения разнообразности ответов Бота
+
+<b>{presense_penalty}</b> - Вероятность того, что модель будет говорить на новые темы.
+/set_creativity - для изменения данной вероятности
+
+<b>{length}</b> - Размер ответов Бота.
+/set_length_answer - для изменения размеров ответов Бота
+
+<b>'{sphere}'</b> - Сфера ваших дискуссий.
+/set_sphere - для добавления/изменения сферы ваших дискуссий
+
+
+<b>Кастомизация</b>
+
+Динамическая генерация сообщений {dynamic_gen_en}.
+/dynamic_generation - для включения/отключения динамической генерации сообщений
+
+Бот сейчас говорит на {language} языке.
+/change_language - для изменения языка

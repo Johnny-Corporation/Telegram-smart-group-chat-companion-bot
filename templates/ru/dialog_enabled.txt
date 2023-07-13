@@ -1,1 +1,3 @@
-Dialog mode was enabled. Johnny ready to chat with you.
+Режима диалога был включен. Джонни готов общаться с тобой.
+
+/disable_dialog - для того, чтобы выйти из режима диалога

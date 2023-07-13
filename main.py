@@ -173,7 +173,7 @@ def reply_blacklist_filter(message: types.Message):
 
 def change_language(chat_id):
     keyboard = types.InlineKeyboardMarkup()
-    # keyboard.add(types.InlineKeyboardButton(text="Русский", callback_data="ru"))
+    keyboard.add(types.InlineKeyboardButton(text="Русский", callback_data="ru"))
     keyboard.add(types.InlineKeyboardButton(text="English", callback_data="en"))
     # keyboard.add(types.InlineKeyboardButton(text="Deutsch", callback_data="de"))
     # keyboard.add(types.InlineKeyboardButton(text="Español", callback_data="es"))
