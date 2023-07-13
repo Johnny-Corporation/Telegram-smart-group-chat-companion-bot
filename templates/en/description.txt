@@ -1,23 +1,32 @@
 Hey! I am Johnny - smart AI bot. I can solve problems, suggest solutions, answer questions, expresse his opinion and more.
+
 You can chat as in private messages, as in group chats - just add it to group!
 
-/enable - <b>turn on</b> the bot in <b>automode</b> by default.
+<b>/enable</b> - <b>turn on</b> the bot in <b>automode</b> by default.
+In this mode, Johnny gives respone with <b>{probability} probability</b>.
+/set_prob to change probability
+
+Also you can change other parameters to Johnny as you want!
+
+Put this command to get set up functions:
+
+<b>/set_up</b>
+
 
 Also you can apply these modes:
 /enable_dialog - bot will answer on each message
 /enable_manual - here you manually call a bot
 
-You can do a such bot as you want:
 
-/set_up
-
-You can do <b>customization</b>!
+Make your bot more unique and convenient with <b>Customization</b> settings:
 
 /change_language for changing language.
 /dynamic_generation for dynamic typing. Bot prints message in front your eyes!
 
+
 Don't forget <b>track your account</b>: 
 
-/account_info
+<b>/account_info</b>
+
 
 Here is your assistant! Try it out!
