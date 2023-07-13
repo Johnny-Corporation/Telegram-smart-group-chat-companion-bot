@@ -22,7 +22,7 @@ def extract_text(completion: openai.ChatCompletion) -> str:
 
 def create_chat_completion(
     messages: list,
-    system_content: str = "You are helpful assistant",
+    system_content: str = None,
     answer_length: int = None,
     sphere: str = "",
     reply: bool = False,  # SYS
@@ -40,18 +40,15 @@ def create_chat_completion(
     reply(bool): True means GPT will consider last message, False means not, None means system input field will be empty
     """
 
-    # Build the system_content
-    system_content = "If you don't understand context, say 'NO' and i will handle it. "
-
+    system_content = "You are a group chat participant. "
     if reply:
         system_content += "Focus on the last message. "
 
-    system_content += "Keep up the conversation, ask questions if you need. "
+    system_content += "Ask questions if you need. "
     system_content += f"Your answer should be {answer_length}. "
     if sphere != "":
         system_content += "The conservation is about " + sphere + ". "
 
-        # Got memory
     previous_messages = [
         {
             "role": "system",
@@ -81,3 +78,18 @@ def create_chat_completion(
     )
 
     return completion
+
+
+def check_context_understanding(answer):
+    completion = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {
+                "role": "user",
+                "content": f"This is text model's answer: {answer}. Is model saying it doesn't understand context and/or just trying to keep up conversation? Answer Yes or No",
+            }
+        ],
+        temperature=0,
+        max_tokens=1,
+    )
+    return extract_text(completion) == "No"
