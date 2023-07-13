@@ -107,3 +107,17 @@ def check_theme_context(answer, theme):
         max_tokens=1,
     )
     return extract_text(completion) == "Yes"
+
+
+def get_messages_in_official_format(messages):
+    """Converts messages kept in Johnny to official format"""
+    previous_messages = []
+    for m in messages:
+        previous_messages.append(
+            {
+                "role": ("assistant" if m[0] == "assistant" else "user"),
+                "content": m[1],
+                "name": functions.remove_utf8_chars(m[0]),
+            }
+        )
+    return previous_messages

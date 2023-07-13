@@ -6,6 +6,7 @@ import utils.gpt_interface as gpt
 from dotenv import load_dotenv
 from datetime import datetime
 from random import random
+from utils.functions import num_tokens_from_string, num_tokens_from_messages
 
 # from telebot.util import antiflood
 
@@ -116,7 +117,6 @@ class Johnny:
             if self.dynamic_gen:
                 text_answer = ""  # stores whole answer
 
-                # count tokens!!!!
                 update_count = 1
                 for i in response:
                     if ("content" in i["choices"][0]["delta"]) and (
@@ -140,6 +140,13 @@ class Johnny:
                                 text=text_answer,
                             )
                             sleep(self.edit_message_sleep_time)
+
+                # counting tokens
+                self.total_spent_tokens[0] += num_tokens_from_string(text_answer)
+                self.total_spent_tokens[1] += num_tokens_from_messages(
+                    gpt.get_messages_in_official_format(self.messages_history),
+                    model=self.model,
+                )
 
             else:
                 text_answer = gpt.extract_text(response)
@@ -225,7 +232,7 @@ class Johnny:
 # [ ] translate all templates <<------ Misha
 # [x] interface of changing all parameters + customization
 # [x] account info command\
-# [ ] conservations in private messages
+# [x] conservations in private messages
 # [x] /start fix
 # [x] functions set presense + frequency penalties
 
@@ -271,4 +278,5 @@ class Johnny:
 # [x]
 
 # [ ]  fix dynamic generation
-# [ ] TEST# [ ] ETST
+# [ ] internet access
+# [ ] speech to text
