@@ -14,6 +14,9 @@ def customization_command(message):
     change_lang_button = types.InlineKeyboardButton(
         text="Change the language", callback_data="change_lang"
     )
+    voice_in_button = types.InlineKeyboardButton(
+        text="Change the language", callback_data="change_lang"
+    )
 
     # Adding buttons to keyboard
     customization_markup.add(dyn_gen_button)

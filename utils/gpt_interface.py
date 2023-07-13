@@ -121,3 +121,9 @@ def get_messages_in_official_format(messages):
             }
         )
     return previous_messages
+
+
+def speech_to_text(path):
+    audio_file= open(path, "rb")
+    transcript = openai.Audio.transcribe("whisper-1", audio_file)
+    return transcript.text

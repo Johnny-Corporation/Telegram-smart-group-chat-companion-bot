@@ -1,12 +1,15 @@
 from dataclasses import dataclass
 from telebot import TeleBot
 from telebot.types import Message
+import soundfile as sf
 from utils.db_controller import Controller
 import utils.gpt_interface as gpt
 from dotenv import load_dotenv
 from datetime import datetime
 from random import random
 from utils.functions import num_tokens_from_string, num_tokens_from_messages
+from os import remove, makedirs
+
 
 load_dotenv(".env")
 
@@ -70,7 +73,42 @@ class Johnny:
         self,
         message: Message,
     ) -> str:
-        text = message.text
+
+
+        if message.content_type == 'voice':
+
+            file_name_full="output\\voice_in\\"+message.voice.file_id+".ogg"
+            file_name_full_converted="output\\voice_in\\"+message.voice.file_id+".wav"
+            file_info = self.bot.get_file(message.voice.file_id)
+
+
+            makedirs("output\\voice_in", exist_ok=True)
+
+            downloaded_file = self.bot.download_file(file_info.file_path)
+            with open(file_name_full, 'wb') as new_file:
+                new_file.write(downloaded_file)
+
+            # Load ogg file
+            data, samplerate = sf.read(file_name_full)
+
+            # Export as wav
+            sf.write(file_name_full_converted, data, samplerate)
+
+            #Delete .ogg file
+            remove(file_name_full)
+
+
+            text = gpt.speech_to_text(file_name_full_converted)
+
+
+            #Delete .wav file
+            remove(file_name_full_converted)
+
+
+        else:
+            text = message.text
+
+        
         db_controller.add_message_event(
             self.chat_id,
             text,
@@ -253,6 +291,7 @@ class Johnny:
 # [x] conservations in private messages
 # [ ] automatic calling functions
 # [ ] automatic commands detection
+# [ ] document read
 
 # for today (11 july 23)
 # [x] add commands for developers
@@ -280,3 +319,8 @@ class Johnny:
 
 
 # [ ] Run on server
+
+# [ ] TypeError fix
+# [ ] QIWI payment
+# [ ] KickStarted
+# [ ] BoomStarted

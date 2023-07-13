@@ -119,10 +119,10 @@ def error_handler(func):
         else:
             if isinstance(message, types.CallbackQuery):
                 logger.info("Callback query processed without errors")
-            elif message.text[0] == "/":  # command
-                logger.info(
-                    f'Command "{message.text}" executed in chat with id {message.chat.id} by user with id {message.from_user.id}'
-                )
+            # elif message.text[0] == "/":  # command
+            #     logger.info(
+            #         f'Command "{message.text}" executed in chat with id {message.chat.id} by user with id {message.from_user.id}'
+            #     )
             else:
                 logger.info(
                     f'Message "{message.text}" sent in chat with id {message.chat.id} by user with id {message.from_user.id}'
@@ -299,6 +299,7 @@ from commands.buttons_handler import *
 
 
 @bot.message_handler(
+    content_types=["text", "voice"],
     func=lambda message: reply_blacklist_filter(message)
     and blacklist_filter(message)
     and time_filter(message),
