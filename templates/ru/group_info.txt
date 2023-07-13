@@ -4,8 +4,8 @@
 Not implemented
 
 <b>Токены</b>
-Group have spent <b>{spent_tokens} tokens</b>.
-It is approximately <b>{dollars}$</b>
+В группе потрачено <b>{spent_tokens} токенов</b>.
+Это примерно <b>{dollars}$</b>
 
 
 <b>Осталось токенов</b>
