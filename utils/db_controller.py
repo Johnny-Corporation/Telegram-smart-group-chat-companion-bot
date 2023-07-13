@@ -39,10 +39,73 @@ class Controller:
             )
         """
         )
+        cursor.execute(
+            """
+            CREATE TABLE UserSubscriptions (
+                ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                ChatID INTEGER,
+                GroupChatIDs TEXT,
+                SenderFirstName TEXT,
+                SenderLastName TEXT,
+                SenderUsername TEXT,
+                PromptTokensTotal INTEGER,
+                CompletionTokensTotal INTEGER,
+                DYNAMIC_GENERATION TINYINT,
+                VOICE_INPUT TINYINT,
+                VOICE_OUTPUT TINYINT
+            )
+        """
+        )
 
         conn.commit()
         cursor.close()
         conn.close()
+
+    def add_user_with_sub(
+        self,
+        chat_id: int,
+        group_chat_ids: str,
+        sender_first_name: str,
+        sender_last_name: str,
+        sender_username: str,
+        prompt_tokens_total: int,
+        completion_tokens_total: int,
+        dynamic_generation: bool,
+        voice_input: bool,
+        voice_output: bool,
+    ) -> None:
+        sql = """
+            INSERT INTO UserSubscriptions (
+                ChatID,
+                GroupChatIDs,
+                SenderFirstName,
+                SenderLastName,
+                SenderUsername,
+                PromptTokensTotal,
+                CompletionTokensTotal,
+                DYNAMIC_GENERATION,
+                VOICE_INPUT,
+                VOICE_OUTPUT
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """
+
+        self.cursor.execute(
+            sql,
+            (
+                chat_id,
+                group_chat_ids,
+                sender_first_name,
+                sender_last_name,
+                sender_username,
+                prompt_tokens_total,
+                completion_tokens_total,
+                int(dynamic_generation),
+                int(voice_input),
+                int(voice_output),
+            ),
+        )
+
+        self.conn.commit()
 
     def add_message_event(
         self,
@@ -55,18 +118,6 @@ class Controller:
         prompt_tokens_total: int,
         completion_tokens_total: int,
     ):
-        """Adds new row to db
-
-        Args:
-            chat_id (int)
-            text (str)
-            time (str): format HH:mm:ss.SSSSSSS (%Y-%m-%d %H:%M:%S.%f)
-            first_name (str)
-            last_name (str)
-            username (str)
-            prompt_tokens_total (int, optional): Total amount of prompt tokens spent in this chat. Only for GPT messages. Defaults to None.
-            completion_tokens_total (int, optional): Total amount of completion tokens spent in this chat. Only for GPT messages. Defaults to None.
-        """
         self.cursor.execute(
             f"""
             INSERT INTO MessageEvents (ChatID, MessageText, Time, SenderFirstName, SenderLastName, SenderUsername, PromptTokensTotal, CompletionTokensTotal)
@@ -84,6 +135,31 @@ class Controller:
             ),
         )
         self.conn.commit()
+
+    def get_user_with_sub_by_chat_id(self, user_chat_id: int) -> dict:
+        """Returns dict with data about user where each key is a column name"""
+        query = "SELECT * FROM UserSubscriptions WHERE ChatID = ?"
+        self.cursor.execute(query, (user_chat_id,))
+        result = self.cursor.fetchone()
+
+        if result is None:
+            return {}  # User not found
+
+        # Convert the row into a dictionary
+        columns = [description[0] for description in self.cursor.description]
+        users_dict = {}
+        for i, column in enumerate(columns):
+            if column == "GroupChatIDs":
+                users_dict[column] = result[i].split(",")
+            else:
+                if (column != "PromptTokensTotal") and (
+                    column != "CompletionTokensTotal"
+                ):
+                    users_dict[column] = bool(result[i])
+                else:
+                    users_dict[column] = result[i]
+
+        return users_dict
 
     def get_last_n_message_events_from_chat(self, n: int, chat_id: int = None):
         """Get last n rows from db in list format
