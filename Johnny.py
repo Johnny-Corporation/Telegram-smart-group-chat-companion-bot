@@ -6,10 +6,7 @@ import utils.gpt_interface as gpt
 from dotenv import load_dotenv
 from datetime import datetime
 from random import random
-
-# from telebot.util import antiflood
-
-from time import sleep  # needed for waiting telegram timeout for editing messages
+from utils.functions import num_tokens_from_string, num_tokens_from_messages
 
 load_dotenv(".env")
 
@@ -58,11 +55,7 @@ class Johnny:
         self.enabled = False
         self.total_spent_tokens = [0, 0]  # prompt and completion tokens
         self.dynamic_gen = False
-        self.dynamic_gen_chunks_frequency = 20  # when dynamic generation is enabled, this value controls how often to edit telegram message, for example when set to 3, message will be updated each 3 chunks from OpenAI API stream
-        self.edit_message_sleep_time = 7
-
-    def think(self):
-        """reads last"""
+        self.dynamic_gen_chunks_frequency = 30  # when dynamic generation is enabled, this value controls how often to edit telegram message, for example when set to 3, message will be updated each 3 chunks from OpenAI API stream
 
     def one_answer(self, message: Message):
         response = gpt.create_chat_completion(
@@ -107,36 +100,26 @@ class Johnny:
         ):
             response = gpt.create_chat_completion(
                 self.messages_history,
-                enabled=self.enabled,
                 reply=bool(message.reply_to_message),
                 answer_length=self.answer_length,
-                sphere=self.sphere,
                 model=self.model,
                 temperature=self.temperature,
                 stream=self.dynamic_gen,
                 frequency_penalty=self.frequency_penalty,
                 presense_penalty=self.presense_penalty,
             )
-            context_answer = gpt.extract_text(response)
-            if context_answer == "NO":  # filtering messages
-                self.bot.send_message(message.chat.id, context_answer)
 
             if self.dynamic_gen:
                 text_answer = ""  # stores whole answer
+                bot_message = self.bot.send_message(
+                    message.chat.id, "Thinking...", parse_mode="Markdown"
+                )
 
-                # count tokens!!!!
                 update_count = 1
                 for i in response:
                     if ("content" in i["choices"][0]["delta"]) and (
                         text_chunk := i["choices"][0]["delta"]["content"]
                     ):
-                        if not text_answer:  # message wasn't sent, cant edit
-                            text_answer = text_chunk
-                            bot_message = self.bot.send_message(
-                                message.chat.id, text_answer
-                            )
-                            continue
-
                         text_answer += text_chunk
                         update_count += 1
 
@@ -147,22 +130,46 @@ class Johnny:
                                 message_id=bot_message.message_id,
                                 text=text_answer,
                             )
-                            sleep(self.edit_message_sleep_time)
+
+                self.bot.edit_message_text(
+                    chat_id=message.chat.id,
+                    message_id=bot_message.message_id,
+                    text=text_answer,
+                )
+
+                # counting tokens
+                self.total_spent_tokens[0] += num_tokens_from_string(text_answer)
+                self.total_spent_tokens[1] += num_tokens_from_messages(
+                    gpt.get_messages_in_official_format(self.messages_history),
+                    model=self.model,
+                )
 
             else:
                 text_answer = gpt.extract_text(response)
+
+                # Checking context understating
+                if (
+                    (self.trigger_probability != 1)
+                    and (self.trigger_probability != 0)
+                    and (not gpt.check_context_understanding(text_answer))
+                ):
+                    return
+                # Checking model answer is about selected sphere
+                if (
+                    (self.trigger_probability != 1)
+                    and (self.trigger_probability != 0)
+                    and (self.sphere)
+                    and (not gpt.check_theme_context(text_answer, self.sphere))
+                ):
+                    return
 
                 self.total_spent_tokens[0] += gpt.extract_tokens(response)[0]
                 self.total_spent_tokens[1] += gpt.extract_tokens(response)[1]
 
                 # If message was a reply to bot message, bot will reply to reply
-                if (
-                    message.reply_to_message
-                    and message.reply_to_message.from_user.username == self.bot_username
-                ):
-                    self.bot.reply_to(message, text_answer)
-                else:
-                    self.bot.send_message(message.chat.id, text_answer)
+                self.bot.send_message(
+                    message.chat.id, text_answer, parse_mode="Markdown"
+                )
 
             # Adding GPT answer to db and messages_history
             db_controller.add_message_event(
@@ -221,7 +228,7 @@ class Johnny:
 # [ ] translate all templates <<------ Misha
 # [x] interface of changing all parameters + customization
 # [x] account info command\
-# [ ] conservations in private messages
+# [x] conservations in private messages
 # [x] /start fix
 # [x] functions set presense + frequency penalties
 
@@ -234,8 +241,8 @@ class Johnny:
 # [x] add to our group
 
 #  ----------- later -----------
-# [ ] Count tokens for dynamic generation via tokenizer <<-----------Misha
-# [ ] add all params like penalty max_tokens etc
+# [x] Count tokens for dynamic generation via tokenizer <<-----------Misha
+# [x] add all params like penalty max_tokens etc
 
 # ------------ future features ---------
 # [ ] Internet access parameter
@@ -243,13 +250,12 @@ class Johnny:
 # [ ] games with gpt (entertainment part)
 # [ ] gpt answers to message by sticker or emoji
 # [ ] activation keys for discount
-# [ ] conservations in private messages
+# [x] conservations in private messages
 # [ ] automatic calling functions
 # [ ] automatic commands detection
 
 # for today (11 july 23)
 # [x] add commands for developers
-# [ ] restart bot
 # [x] db operations
 # [x] Maybe add to TODO
 # [x] get logs
@@ -266,5 +272,11 @@ class Johnny:
 # [x] new private init file
 # [x]
 
-# [ ]  fix dynamic generation
-# [ ] TEST# [ ] ETST
+# [x]  fix dynamic generation
+# [ ] internet access
+# [ ] speech to text
+
+# [ ] Fix templates, rephrase strange texts
+
+
+# [ ] Run on server

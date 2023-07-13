@@ -117,12 +117,11 @@ def error_handler(func):
                 "output\\info_logs.log", bot, developer_chat_IDs, file=True
             )
         else:
-
             if isinstance(message, types.CallbackQuery):
                 logger.info("Callback query processed without errors")
-            elif (message.chat.id in groups) or message.text[0] == "/":  # command
+            elif message.text[0] == "/":  # command
                 logger.info(
-                    f'Command "{message.text}" executed in chat with id {message.chat.id}by user with id {message.from_user.id}'
+                    f'Command "{message.text}" executed in chat with id {message.chat.id} by user with id {message.from_user.id}'
                 )
             else:
                 logger.info(
@@ -187,8 +186,7 @@ def send_welcome_text_and_load_data(chat_id: int, language_code: str = "en") -> 
         chat_id (int)
     """
 
-
-    if chat_id>0:
+    if chat_id > 0:
         bot.send_message(chat_id, templates[language_code]["new_user_welcome.txt"])
     else:
         bot.send_message(chat_id, templates[language_code]["new_group_welcome.txt"])
@@ -230,7 +228,7 @@ def init_new_group(chat_id):
         if chat_id > 0:  # private
             last_name = chat.last_name
             if chat.last_name == None:
-                last_name = 'None'
+                last_name = "None"
             with open(
                 f"output\\clients_info\\{clean_string(chat.first_name)}-{last_name}.json",
                 "w",
@@ -253,7 +251,6 @@ def init_new_group(chat_id):
         logger.info(f"Bot initialized in new group (id: {chat_id})")
 
         change_language(chat_id)
-        
 
 
 # --------------- Commands ---------------

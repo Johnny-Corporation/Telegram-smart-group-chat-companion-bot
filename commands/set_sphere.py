@@ -7,7 +7,7 @@ from __main__ import *
 def set_sphere_command(message):
     language_code = groups[message.chat.id].lang_code
     if groups[message.chat.id].sphere == "":
-        sphere_in = "Not implemented"
+        sphere_in = "Not set"
     else:
         sphere_in = groups[message.chat.id].sphere
     bot_reply = bot.reply_to(
