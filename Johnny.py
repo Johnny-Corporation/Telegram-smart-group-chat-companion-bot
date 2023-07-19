@@ -4,11 +4,21 @@ from telebot.types import Message
 import soundfile as sf
 from utils.db_controller import Controller
 import utils.gpt_interface as gpt
+from utils.time_tracking import *
 from dotenv import load_dotenv
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from random import random
 from utils.functions import num_tokens_from_string, num_tokens_from_messages
 from os import remove, makedirs
+
+from apscheduler.schedulers.background import BackgroundScheduler
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+from __main__ import *
+from utils.functions import load_templates
+
+templates = load_templates("templates\\")
 
 
 load_dotenv(".env")
@@ -24,7 +34,7 @@ class Johnny:
     bot: TeleBot
     chat_id: int
     bot_username: str
-    temporary_memory_size: int = 20
+    temporary_memory_size: int = 20     
     language_code: str = "eng"
     trigger_probability: float = 0.2
     model = "gpt-3.5-turbo"
@@ -45,8 +55,6 @@ class Johnny:
         random_trigger (bool) If set to True, bot triggers randomly. When enabled, trigger_messages_count is ignored
         random_trigger_probability (float from 0 to 1) = Triggering probability on each message. Works only when random trigger is True 
         temperature (float) temperature value, used in requests to GPT
-
-        system_content (str) it includes. "answer_length". "spheres of conservation". "user_requests".
         
     """
 
@@ -60,22 +68,54 @@ class Johnny:
         self.dynamic_gen = False
         self.dynamic_gen_chunks_frequency = 30  # when dynamic generation is enabled, this value controls how often to edit telegram message, for example when set to 3, message will be updated each 3 chunks from OpenAI API stream
 
-    def one_answer(self, message: Message):
+        #Permissions
+        self.temporary_memory_size_limit = 20
+        self.dynamic_gen_permission = False
+        self.voice_output_permission = False
+        self.sphere_permission = False
+        self.temperature_permission = False
+        self.frequency_penalty_permission = False
+        self.presense_penalty_permission = False
+        self.voice_input_permission = False
+
+
+        #User 
+        self.subscription = 'Free'
+        self.tokens_limit = 100000
+        self.allowed_groups = 1
+        self.id_groups = []
+
+        #Group
+        self.owner_id = None
+
+
+    def one_answer(self, message: Message, groups: dict):
         response = gpt.create_chat_completion(
             [message.text], reply=None, model=self.model
         )
         tokens_used = gpt.extract_tokens(response)
         self.total_spent_tokens[0] += tokens_used[0]
         self.total_spent_tokens[1] += tokens_used[1]
+
+        if message.chat.id<0:
+            groups[self.owner_id].total_spent_tokens[0] = self.total_spent_tokens[0]
+            groups[self.owner_id].total_spent_tokens[1] = self.total_spent_tokens[1]
         return gpt.extract_text(response)
 
     def new_message(
         self,
         message: Message,
+        groups: dict
     ) -> str:
+        
+        if len(groups[self.owner_id].id_groups) > groups[self.owner_id].allowed_groups:
+            self.bot.send_message(message.chat.id, templates[self.lang_code]["exceed_limit_on_groups.txt"])
 
+            groups[self.owner_id].id_groups.remove(message.chat.id)
 
-        if message.content_type == 'voice':
+            self.bot.leave_chat(message.chat.id)
+
+        if message.content_type == 'voice' and self.voice_input_permission == True:
 
             file_name_full="output\\voice_in\\"+message.voice.file_id+".ogg"
             file_name_full_converted="output\\voice_in\\"+message.voice.file_id+".wav"
@@ -98,8 +138,9 @@ class Johnny:
             remove(file_name_full)
 
 
-            text = gpt.speech_to_text(file_name_full_converted)
+            #text = gpt.speech_to_text(file_name_full_converted)
 
+            self.bot.send_message(message.chat.id, text)
 
             #Delete .wav file
             remove(file_name_full_converted)
@@ -127,6 +168,19 @@ class Johnny:
 
         if not self.enabled:
             return
+        
+
+        if self.total_spent_tokens[0] + self.total_spent_tokens[1]>=self.tokens_limit:
+            self.bot.send_message(message.chat.id, templates[self.lang_code]["exceed_limit_on_tokens.txt"])
+            self.total_spent_tokens[0] = self.tokens_limit/2
+            self.total_spent_tokens[1] = self.tokens_limit/2
+            return
+        elif groups[self.owner_id].total_spent_tokens[0] + groups[self.owner_id].total_spent_tokens[1]>=self.tokens_limit:
+            self.bot.send_message(message.chat.id, templates[self.lang_code]["exceed_limit_on_tokens.txt"])
+            groups[self.owner_id].total_spent_tokens[0] = self.tokens_limit/2
+            groups[self.owner_id].total_spent_tokens[1] = self.tokens_limit/2
+            return
+
 
         if (
             ("@" + self.bot_username in text)
@@ -147,7 +201,7 @@ class Johnny:
                 presense_penalty=self.presense_penalty,
             )
 
-            if self.dynamic_gen:
+            if self.dynamic_gen and self.dynamic_gen_permission:
                 text_answer = ""  # stores whole answer
                 bot_message = self.bot.send_message(
                     message.chat.id, "Thinking...", parse_mode="Markdown"
@@ -209,6 +263,11 @@ class Johnny:
                     message.chat.id, text_answer, parse_mode="Markdown"
                 )
 
+
+            if message.chat.id<0:
+                groups[self.owner_id].total_spent_tokens[0] = self.total_spent_tokens[0]
+                groups[self.owner_id].total_spent_tokens[1] = self.total_spent_tokens[1]
+
             # Adding GPT answer to db and messages_history
             db_controller.add_message_event(
                 self.chat_id,
@@ -222,10 +281,274 @@ class Johnny:
             )
             self.messages_history.append(["assistant", text_answer])
 
+
+    def add_new_user(
+        self,
+        chat_id,
+        first_name,
+        last_name,
+        username,
+        type_of_subscription: str,
+        num_allowed_groups: int,
+        temp_memory_size_limit: int,
+        tokens_total: int,
+        dynamic_generation: bool,
+        voice_input: bool,
+        voice_output: bool,
+        sphere_context: bool,
+        temperature: bool,
+        freq_penalty: bool,
+        presense_penalty: bool,
+
+    ):
+
+        # get current date
+        current_date = datetime.now().isoformat()
+
+
+        if db_controller.check_the_existing_of_user_with_sub(int(chat_id)):
+            db_controller.delete_the_existing_of_user_with_sub(int(chat_id))
+
+        db_controller.add_user_with_sub(
+            chat_id, 
+            type_of_subscription,
+            num_allowed_groups,
+            temp_memory_size_limit,
+            current_date,
+            first_name,
+            str(last_name),
+            username,
+            tokens_total,
+            dynamic_generation,
+            voice_input,
+            voice_output,
+            sphere_context,
+            temperature,
+            freq_penalty,
+            presense_penalty
+        )
+
+        if type_of_subscription != 'Free':
+
+            self.bot.send_message(chat_id, templates[self.lang_code]["new_subscriber.txt"].format(sub=self.subscription), parse_mode="HTML")
+
+        
+
+
+    def extend_sub(self, chat_id, first_name, last_name, username):
+
+        date_of_start_txt = db_controller.get_last_date_of_start_of_user(chat_id)
+        prev_date_of_start = datetime.fromisoformat(date_of_start_txt) + relativedelta(months=1)
+        date_of_start = prev_date_of_start.isoformat()
+
+        db_controller.add_user_with_sub(
+            chat_id, 
+            self.subscription,
+            self.allowed_groups,
+            self.temporary_memory_size_limit,
+            date_of_start,
+            first_name,
+            str(last_name),
+            username,
+            self.tokens_limit,
+            self.dynamic_gen_permission,
+            self.voice_input_permission,
+            self.voice_output_permission,
+            self.sphere_permission,
+            self.temperature_permission,
+            self.frequency_penalty_permission,
+            self.presense_penalty_permission
+        )
+
+        self.bot.send_message(chat_id, templates[self.lang_code]["sub_extend.txt"].format(sub=self.subscription), parse_mode="HTML")
+
+        def sub_tracking(chat_id, date_of_start):
+
+            #Add reminders!!!
+            db_controller.delete_the_existing_of_user_with_sub_by_date(date_of_start)
+
+            current_date = datetime.now().isoformat()
+
+            check = db_controller.check_the_existing_of_user_with_sub(chat_id)
+                
+            if check == False:
+
+                self.bot.send_message(chat_id, templates[self.lang_code]["sub_was_end.txt"], parse_mode="HTML")
+
+                db_controller.add_user_with_sub(
+                    chat_id, 
+                    "Free",
+                    1,
+                    20,
+                    current_date,
+                    " ",
+                    " ",
+                    " ",
+                    100000,
+                    False,
+                    False,
+                    False,
+                    False,
+                    False,
+                    False,
+                    False
+                )
+
+                self.subscription = "Free"
+                self.allowed_groups = 1
+                self.tokens_limit = 100000
+                self.dynamic_gen_permission = False
+                self.voice_input_permission = False
+                self.voice_output_permission = False
+                self.sphere_permission = False
+                self.temperature_permission = False
+                self.frequency_penalty_permission = False
+                self.presense_penalty_permission = False
+                self.temporary_memory_size_limit = 20
+
+                self.temperature = 1
+                self.frequency_penalty = 0.2
+                self.presense_penalty = 0.2
+                self.sphere = ""
+                self.temporary_memory_size = 20
+
+            self.bot.send_message(chat_id, templates[self.lang_code]["sub_was_end_with_extend.txt"].format(sub=self.subscription), parse_mode="HTML")
+
+            
+
+        # create a scheduler
+        sub_scheduler = BackgroundScheduler()
+
+        # schedule a task to print a number after 2 seconds
+        sub_scheduler.add_job(sub_tracking, 'date', run_date=prev_date_of_start + relativedelta(months=1), args=[chat_id, date_of_start], misfire_grace_time=86400)
+
+        # start the scheduler
+        sub_scheduler.start()
+
+        
+
+        
+    def track_sub(self, chat_id, new):
+        
+        if self.subscription != "Free":
+
+            def sub_tracking(chat_id, date_of_start):
+
+                #Add reminders!!!
+                db_controller.delete_the_existing_of_user_with_sub_by_date(date_of_start)
+
+                current_date = datetime.now().isoformat()
+
+                check = db_controller.check_the_existing_of_user_with_sub(chat_id)
+
+                if not check:
+
+                    self.bot.send_message(chat_id, templates[self.lang_code]["sub_was_end.txt"], parse_mode="HTML")
+
+                    db_controller.add_user_with_sub(
+                        chat_id, 
+                        "Free",
+                        1,
+                        20,
+                        current_date,
+                        " ",
+                        " ",
+                        " ",
+                        100000,
+                        False,
+                        False,
+                        False,
+                        False,
+                        False,
+                        False,
+                        False
+                    )
+
+                    self.subscription = "Free"
+                    self.allowed_groups = 1
+                    self.tokens_limit = 100000
+                    self.dynamic_gen_permission = False
+                    self.voice_input_permission = False
+                    self.voice_output_permission = False
+                    self.sphere_permission = False
+                    self.temperature_permission = False
+                    self.frequency_penalty_permission = False
+                    self.presense_penalty_permission = False
+                    self.temporary_memory_size_limit = 20
+
+                    self.temperature = 1
+                    self.frequency_penalty = 0.2
+                    self.presense_penalty = 0.2
+                    self.sphere = ""
+                    self.temporary_memory_size = 20
+
+                self.bot.send_message(chat_id, templates[self.lang_code]["sub_was_end_with_extend.txt"].format(sub=self.subscription), parse_mode="HTML")
+
+            if new == True:
+                start_date_txt = db_controller.get_last_date_of_start_of_user(chat_id)
+                start_date = datetime.fromisoformat(start_date_txt)
+
+                # create a scheduler
+                sub_scheduler = BackgroundScheduler()
+
+                # schedule a task to print a number after 2 seconds
+                sub_scheduler.add_job(sub_tracking, 'date', run_date=start_date + relativedelta(months=1), args=[chat_id, start_date_txt], misfire_grace_time=86400)
+
+                # start the scheduler
+                sub_scheduler.start()
+            else:
+                all_dates = db_controller.get_users_with_sub_by_chat_id(chat_id)
+
+                for date in all_dates:
+                    start_date_txt = date[0]
+                    start_date = datetime.fromisoformat(start_date_txt)
+                    
+                    # create a scheduler
+                    sub_scheduler = BackgroundScheduler()
+
+                    # schedule a task to print a number after 2 seconds
+                    sub_scheduler.add_job(sub_tracking, 'date', run_date=start_date + relativedelta(months=1), args=[chat_id, start_date_txt], misfire_grace_time=86400)
+
+                    # start the scheduler
+                    sub_scheduler.start()
+
+    def change_owner_of_group(self, username):
+
+        new_user = db_controller.get_user_with_sub_by_username(username) 
+
+        return new_user
+
+    def add_purchase_of_tokens(self, chat_id, num_of_new_tokens):
+        new_total_tokens = self.tokens_limit + num_of_new_tokens
+        db_controller.update_tokens_of_user_with_sub(chat_id, new_total_tokens)
+
+
     def change_memory_size(self, size):
         self.temporary_memory_size = size
         self.messages_history = []
         self.load_data()
+
+
+    def load_subscription(self, chat_id):
+        data = db_controller.get_user_with_sub_by_chat_id(chat_id)
+
+        if data != {}:
+            self.subscription = data["TypeOfSubscription"]
+            self.allowed_groups = data["NumAllowedGroups"]
+            self.tokens_limit = data["TokensTotal"]
+            self.dynamic_gen_permission = data["DYNAMIC_GENERATION"]
+            self.voice_input_permission = data["VOICE_INPUT"]
+            self.voice_output_permission = data["VOICE_OUTPUT"]
+            self.sphere_permission = data["SphereContext"]
+            self.temperature_permission = data["Temperature"]
+            self.frequency_penalty_permission = data["FrequencyPenalty"]
+            self.presense_penalty_permission = data["PresensePenalty"]
+            self.temporary_memory_size_limit = data["TemporaryMemorySize"]
+            self.owner_id = chat_id
+            return True
+        return False
+
+
 
     def load_data(self) -> None:
         """Loads data from to object from db"""
@@ -324,3 +647,10 @@ class Johnny:
 # [ ] QIWI payment
 # [ ] KickStarted
 # [ ] BoomStarted
+
+
+# [ ] Command to change group's owner
+# [ ] Detect the developers in initializations
+# [ ] subscription templates do
+
+# [ ] english templates to other languages

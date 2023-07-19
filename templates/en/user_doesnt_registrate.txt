@@ -1,0 +1,3 @@
+User {first_name} doesn't registrate.
+
+The changing of group's owner was canceled.

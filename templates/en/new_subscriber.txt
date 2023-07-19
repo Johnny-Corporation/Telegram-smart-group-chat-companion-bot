@@ -1,0 +1,4 @@
+Congratulations! Now you have a <b>{sub}</b> subscription
+
+<i>You can extend this subscription in /purchase </i>
+<i>/account_info to see changes</i>

@@ -2,7 +2,7 @@ from __main__ import *
 
 
 # --- Dialog mode enable ---
-@bot.message_handler(commands=["enable_dialog"], func=time_filter)
+@bot.message_handler(commands=["enable_dialog"], func=time_filter and member_filter)
 @error_handler
 def dialog_enable_command(message):
     if groups[message.chat.id].enabled == False:

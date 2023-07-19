@@ -1,0 +1,3 @@
+Congratulations! You got more 100000 tokens!
+
+Now you have a {tokens} tokens.

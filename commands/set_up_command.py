@@ -2,7 +2,7 @@ from __main__ import *
 
 
 # --- set_up functions ---
-@bot.message_handler(commands=["set_up"], func=time_filter)
+@bot.message_handler(commands=["set_up"], func=time_filter and member_filter)
 @error_handler
 def set_up_command(message):
     language_code = groups[message.chat.id].lang_code
@@ -22,6 +22,12 @@ def set_up_command(message):
         text=templates[language_code]["button_set_memory.txt"],
         callback_data="memory_length",
     )
+    if message.chat.id < 0:
+        owner_button = types.InlineKeyboardButton(
+            text="Change owner of group",
+            callback_data="change_owner",
+        )
+        set_up_markup.add(owner_button)
     freq_penalty_button = types.InlineKeyboardButton(
         text=templates[language_code]["button_set_variety.txt"],
         callback_data="variety",

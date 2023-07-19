@@ -2,7 +2,7 @@ from __main__ import *
 
 
 # --- view mode ---
-@bot.message_handler(commands=["view_mode"], func=time_filter)
+@bot.message_handler(commands=["view_mode"], func=time_filter and member_filter)
 @error_handler
 def view_mode_command(message):
     if groups[message.chat.id].enabled == True:

@@ -2,7 +2,7 @@ from __main__ import *
 
 
 # --- Set memory size ---
-@bot.message_handler(commands=["temporary_memory_size"], func=time_filter)
+@bot.message_handler(commands=["temporary_memory_size"], func=time_filter and member_filter)
 @error_handler
 def set_temp_memory_size_command(message):
     language_code = groups[message.chat.id].lang_code

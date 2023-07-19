@@ -2,7 +2,7 @@ from __main__ import *
 
 
 # --- Enable ---
-@bot.message_handler(commands=["enable"], func=time_filter)
+@bot.message_handler(commands=["enable"], func=time_filter and member_filter)
 @error_handler
 def enable_command(message):
     language_code = groups[message.chat.id].lang_code
@@ -26,7 +26,7 @@ def enable_command(message):
 
 
 # --- Disable ---
-@bot.message_handler(commands=["disable"], func=time_filter)
+@bot.message_handler(commands=["disable"], func=time_filter and member_filter)
 @error_handler
 def disable_command(message):
     language_code = groups[message.chat.id].lang_code

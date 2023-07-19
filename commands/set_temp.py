@@ -2,7 +2,7 @@ from __main__ import *
 
 
 # --- Set temp ---
-@bot.message_handler(commands=["set_temperature"], func=time_filter)
+@bot.message_handler(commands=["set_temperature"], func=time_filter and member_filter)
 @error_handler
 def set_temp_command(message):
     language_code = groups[message.chat.id].lang_code

@@ -2,7 +2,7 @@ from __main__ import *
 
 
 # --- Group info ---
-@bot.message_handler(commands=["group_info"], func=time_filter)
+@bot.message_handler(commands=["group_info"], func=time_filter and member_filter)
 @error_handler
 def group_info_command(message):
     language_code = groups[message.chat.id].lang_code

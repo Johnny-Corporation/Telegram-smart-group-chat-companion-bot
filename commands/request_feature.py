@@ -2,7 +2,7 @@ from __main__ import *
 
 
 # --- Request feature ---
-@bot.message_handler(commands=["request_feature"], func=time_filter)
+@bot.message_handler(commands=["request_feature"], func=time_filter and member_filter)
 @error_handler
 def request_feature_command(message):
     language_code = groups[message.chat.id].lang_code

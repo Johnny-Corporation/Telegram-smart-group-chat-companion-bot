@@ -209,3 +209,21 @@ def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0613"):
                 num_tokens += tokens_per_name
     num_tokens += 3  # every reply is primed with <|start|>assistant<|message|>
     return num_tokens
+
+
+def check_file_existing(client_first_name, file_path):
+    clients = listdir(file_path)
+                    
+    for filename in clients:
+        if client_first_name in filename:
+             return True
+        else:
+            return False
+                                
+    if clients == []:
+        return False
+    
+
+def generate_code():
+    chars = string.ascii_letters + string.digits
+    return ''.join(random.choice(chars) for _ in range(size))

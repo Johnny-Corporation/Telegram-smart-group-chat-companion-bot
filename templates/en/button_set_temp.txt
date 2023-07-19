@@ -1,1 +1,1 @@
-Change bot answer style
+Change the bot randomness of bot's answers

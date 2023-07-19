@@ -2,7 +2,7 @@ from __main__ import *
 
 
 # --- Set answers' length ---
-@bot.message_handler(commands=["set_length_answer"], func=time_filter)
+@bot.message_handler(commands=["set_length_answer"], func=time_filter and member_filter)
 @error_handler
 def set_length_answer_command(message):
     language_code = groups[message.chat.id].lang_code

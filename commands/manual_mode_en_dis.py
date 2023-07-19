@@ -2,7 +2,7 @@ from __main__ import *
 
 
 # --- Manual mode enable ---
-@bot.message_handler(commands=["enable_manual"], func=time_filter)
+@bot.message_handler(commands=["enable_manual"], func=time_filter and member_filter)
 @error_handler
 def manual_enable_command(message):
     if groups[message.chat.id].enabled == False:

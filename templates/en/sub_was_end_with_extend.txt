@@ -1,0 +1,3 @@
+Your subscription in previous month was ended. You are still have <b>{sub}</b> subscription.
+
+<i>/subs_list to know more</i>

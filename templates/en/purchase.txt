@@ -1,0 +1,3 @@
+Now you have {plan} plan. Here are the rates we provide:
+
+<i>To know about rates: /subs_list</i>

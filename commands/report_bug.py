@@ -2,7 +2,7 @@ from __main__ import *
 
 
 # --- Report bug ---
-@bot.message_handler(commands=["report_bug"], func=time_filter)
+@bot.message_handler(commands=["report_bug"], func=time_filter and member_filter)
 @error_handler
 def report_bug_command(message):
     language_code = groups[message.chat.id].lang_code

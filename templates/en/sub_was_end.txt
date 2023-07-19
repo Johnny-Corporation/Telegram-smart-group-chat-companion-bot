@@ -1,0 +1,4 @@
+Your subscription was ended. Now you are in Free mode.
+
+<i>/purchase to buy subscription</i>
+<i>/account_info to see changes</i>

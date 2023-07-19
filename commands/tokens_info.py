@@ -2,7 +2,7 @@ from __main__ import *
 
 
 # --- Tokens info ---
-@bot.message_handler(commands=["tokens_info"], func=time_filter)
+@bot.message_handler(commands=["tokens_info"], func=time_filter and member_filter)
 @error_handler
 def tokens_info_command(message):
     language_code = groups[message.chat.id].lang_code

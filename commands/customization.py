@@ -2,7 +2,7 @@ from __main__ import *
 
 
 # --- customizations functions ---
-@bot.message_handler(commands=["customization"], func=time_filter)
+@bot.message_handler(commands=["customization"], func=time_filter and member_filter)
 @error_handler
 def customization_command(message):
     customization_markup = types.InlineKeyboardMarkup()
