@@ -8,7 +8,7 @@ def set_frequency_penalty_command(message):
     language_code = groups[message.chat.id].lang_code
     bot_reply = bot.reply_to(
         message,
-        templates[language_code]["set_variety.txt"].format(
+        groups[message.chat.id].templates[language_code]["set_variety.txt"].format(
             frequency_penalty=groups[message.chat.id].frequency_penalty
         ),
         parse_mode="HTML",

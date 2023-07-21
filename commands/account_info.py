@@ -10,7 +10,7 @@ def account_info_command(message):
     if message.from_user.id not in groups:
         bot.reply_to(
             message,
-            templates[language_code]["user_doesnt_registrate.txt"].format(first_name=message.from_user.first_name),
+            groups[message.chat.id].templates[language_code]["user_doesnt_registrate.txt"].format(first_name=message.from_user.first_name),
             parse_mode="HTML",
             disable_web_page_preview=True,
         )
@@ -20,22 +20,22 @@ def account_info_command(message):
     if left_tokens < 0:
         left_tokens = 0
 
-    dyn_gen_per = 'allowed'
+    dyn_gen_per = translate_text(language_code, 'allowed')
     if groups[message.from_user.id].dynamic_gen_permission == False:
-        dyn_gen_per = 'not allowed'
-    voice_in_per = 'allowed'
+        dyn_gen_per = translate_text(language_code, 'not allowed')
+    voice_in_per = translate_text(language_code, 'allowed')
     if groups[message.from_user.id].voice_input_permission == False:
-        voice_in_per = 'not allowed'
-    voice_out_per = 'allowed'
+        voice_in_per = translate_text(language_code, 'not allowed')
+    voice_out_per = translate_text(language_code, 'allowed')
     if groups[message.from_user.id].voice_output_permission == False:
-        voice_out_per = 'not allowed'
-    set_up_per = 'allowed'
+        voice_out_per = translate_text(language_code, 'not allowed')
+    set_up_per = translate_text(language_code, 'allowed')
     if groups[message.from_user.id].sphere_permission == False:
-        set_up_per = 'not allowed'
+        set_up_per = translate_text(language_code, 'not allowed')
 
     bot.reply_to(
         message,
-        templates[language_code]["account_info.txt"].format(
+        groups[message.chat.id].templates[language_code]["account_info.txt"].format(
         first_name=message.from_user.first_name,
         subscription=groups[message.from_user.id].subscription,
         tokens=groups[message.from_user.id].tokens_limit,

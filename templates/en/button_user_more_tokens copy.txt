@@ -1,1 +1,1 @@
-for User plan: 0.0025$/1K
+for plan USER: 0.0025$/1K

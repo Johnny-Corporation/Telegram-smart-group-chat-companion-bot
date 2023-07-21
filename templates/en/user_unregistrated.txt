@@ -1,3 +1,3 @@
-This User unregistrated.
+This User is not registered.
 
-Let this User sign in private messages.
+User must sign up in private messages.

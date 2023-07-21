@@ -1,6 +1,6 @@
 {type_of_buy}.
 Cost: {cost} rubles.
 
-<i>/subs_list to know more</i> 
+<i> /subs_list to know more</i> 
 
 Press button to buy:

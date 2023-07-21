@@ -8,7 +8,7 @@ def set_temp_command(message):
     language_code = groups[message.chat.id].lang_code
     bot_reply = bot.reply_to(
         message,
-        templates[language_code]["change_temp.txt"].format(
+        groups[message.chat.id].templates[language_code]["change_temp.txt"].format(
             temperature=groups[message.chat.id].temperature
         ),
         parse_mode="HTML",

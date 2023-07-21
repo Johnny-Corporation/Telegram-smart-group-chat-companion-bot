@@ -9,7 +9,7 @@ def dynamic_generation_command(message):
     groups[message.chat.id].dynamic_gen = not groups[message.chat.id].dynamic_gen
     bot.reply_to(
         message,
-        templates[language_code]["dynamic_generation.txt"].format(
+        groups[message.chat.id].templates[language_code]["dynamic_generation.txt"].format(
             groups[message.chat.id].dynamic_gen
         ),
     )

@@ -83,18 +83,18 @@ def error_handler(func):
     def wrapper(message: types.Message):
         try:
             func(message)
-        except KeyError:
-            chat_id = (
-                message.chat.id
-                if isinstance(message, types.Message)
-                else message.message.chat.id
-            )
+        # except KeyError:
+        #     chat_id = (
+        #         message.chat.id
+        #         if isinstance(message, types.Message)
+        #         else message.message.chat.id
+        #     )
 
-            bot.send_message(
-                chat_id,
-                "Sorry, bot was restarted. Your data saved!",
-            )
-            init_new_group(chat_id, message.from_user.id)
+        #     bot.send_message(
+        #         chat_id,
+        #         "Sorry, bot was restarted. Your data saved!",
+        #     )
+        #     init_new_group(chat_id, message.from_user.id)
         except Exception:
             chat_id = (
                 message.chat.id
@@ -192,9 +192,14 @@ def change_language(chat_id):
     keyboard = types.InlineKeyboardMarkup()
     keyboard.add(types.InlineKeyboardButton(text="Русский", callback_data="ru"))
     keyboard.add(types.InlineKeyboardButton(text="English", callback_data="en"))
-    # keyboard.add(types.InlineKeyboardButton(text="Deutsch", callback_data="de"))
-    # keyboard.add(types.InlineKeyboardButton(text="Español", callback_data="es"))
+    keyboard.add(types.InlineKeyboardButton(text="Other", callback_data="other"))
+
     bot.send_message(chat_id, "Choose language", reply_markup=keyboard)
+
+def apply_language(lang, new_templates):
+    global templates
+    print(templates.keys())
+    templates[lang] = new_templates[lang]
 
 
 def send_welcome_text_and_load_data(chat_id: int, owner_id: int, language_code: str = "en") -> None:
@@ -205,11 +210,11 @@ def send_welcome_text_and_load_data(chat_id: int, owner_id: int, language_code: 
     """
 
     if chat_id > 0:
-        bot.send_message(chat_id, templates[language_code]["new_user_welcome.txt"])
+        bot.send_message(chat_id, groups[chat_id].templates[language_code]["new_user_welcome.txt"])
     else:
-        bot.send_message(chat_id, templates[language_code]["new_group_welcome.txt"])
+        bot.send_message(chat_id, groups[chat_id].templates[language_code]["new_group_welcome.txt"])
 
-    bot.send_message(chat_id, templates[language_code]["initialization.txt"])
+    bot.send_message(chat_id, groups[chat_id].templates[language_code]["initialization.txt"])
     if language_code == "ru":
         send_sticker(chat_id, stickers["initializing"], bot)
 
@@ -255,7 +260,7 @@ def send_welcome_text_and_load_data(chat_id: int, owner_id: int, language_code: 
 
     bot.send_message(
         chat_id,
-        templates[language_code]["done_initializing.txt"],
+        groups[chat_id].templates[language_code]["done_initializing.txt"],
     )
 
 
@@ -312,6 +317,7 @@ def init_new_group(chat_id, owner_id):
                 f.write(convert_to_json(str(chat)))
 
         groups[chat_id] = Johnny(bot, chat_id, str(bot_username))
+        groups[chat_id].templates = load_templates("templates\\")
 
         #Check group
         if chat_id < 0:
@@ -346,6 +352,7 @@ from commands.reply_handlers.set_probability import *
 from commands.reply_handlers.enter_new_tokens import *
 from commands.reply_handlers.enter_promocode import *
 from commands.reply_handlers.change_owner import *
+from commands.reply_handlers.change_language import *
 
 # Commands
 from commands.about import *
@@ -380,6 +387,7 @@ from commands.update_sub import *
 from commands.change_owner_of_group import *
 from commands.yoomoney import *
 from commands.subs_list import *
+from commands.customization import *
 
 # Buttons handler
 from commands.buttons_handler import *

@@ -1,4 +1,4 @@
 Please enter value <b>from 0</b> (most deterministic) <b>to 2</b> (the most random) <b>in reply to this message</b>. 
 This parameter defines how random is GPT responses.
 
-<i>Sets {temperature} now</i>
+<i>Set up {temperature} now</i>

@@ -10,13 +10,13 @@ def set_memory_size_reply_handler(inner_message):
     except ValueError:
         bot.reply_to(inner_message, "❌")
         bot.send_message(
-            inner_message.chat.id, templates[language_code]["set_memory_declined.txt"]
+            inner_message.chat.id, groups[inner_message.chat.id].templates[language_code]["set_memory_declined.txt"]
         )
         return
     if val <= 0:
         bot.reply_to(inner_message, "❌")
         bot.send_message(
-            inner_message.chat.id, templates[language_code]["set_memory_declined.txt"]
+            inner_message.chat.id, groups[inner_message.chat.id].templates[language_code]["set_memory_declined.txt"]
         )
         return
     
@@ -27,4 +27,4 @@ def set_memory_size_reply_handler(inner_message):
 
     else:
 
-        bot.reply_to(inner_message, templates[language_code]["no_rights.txt"], parse_mode = "HTML")
+        bot.reply_to(inner_message, groups[inner_message.chat.id].templates[language_code]["no_rights.txt"], parse_mode = "HTML")

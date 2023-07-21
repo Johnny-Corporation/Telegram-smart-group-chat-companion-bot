@@ -32,6 +32,7 @@ class Johnny:
     """Group handler, assumes to be created as separate instance for each chat"""
 
     bot: TeleBot
+    templates
     chat_id: int
     bot_username: str
     temporary_memory_size: int = 20     
@@ -109,7 +110,7 @@ class Johnny:
     ) -> str:
         
         if len(groups[self.owner_id].id_groups) > groups[self.owner_id].allowed_groups:
-            self.bot.send_message(message.chat.id, templates[self.lang_code]["exceed_limit_on_groups.txt"])
+            self.bot.send_message(message.chat.id, self.templates[self.lang_code]["exceed_limit_on_groups.txt"])
 
             groups[self.owner_id].id_groups.remove(message.chat.id)
 
@@ -171,12 +172,12 @@ class Johnny:
         
 
         if self.total_spent_tokens[0] + self.total_spent_tokens[1]>=self.tokens_limit:
-            self.bot.send_message(message.chat.id, templates[self.lang_code]["exceed_limit_on_tokens.txt"])
+            self.bot.send_message(message.chat.id, self.templates[self.lang_code]["exceed_limit_on_tokens.txt"])
             self.total_spent_tokens[0] = self.tokens_limit/2
             self.total_spent_tokens[1] = self.tokens_limit/2
             return
         elif groups[self.owner_id].total_spent_tokens[0] + groups[self.owner_id].total_spent_tokens[1]>=self.tokens_limit:
-            self.bot.send_message(message.chat.id, templates[self.lang_code]["exceed_limit_on_tokens.txt"])
+            self.bot.send_message(message.chat.id, self.templates[self.lang_code]["exceed_limit_on_tokens.txt"])
             groups[self.owner_id].total_spent_tokens[0] = self.tokens_limit/2
             groups[self.owner_id].total_spent_tokens[1] = self.tokens_limit/2
             return
@@ -330,7 +331,7 @@ class Johnny:
 
         if type_of_subscription != 'Free':
 
-            self.bot.send_message(chat_id, templates[self.lang_code]["new_subscriber.txt"].format(sub=self.subscription), parse_mode="HTML")
+            self.bot.send_message(chat_id, self.templates[self.lang_code]["new_subscriber.txt"].format(sub=self.subscription), parse_mode="HTML")
 
         
 
@@ -360,7 +361,7 @@ class Johnny:
             self.presense_penalty_permission
         )
 
-        self.bot.send_message(chat_id, templates[self.lang_code]["sub_extend.txt"].format(sub=self.subscription), parse_mode="HTML")
+        self.bot.send_message(chat_id, self.templates[self.lang_code]["sub_extend.txt"].format(sub=self.subscription), parse_mode="HTML")
 
         def sub_tracking(chat_id, date_of_start):
 
@@ -373,7 +374,7 @@ class Johnny:
                 
             if check == False:
 
-                self.bot.send_message(chat_id, templates[self.lang_code]["sub_was_end.txt"], parse_mode="HTML")
+                self.bot.send_message(chat_id, self.templates[self.lang_code]["sub_was_end.txt"], parse_mode="HTML")
 
                 db_controller.add_user_with_sub(
                     chat_id, 
@@ -412,7 +413,7 @@ class Johnny:
                 self.sphere = ""
                 self.temporary_memory_size = 20
 
-            self.bot.send_message(chat_id, templates[self.lang_code]["sub_was_end_with_extend.txt"].format(sub=self.subscription), parse_mode="HTML")
+            self.bot.send_message(chat_id, self.templates[self.lang_code]["sub_was_end_with_extend.txt"].format(sub=self.subscription), parse_mode="HTML")
 
             
 
@@ -443,7 +444,7 @@ class Johnny:
 
                 if not check:
 
-                    self.bot.send_message(chat_id, templates[self.lang_code]["sub_was_end.txt"], parse_mode="HTML")
+                    self.bot.send_message(chat_id, self.templates[self.lang_code]["sub_was_end.txt"], parse_mode="HTML")
 
                     db_controller.add_user_with_sub(
                         chat_id, 
@@ -482,7 +483,7 @@ class Johnny:
                     self.sphere = ""
                     self.temporary_memory_size = 20
 
-                self.bot.send_message(chat_id, templates[self.lang_code]["sub_was_end_with_extend.txt"].format(sub=self.subscription), parse_mode="HTML")
+                self.bot.send_message(chat_id, self.templates[self.lang_code]["sub_was_end_with_extend.txt"].format(sub=self.subscription), parse_mode="HTML")
 
             if new == True:
                 start_date_txt = db_controller.get_last_date_of_start_of_user(chat_id)
@@ -651,6 +652,4 @@ class Johnny:
 
 # [ ] Command to change group's owner
 # [ ] Detect the developers in initializations
-# [ ] subscription templates do
-
 # [ ] english templates to other languages

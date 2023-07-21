@@ -8,7 +8,7 @@ def enter_promocode(message):
     language_code = groups[message.chat.id].lang_code
     bot_reply = bot.reply_to(
         message,
-        templates[language_code]["enter_promocode.txt"],
+        groups[message.chat.id].templates[language_code]["enter_promocode.txt"],
         parse_mode="HTML",
     )
 

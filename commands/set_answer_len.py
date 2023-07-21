@@ -10,16 +10,16 @@ def set_length_answer_command(message):
     length_markup = types.InlineKeyboardMarkup()
 
     long_button = types.InlineKeyboardButton(
-        text=templates[language_code]["button_long.txt"], callback_data="long"
+        text=groups[message.chat.id].templates[language_code]["button_long.txt"], callback_data="long"
     )
     medium_button = types.InlineKeyboardButton(
-        text=templates[language_code]["button_medium.txt"], callback_data="medium"
+        text=groups[message.chat.id].templates[language_code]["button_medium.txt"], callback_data="medium"
     )
     short_button = types.InlineKeyboardButton(
-        text=templates[language_code]["button_short.txt"], callback_data="short"
+        text=groups[message.chat.id].templates[language_code]["button_short.txt"], callback_data="short"
     )
     any_button = types.InlineKeyboardButton(
-        text=templates[language_code]["button_any_length.txt"], callback_data="any"
+        text=groups[message.chat.id].templates[language_code]["button_any_length.txt"], callback_data="any"
     )
 
     length_markup.add(long_button)
@@ -29,7 +29,7 @@ def set_length_answer_command(message):
 
     bot.reply_to(
         message,
-        templates[language_code]["set_length_answer.txt"].format(
+        groups[message.chat.id].templates[language_code]["set_length_answer.txt"].format(
             presense_penalty=groups[message.chat.id].presense_penalty
         ),
         reply_markup=length_markup,

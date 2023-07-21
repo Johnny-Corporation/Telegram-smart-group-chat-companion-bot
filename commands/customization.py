@@ -9,10 +9,10 @@ def customization_command(message):
 
     # --- Buttons ---
     dyn_gen_button = types.InlineKeyboardButton(
-        text="Enable/disable dynamic generation", callback_data="dyn_gen"
+        text=groups[message.chat.id].templates[language_code]["button_dyn_gen.txt"], callback_data="dyn_gen"
     )
     change_lang_button = types.InlineKeyboardButton(
-        text="Change the language", callback_data="change_lang"
+        text=groups[message.chat.id].templates[language_code]["button_change_lang.txt"], callback_data="change_lang"
     )
     voice_in_button = types.InlineKeyboardButton(
         text="Change the language", callback_data="change_lang"
@@ -26,7 +26,7 @@ def customization_command(message):
     language_code = groups[message.chat.id].lang_code
     bot.send_message(
         message.chat.id,
-        templates[language_code]["customization.txt"],
+        groups[message.chat.id].templates[language_code]["customization.txt"],
         reply_markup=customization_markup,
         parse_mode="HTML",
     )

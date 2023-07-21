@@ -11,7 +11,7 @@ def change_owner_reply_handler(inner_message):
     except ValueError:
         bot.reply_to(inner_message, "❌")
         bot.send_message(
-            inner_message.chat.id, templates[language_code]["change_owner_of_group_caanceled.txt"],
+            inner_message.chat.id, groups[inner_message.chat.id].templates[language_code]["change_owner_of_group_caanceled.txt"],
         )
         return
     
@@ -21,7 +21,7 @@ def change_owner_reply_handler(inner_message):
     get_user = groups[groups[inner_message.chat.id].owner_id].change_owner_of_group(val)
 
     if get_user == {}:
-        bot.send_message(inner_message.chat.id, templates[language_code]["user_unregistrated.txt"])
+        bot.send_message(inner_message.chat.id, groups[inner_message.chat.id].templates[language_code]["user_unregistrated.txt"])
         return
     
     prev_owner = groups[inner_message.chat.id].owner_id
@@ -42,4 +42,4 @@ def change_owner_reply_handler(inner_message):
     groups[inner_message.chat.id].temporary_memory_size_limit = get_user["TemporaryMemorySize"]
     groups[inner_message.chat.id].owner_id = new_owner
 
-    bot.send_message(inner_message.chat.id, templates[language_code]["owner_waas_changed.txt"])
+    bot.send_message(inner_message.chat.id, groups[inner_message.chat.id].templates[language_code]["owner_waas_changed.txt"])

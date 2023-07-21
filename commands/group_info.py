@@ -21,12 +21,12 @@ def group_info_command(message):
         language_code1 = "deutsch"
 
     if groups[message.chat.id].answer_length == "as you need":
-        answer_length = "as bot need"
+        answer_length = translate_text(language_code, "as bot need")
     else:
-        answer_length = "as you need"
+        answer_length = translate_text(language_code, "as you need")
     bot.send_message(
         message.chat.id,
-        templates[language_code]["group_info.txt"].format(
+        groups[message.chat.id].templates[language_code]["group_info.txt"].format(
             group_name=message.chat.title,
             temperature=groups[message.chat.id].temperature,
             answers_frequency=groups[message.chat.id].trigger_probability,

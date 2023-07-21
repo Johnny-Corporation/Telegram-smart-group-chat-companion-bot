@@ -1,1 +1,0 @@
-Has gastado {spent_tokens} tokens. Aproximadamente {dollars}$

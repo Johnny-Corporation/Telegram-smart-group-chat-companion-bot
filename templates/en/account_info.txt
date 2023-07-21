@@ -10,7 +10,7 @@ Groups: Can have {groups} groups.
 <b>Left {left_groups} groups</b>
 
 Memory: Can have {temp_memory_limit} messages maximum.
-<b>Set: {temp_memory}</b>
+<b>Established: {temp_memory}</b>
 
 Dynamic generation {dyn_gen_per}
 

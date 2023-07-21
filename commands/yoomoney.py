@@ -32,7 +32,7 @@ def accept_payment(message, type_of_buy, cost):
         markup.add(temp_button)
         bot.send_message(
             message.chat.id,
-            templates[language_code]["info_about_buy.txt"].format(type_of_buy=type_of_buy, cost=cost),
+            groups[message.chat.id].templates[language_code]["info_about_buy.txt"].format(type_of_buy=type_of_buy, cost=cost),
             reply_markup = markup,
             parse_mode = "HTML"
         )

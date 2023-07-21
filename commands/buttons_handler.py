@@ -8,7 +8,6 @@ from utils.functions_for_developers import *
 def keyboard_buttons_handler(call):
     previous_language_code = groups[call.message.chat.id].lang_code
     match call.data:
-
         # Set up funcs
 
         case "temperature":
@@ -17,7 +16,7 @@ def keyboard_buttons_handler(call):
             else:
                 bot.send_message(
                     call.message.chat.id, 
-                    templates[previous_language_code]["no_rights.txt"],
+                    groups[call.message.chat.id].templates[previous_language_code]["no_rights.txt"],
                     parse_mode = "HTML"
                 )
         case "answer_probability":
@@ -30,7 +29,7 @@ def keyboard_buttons_handler(call):
             else:
                 bot.send_message(
                     call.message.chat.id, 
-                    templates[previous_language_code]["no_rights.txt"],
+                    groups[call.message.chat.id].templates[previous_language_code]["no_rights.txt"],
                     parse_mode = "HTML"
                 )
         case "creativity":
@@ -39,7 +38,7 @@ def keyboard_buttons_handler(call):
             else:
                 bot.send_message(
                     call.message.chat.id, 
-                    templates[previous_language_code]["no_rights.txt"],
+                    groups[call.message.chat.id].templates[previous_language_code]["no_rights.txt"],
                     parse_mode = "HTML"
                 )
         case "answer_length":
@@ -50,7 +49,7 @@ def keyboard_buttons_handler(call):
             else:
                 bot.send_message(
                     call.message.chat.id, 
-                    templates[previous_language_code]["no_rights.txt"],
+                    groups[call.message.chat.id].templates[previous_language_code]["no_rights.txt"],
                     parse_mode = "HTML"
                 )
             
@@ -65,7 +64,7 @@ def keyboard_buttons_handler(call):
             else:
                 bot.send_message(
                     call.message.chat.id, 
-                    templates[previous_language_code]["no_rights.txt"],
+                    groups[call.message.chat.id].templates[previous_language_code]["no_rights.txt"],
                     parse_mode = "HTML"
                 )
             
@@ -76,7 +75,7 @@ def keyboard_buttons_handler(call):
             groups[call.message.chat.id].answer_length = "in detail"
             bot.send_message(
                 call.message.chat.id,
-                templates[previous_language_code]["length_chosen.txt"],
+                groups[call.message.chat.id].templates[previous_language_code]["length_chosen.txt"],
             )
         case "medium":
             groups[
@@ -84,19 +83,19 @@ def keyboard_buttons_handler(call):
             ].answer_length = "not in detail, but not briefly"
             bot.send_message(
                 call.message.chat.id,
-                templates[previous_language_code]["length_chosen.txt"],
+                groups[call.message.chat.id].templates[previous_language_code]["length_chosen.txt"],
             )
         case "short":
             groups[call.message.chat.id].answer_length = "brief"
             bot.send_message(
                 call.message.chat.id,
-                templates[previous_language_code]["length_chosen.txt"],
+                groups[call.message.chat.id].templates[previous_language_code]["length_chosen.txt"],
             )
         case "any":
             groups[call.message.chat.id].answer_length = "as you need"
             bot.send_message(
                 call.message.chat.id,
-                templates[previous_language_code]["length_chosen.txt"],
+                groups[call.message.chat.id].templates[previous_language_code]["length_chosen.txt"],
             )
 
         # Language
@@ -107,13 +106,30 @@ def keyboard_buttons_handler(call):
             language_code = "en"
         case "ru":
             groups[call.message.chat.id].lang_code = "ru"
+
+            sent_message = bot.send_message(call.message.chat.id, "Загружаем язык... Подождите минутку")
+
+            translate_templates("ru")
+
+            groups[call.message.chat.id].templates = load_templates("templates\\")
+
+            bot.delete_message(call.message.chat.id, sent_message.message_id)
             bot.send_message(call.message.chat.id, "Язык изменен на русский")
-        case "de":
-            groups[call.message.chat.id].lang_code = "de"
-            bot.send_message(call.message.chat.id, "Sprache auf Deutsch geändert")
-        case "es":
-            groups[call.message.chat.id].lang_code = "es"
-            bot.send_message(call.message.chat.id, "Idioma cambiado a español")
+        case "other":
+
+            try:
+                language_code = groups[call.message.chat.id].lang_code
+                reply_to = bot.send_message(call.message.chat.id, groups[call.message.chat.id].templates[language_code]["enter_language.txt"])
+            except:
+                reply_to = bot.send_message(call.message.chat.id, "Enter the language either as a code (ex. 'es') as a name (ex. 'spanish')")
+
+            
+                reply_blacklist[call.message.chat.id].append(reply_to.message_id)
+                bot.register_for_reply(reply_to, change_language_reply_handler)
+            while True:
+                if groups[call.message.chat.id].lang_code != None:
+                    break
+
 
         # DEV TOOLS
 
@@ -160,7 +176,7 @@ def keyboard_buttons_handler(call):
                 groups[call.message.chat.id].track_sub(call.message.chat.id, new=True)
 
             else:
-                bot.send_message(call.message.chat.id, templates[previous_language_code]["buy_was_canceled.txt"])
+                bot.send_message(call.message.chat.id, groups[call.message.chat.id].templates[previous_language_code]["buy_was_canceled.txt"])
 
         case "middle":
 
@@ -179,7 +195,7 @@ def keyboard_buttons_handler(call):
                 groups[call.message.chat.id].track_sub(call.message.chat.id, new=True)
 
             else:
-                bot.send_message(call.message.chat.id, templates[previous_language_code]["buy_was_canceled.txt"])
+                bot.send_message(call.message.chat.id, groups[call.message.chat.id].templates[previous_language_code]["buy_was_canceled.txt"])
 
         case "pro":
 
@@ -199,7 +215,7 @@ def keyboard_buttons_handler(call):
                 groups[call.message.chat.id].track_sub(call.message.chat.id, new=True)
 
             else:
-                bot.send_message(call.message.chat.id, templates[previous_language_code]["buy_was_canceled.txt"])
+                bot.send_message(call.message.chat.id, groups[call.message.chat.id].templates[previous_language_code]["buy_was_canceled.txt"])
 
         case "more_tokens":
             enter_purchase_of_tokens(call.message)
@@ -222,7 +238,7 @@ def keyboard_buttons_handler(call):
                 groups[call.message.chat.id].extend_sub(call.message.chat.id, call.message.from_user.first_name, call.message.from_user.last_name, call.message.from_user.username)
                 groups[call.message.chat.id].track_sub(call.message.chat.id, new=True)
             else:
-                bot.send_message(call.message.chat.id, templates[previous_language_code]["buy_was_canceled.txt"])
+                bot.send_message(call.message.chat.id, groups[call.message.chat.id].templates[previous_language_code]["buy_was_canceled.txt"])
         
         case "update_sub":
             update_sub(call.message)
@@ -237,5 +253,5 @@ def keyboard_buttons_handler(call):
 
     if not previous_language_code:
         send_welcome_text_and_load_data(
-            call.message.chat.id, groups[call.message.chat.id].lang_code
+            call.message.chat.id, call.from_user.id, groups[call.message.chat.id].lang_code
         )

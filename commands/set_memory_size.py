@@ -8,7 +8,7 @@ def set_temp_memory_size_command(message):
     language_code = groups[message.chat.id].lang_code
     bot_reply = bot.reply_to(
         message,
-        templates[language_code]["change_temp_memory_size.txt"].format(
+        groups[message.chat.id].templates[language_code]["change_temp_memory_size.txt"].format(
             memory=groups[message.chat.id].temporary_memory_size
         ),
         parse_mode="HTML",

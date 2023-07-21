@@ -1,4 +1,4 @@
 Enter float value <b>from 0</b> (no responses) <b>to 1></b> (responses each message) <b>in reply to this message</b>. 
 Bot will answer as often as this value is high.
 
-<i>Sets {probability} now</i>
+<i>Set up {probability} now</i>

@@ -10,13 +10,13 @@ def set_temp_reply_handler(inner_message):
     except ValueError:
         bot.reply_to(inner_message, "❌")
         bot.send_message(
-            inner_message.chat.id, templates[language_code]["set_temp_declined.txt"]
+            inner_message.chat.id, groups[inner_message.chat.id].templates[language_code]["set_temp_declined.txt"]
         )
         return
     if (val > 2) or (val < 0):
         bot.reply_to(inner_message, "❌")
         bot.send_message(
-            inner_message.chat.id, templates[language_code]["set_temp_declined.txt"]
+            inner_message.chat.id, groups[inner_message.chat.id].templates[language_code]["set_temp_declined.txt"]
         )
         return
 

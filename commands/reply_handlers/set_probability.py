@@ -11,14 +11,14 @@ def set_probability_reply_handler(inner_message):
         bot.reply_to(inner_message, "❌")
         bot.send_message(
             inner_message.chat.id,
-            templates[language_code]["set_probability_declined.txt"],
+            groups[inner_message.chat.id].templates[language_code]["set_probability_declined.txt"],
         )
         return
     if (val < 0) or (val > 1):
         bot.reply_to(inner_message, "❌")
         bot.send_message(
             inner_message.chat.id,
-            templates[language_code]["set_probability_declined.txt"],
+            groups[inner_message.chat.id].templates[language_code]["set_probability_declined.txt"],
         )
         return
 

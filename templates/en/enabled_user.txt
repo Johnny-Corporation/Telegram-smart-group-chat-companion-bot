@@ -1,9 +1,9 @@
 Bot is turned on now and reading new messsage to debate!
 
 Other modes:
-/enable_manual - here you manually call a bot
+ /enable_manual - here you manually call a bot
 
-Anytime, you can clean memory /clean_memory to start conservation from scratch
+Anytime, you can clean memory  /clean_memory to start the conservation from scratch
 For better understanding recommend set up the sphere of dialog /set_sphere
 
 <i>/about to know about bot </i>

@@ -13,15 +13,15 @@ def update_sub(message):
 
         # --- Buttons ---
         user_button = types.InlineKeyboardButton(
-            text=templates[language_code]["button_user.txt"],
+            text=groups[message.chat.id].templates[language_code]["button_user.txt"],
             callback_data="easy",
         )
         small_business_button = types.InlineKeyboardButton(
-            text=templates[language_code]["button_small_business.txt"],
+            text=groups[message.chat.id].templates[language_code]["button_small_business.txt"],
             callback_data="middle",
         )
         big_business_button = types.InlineKeyboardButton(
-            text=templates[language_code]["button_big_business.txt"],
+            text=groups[message.chat.id].templates[language_code]["button_big_business.txt"],
             callback_data="pro",
         )
 
@@ -32,9 +32,9 @@ def update_sub(message):
         # Seconding keyboard
         bot.send_message(
             message.chat.id,
-            templates[language_code]["update_sub.txt"].format(plan=groups[message.chat.id].subscription),
+            groups[message.chat.id].templates[language_code]["update_sub.txt"].format(plan=groups[message.chat.id].subscription),
             reply_markup=purchase_markup,
             parse_mode="HTML",
         )
     else:
-        bot.reply_to(message, templates[language_code]["buy_unavaible_in_group.txt"].format(bot_username=bot_username))
+        bot.reply_to(message, groups[message.chat.id].templates[language_code]["buy_unavaible_in_group.txt"].format(bot_username=bot_username))

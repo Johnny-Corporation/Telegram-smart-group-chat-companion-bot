@@ -1,6 +1,9 @@
-from os import path, listdir
+from os import path, listdir, makedirs
 import json
 import re
+from googletrans import Translator
+from bs4 import BeautifulSoup, NavigableString
+import textwrap
 #import tiktoken
 
 
@@ -227,3 +230,191 @@ def check_file_existing(client_first_name, file_path):
 def generate_code():
     chars = string.ascii_letters + string.digits
     return ''.join(random.choice(chars) for _ in range(size))
+
+
+def check_language(target_language):
+    supported_languages = {
+        'af': 'afrikaans',
+        'sq': 'albanian',
+        'am': 'amharic',
+        'ar': 'arabic',
+        'hy': 'armenian',
+        'az': 'azerbaijani',
+        'eu': 'basque',
+        'be': 'belarusian',
+        'bn': 'bengali',
+        'bs': 'bosnian',
+        'bg': 'bulgarian',
+        'ca': 'catalan',
+        'ceb': 'cebuano',
+        'ny': 'chichewa',
+        'zh-cn': 'chinese (simplified)',
+        'zh-tw': 'chinese (traditional)',
+        'co': 'corsican',
+        'hr': 'croatian',
+        'cs': 'czech',
+        'da': 'danish',
+        'nl': 'dutch',
+        'en': 'english',
+        'eo': 'esperanto',
+        'et': 'estonian',
+        'tl': 'filipino',
+        'fi': 'finnish',
+        'fr': 'french',
+        'fy': 'frisian',
+        'gl': 'galician',
+        'ka': 'georgian',
+        'de': 'german',
+        'el': 'greek',
+        'gu': 'gujarati',
+        'ht': 'haitian creole',
+        'ha': 'hausa',
+        'haw': 'hawaiian',
+        'iw': 'hebrew',
+        'he': 'hebrew',
+        'hi': 'hindi',
+        'hmn': 'hmong',
+        'hu': 'hungarian',
+        'is': 'icelandic',
+        'ig': 'igbo',
+        'id': 'indonesian',
+        'ga': 'irish',
+        'it': 'italian',
+        'ja': 'japanese',
+        'jw': 'javanese',
+        'kn': 'kannada',
+        'kk': 'kazakh',
+        'km': 'khmer',
+        'rw': 'kinyarwanda',
+        'ko': 'korean',
+        'ku': 'kurdish (kurmanji)',
+        'ky': 'kyrgyz',
+        'lo': 'lao',
+        'la': 'latin',
+        'lv': 'latvian',
+        'lt': 'lithuanian',
+        'lb': 'luxembourgish',
+        'mk': 'macedonian',
+        'mg': 'malagasy',
+        'ms': 'malay',
+        'ml': 'malayalam',
+        'mt': 'maltese',
+        'mi': 'maori',
+        'mr': 'marathi',
+        'mn': 'mongolian',
+        'my': 'myanmar (burmese)',
+        'ne': 'nepali',
+        'no': 'norwegian',
+        'or': 'odia',
+        'ps': 'pashto',
+        'fa': 'persian',
+        'pl': 'polish',
+        'pt': 'portuguese',
+        'pa': 'punjabi',
+        'ro': 'romanian',
+        'ru': 'russian',
+        'sm': 'samoan',
+        'gd': 'scots gaelic',
+        'sr': 'serbian',
+        'st': 'sesotho',
+        'sn': 'shona',
+        'sd': 'sindhi',
+        'si': 'sinhala',
+        'sk': 'slovak',
+        'sl': 'slovenian',
+        'so': 'somali',
+        'es': 'spanish',
+        'su': 'sundanese',
+        'sw': 'swahili',
+        'sv': 'swedish',
+        'tg': 'tajik',
+        'ta': 'tamil',
+        'tt': 'tatar',
+        'te': 'telugu',
+        'th': 'thai',
+        'tr': 'turkish',
+        'tk': 'turkmen',
+        'uk': 'ukrainian',
+        'ur': 'urdu',
+        'ug': 'uyghur',
+        'uz': 'uzbek',
+        'vi': 'vietnamese',
+        'cy': 'welsh',
+        'xh': 'xhosa',
+        'yi': 'yiddish',
+        'yo': 'yoruba',
+        'zu': 'zulu'
+    }
+
+    # Check if the entered language is supported
+    if target_language not in supported_languages and target_language not in supported_languages.values():
+        return False
+    else:
+        # If the user entered a language name, convert it to the corresponding language code
+        if target_language in supported_languages.values():
+            target_language = list(supported_languages.keys())[list(supported_languages.values()).index(target_language)]
+
+            return [target_language, supported_languages[target_language]]
+        elif target_language in supported_languages.keys():
+            return [target_language, supported_languages[target_language]]
+
+def translate_templates(lang):
+
+    # Regular expression to match /command commands and HTML tags
+    command_regex = re.compile(r'(  /.*? |<.*?>|{.*?})')
+
+    # Initialize the Translator object and specify the target language
+    translator = Translator()
+
+    # Directory where the translated files will be saved
+    target_directory = f'templates/{lang}'
+
+     # Check if the target directory already exists
+    if path.exists(target_directory):
+        print(f"The directory '{target_directory}' already exists. Skipping translation.")
+    else:
+        # Create the target directory
+        makedirs(target_directory)
+
+        # Directory containing the source text files
+        source_directory = 'templates/en'
+
+        # Translate each text file in the source directory
+        for filename in listdir(source_directory):
+            # Only process .txt files
+            if filename.endswith('.txt'):
+                # Read the source file
+                with open(path.join(source_directory, filename), 'r') as file:
+                    txt = file.read()
+
+                # Find all matches of the regular expression in the text
+                matches = command_regex.findall(txt)
+
+                # Replace the matches with placeholders
+                for i, match in enumerate(matches):
+                    placeholder = f'{{{i}}}'
+                    txt = txt.replace(match, placeholder, 1)
+
+                # Split the text into chunks of 500 characters each
+                chunks = [txt[i:i + 500] for i in range(0, len(txt), 500)]
+
+                # Translate each chunk and join them together
+                translation = ''.join([translator.translate(chunk, dest=lang).text for chunk in chunks])
+
+                # Replace the placeholders with the original text
+                for i, match in enumerate(matches):
+                    placeholder = f'{{{i}}}'
+                    translation = translation.replace(placeholder, match, 1)
+
+                # Write the translated text to a new file in the target directory
+                with open(path.join(target_directory, filename), 'w', encoding="utf-8") as file:
+                    file.write(translation)
+
+
+def translate_text(lang, text):
+    if lang == 'en':
+        return text
+    else:
+        translator = Translator()
+        translated = translator.translate(text, dest=lang)
+        return translated.text

@@ -8,7 +8,7 @@ def set_probability_command(message):
     language_code = groups[message.chat.id].lang_code
     bot_reply = bot.reply_to(
         message,
-        templates[language_code]["change_probability.txt"].format(
+        groups[message.chat.id].templates[language_code]["change_probability.txt"].format(
             probability=groups[message.chat.id].trigger_probability
         ),
         parse_mode="HTML",

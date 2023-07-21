@@ -10,7 +10,7 @@ def set_sphere_reply_handler(inner_message):
     except ValueError:
         bot.reply_to(inner_message, "❌")
         bot.send_message(
-            inner_message.chat.id, templates[language_code]["sphere_declined.txt"]
+            inner_message.chat.id, groups[inner_message.chat.id].templates[language_code]["sphere_declined.txt"]
         )
         return
 
