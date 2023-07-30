@@ -6,6 +6,6 @@ Other modes:
 Anytime, you can clean memory  /clean_memory to start the conservation from scratch
 For better understanding recommend set up the sphere of dialog /set_sphere
 
-<i>/about to know about bot </i>
+<i> /about to know about bot </i>
 
 /disable to turn off a bot

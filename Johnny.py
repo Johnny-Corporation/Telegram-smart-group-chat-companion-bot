@@ -68,6 +68,7 @@ class Johnny:
         self.total_spent_tokens = [0, 0]  # prompt and completion tokens
         self.dynamic_gen = False
         self.dynamic_gen_chunks_frequency = 30  # when dynamic generation is enabled, this value controls how often to edit telegram message, for example when set to 3, message will be updated each 3 chunks from OpenAI API stream
+        self.button_commands = []
 
         #Permissions
         self.temporary_memory_size_limit = 20
@@ -85,6 +86,7 @@ class Johnny:
         self.tokens_limit = 100000
         self.allowed_groups = 1
         self.id_groups = []
+        self.commercial_trigger = 0
 
         #Group
         self.owner_id = None
@@ -92,7 +94,7 @@ class Johnny:
 
     def one_answer(self, message: Message, groups: dict):
         response = gpt.create_chat_completion(
-            [message.text], reply=None, model=self.model
+            [[message.from_user.first_name, message.text]], lang=self.lang_code, reply=None, model=self.model
         )
         tokens_used = gpt.extract_tokens(response)
         self.total_spent_tokens[0] += tokens_used[0]
@@ -109,13 +111,16 @@ class Johnny:
         groups: dict
     ) -> str:
         
+        #Check on limit on groups on one men
         if len(groups[self.owner_id].id_groups) > groups[self.owner_id].allowed_groups:
             self.bot.send_message(message.chat.id, self.templates[self.lang_code]["exceed_limit_on_groups.txt"])
 
             groups[self.owner_id].id_groups.remove(message.chat.id)
 
             self.bot.leave_chat(message.chat.id)
+            return
 
+        #From voice to text
         if message.content_type == 'voice' and self.voice_input_permission == True:
 
             file_name_full="output\\voice_in\\"+message.voice.file_id+".ogg"
@@ -171,6 +176,11 @@ class Johnny:
             return
         
 
+        #Check on tokens
+        if self.commercial_trigger < 1 and self.total_spent_tokens[0] + self.total_spent_tokens[1] > 10000 and self.subscription == "Free":
+            self.bot.send_message(message.chat.id, self.templates[self.lang_code]["suggest_to_buy.txt"], parse_mode='HTML')
+            self.commercial_trigger += 1 
+
         if self.total_spent_tokens[0] + self.total_spent_tokens[1]>=self.tokens_limit:
             self.bot.send_message(message.chat.id, self.templates[self.lang_code]["exceed_limit_on_tokens.txt"])
             self.total_spent_tokens[0] = self.tokens_limit/2
@@ -183,6 +193,7 @@ class Johnny:
             return
 
 
+
         if (
             ("@" + self.bot_username in text)
             or (
@@ -191,8 +202,10 @@ class Johnny:
             )
             or (random() < self.trigger_probability)
         ):
+
             response = gpt.create_chat_completion(
                 self.messages_history,
+                lang=self.lang_code,
                 reply=bool(message.reply_to_message),
                 answer_length=self.answer_length,
                 model=self.model,
@@ -238,6 +251,7 @@ class Johnny:
                 )
 
             else:
+
                 text_answer = gpt.extract_text(response)
 
                 # Checking context understating
@@ -307,9 +321,11 @@ class Johnny:
         current_date = datetime.now().isoformat()
 
 
+        #If the user already written in db, delete old vers
         if db_controller.check_the_existing_of_user_with_sub(int(chat_id)):
             db_controller.delete_the_existing_of_user_with_sub(int(chat_id))
 
+        #Add to db
         db_controller.add_user_with_sub(
             chat_id, 
             type_of_subscription,
@@ -329,19 +345,19 @@ class Johnny:
             presense_penalty
         )
 
+        #If we wrote new user with new sub, give him 'congrats message'
         if type_of_subscription != 'Free':
-
-            self.bot.send_message(chat_id, self.templates[self.lang_code]["new_subscriber.txt"].format(sub=self.subscription), parse_mode="HTML")
+            self.bot.send_message(chat_id, self.templates[self.lang_code]["new_subscriber.txt"].format(sub=type_of_subscription), parse_mode="HTML")
 
         
-
-
     def extend_sub(self, chat_id, first_name, last_name, username):
 
+        #Get start date of current sub and add a month for extendtion
         date_of_start_txt = db_controller.get_last_date_of_start_of_user(chat_id)
         prev_date_of_start = datetime.fromisoformat(date_of_start_txt) + relativedelta(months=1)
         date_of_start = prev_date_of_start.isoformat()
 
+        #Add copy of user but with extended date of user (The deleting of user with sub realized in sub_tracking)
         db_controller.add_user_with_sub(
             chat_id, 
             self.subscription,
@@ -362,19 +378,27 @@ class Johnny:
         )
 
         self.bot.send_message(chat_id, self.templates[self.lang_code]["sub_extend.txt"].format(sub=self.subscription), parse_mode="HTML")
+        
 
-        def sub_tracking(chat_id, date_of_start):
+    def track_sub(self, chat_id: int, new: bool):
+        
+        def sub_tracking(chat_id: int, date_of_start):
+            """This fucntion is called when subscription was ended (after month)"""
 
             #Add reminders!!!
+
+            #Add current user from db with subscription
             db_controller.delete_the_existing_of_user_with_sub_by_date(date_of_start)
 
-            current_date = datetime.now().isoformat()
 
+            #check the extendtion of 
             check = db_controller.check_the_existing_of_user_with_sub(chat_id)
-                
-            if check == False:
+
+            if not check:
 
                 self.bot.send_message(chat_id, self.templates[self.lang_code]["sub_was_end.txt"], parse_mode="HTML")
+
+                current_date = datetime.now().isoformat()
 
                 db_controller.add_user_with_sub(
                     chat_id, 
@@ -413,79 +437,27 @@ class Johnny:
                 self.sphere = ""
                 self.temporary_memory_size = 20
 
+                return
+
             self.bot.send_message(chat_id, self.templates[self.lang_code]["sub_was_end_with_extend.txt"].format(sub=self.subscription), parse_mode="HTML")
 
-            
+        if self.subscription == "SMALL BUSINESS (trial)":
 
-        # create a scheduler
-        sub_scheduler = BackgroundScheduler()
+            start_date_txt = db_controller.get_last_date_of_start_of_user(chat_id)
+            start_date = datetime.fromisoformat(start_date_txt)
 
-        # schedule a task to print a number after 2 seconds
-        sub_scheduler.add_job(sub_tracking, 'date', run_date=prev_date_of_start + relativedelta(months=1), args=[chat_id, date_of_start], misfire_grace_time=86400)
+            # create a scheduler
+            sub_scheduler = BackgroundScheduler()
 
-        # start the scheduler
-        sub_scheduler.start()
+            # schedule a task to print a number after 2 seconds
+            sub_scheduler.add_job(sub_tracking, 'date', run_date=start_date + relativedelta(days=3), args=[chat_id, start_date_txt], misfire_grace_time=86400)
 
+            # start the scheduler
+            sub_scheduler.start()
         
+        elif self.subscription != "Free":
 
-        
-    def track_sub(self, chat_id, new):
-        
-        if self.subscription != "Free":
-
-            def sub_tracking(chat_id, date_of_start):
-
-                #Add reminders!!!
-                db_controller.delete_the_existing_of_user_with_sub_by_date(date_of_start)
-
-                current_date = datetime.now().isoformat()
-
-                check = db_controller.check_the_existing_of_user_with_sub(chat_id)
-
-                if not check:
-
-                    self.bot.send_message(chat_id, self.templates[self.lang_code]["sub_was_end.txt"], parse_mode="HTML")
-
-                    db_controller.add_user_with_sub(
-                        chat_id, 
-                        "Free",
-                        1,
-                        20,
-                        current_date,
-                        " ",
-                        " ",
-                        " ",
-                        100000,
-                        False,
-                        False,
-                        False,
-                        False,
-                        False,
-                        False,
-                        False
-                    )
-
-                    self.subscription = "Free"
-                    self.allowed_groups = 1
-                    self.tokens_limit = 100000
-                    self.dynamic_gen_permission = False
-                    self.voice_input_permission = False
-                    self.voice_output_permission = False
-                    self.sphere_permission = False
-                    self.temperature_permission = False
-                    self.frequency_penalty_permission = False
-                    self.presense_penalty_permission = False
-                    self.temporary_memory_size_limit = 20
-
-                    self.temperature = 1
-                    self.frequency_penalty = 0.2
-                    self.presense_penalty = 0.2
-                    self.sphere = ""
-                    self.temporary_memory_size = 20
-
-                self.bot.send_message(chat_id, self.templates[self.lang_code]["sub_was_end_with_extend.txt"].format(sub=self.subscription), parse_mode="HTML")
-
-            if new == True:
+            if new:
                 start_date_txt = db_controller.get_last_date_of_start_of_user(chat_id)
                 start_date = datetime.fromisoformat(start_date_txt)
 
@@ -513,11 +485,11 @@ class Johnny:
                     # start the scheduler
                     sub_scheduler.start()
 
+
     def change_owner_of_group(self, username):
-
         new_user = db_controller.get_user_with_sub_by_username(username) 
-
         return new_user
+    
 
     def add_purchase_of_tokens(self, chat_id, num_of_new_tokens):
         new_total_tokens = self.tokens_limit + num_of_new_tokens

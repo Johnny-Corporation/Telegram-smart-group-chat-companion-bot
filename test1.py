@@ -1,110 +1,96 @@
-# from translate import Translator
-# import textwrap
-# import re
-# from utils.functions import *
+import telebot
+import time
+from telebot import types
+
+bot = telebot.TeleBot('6386393540:AAEYh8-sCQdRL7nGabG7YV7_mnaFxss8p2U')
+
+stop_count = 0
+
+@bot.message_handler(commands=['start'])
+def start_message(message):
+
+    bot.send_message(message.chat.id, f"Приветствую, <i>{message.from_user.first_name}</i>!\n \nЗдесь Вы можете выиграть <u>свидание-сюрприз!</u> Нужно лишь ответить <u>на пару вопросов!</u>" , parse_mode="HTML")
+
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    itembtn1 = types.KeyboardButton('Да!')
+    itembtn2 = types.KeyboardButton('Нет')
+    markup.add(itembtn1, itembtn2)
+    bot.send_message(message.chat.id, "Начнём?", reply_markup=markup)
+
+@bot.message_handler(content_types=['text'])
+def handle_text(message):
+
+    # --- Начало ---
+    if message.text == 'Да!':
+        bot.send_message(message.chat.id, "Начнём!")
+        time.sleep(0.3)
+
+    elif message.text == 'Нет':
+        bot.send_message(message.chat.id, "Ну вы же понимаете, что вам всё равно придётся пройти через этот тест)")
+        time.sleep(0.3)
+
+    # --- Познакомимся? ---
+
+    elif message.text == 'Нет?' or message.text == 'Неуверена, что нет' or message.text == 'Возможно нет' or message.text == 'НЕТ!!!':
+        bot.send_message("Намёк я точно определённо не понял\n \nКак говорила одна прекрасная девушка: ")
+
+    elif message.text == 'Я в телеграме не знакомлюсь':
+        bot.send_message("Тогда нам и не придётся!")
+
+    elif message.text == 'НЕТ!':
+        bot.send_message("Ну на самом деле я итак всё знаю")
+        time.sleep(0.3)
+        bot.send_message("Почти")
+
+    elif message.text == 'Вы кажется ошиблись':
+        bot.send_message("Тогда нам и не придётся!")
 
 
 
+    else:
+        bot.send_message(message.chat.id, f"Отвечайте на вопрос, иначе же подарок достанется кому-то другому)\nУ вас осталось {3-stop_count} попыток.")
+        stop_count = stop_count + 1
 
-# supported_languages = {
-#     'af': 'afrikaans',
-#     'sq': 'albanian',
-#     'ar': 'arabic',
-#     'hy': 'armenian',
-#     'zh': 'chinese',
-#     'en': 'english',
-#     'fr': 'french',
-#     'de': 'german',
-#     'ru': 'russian'
-# }
 
-# # Ask the user for the target language
-# target_language = input("Please enter the language to translate to (e.g., 'ru' or 'russian'): ")
+def first_question(message):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    itembtn2 = types.KeyboardButton('Нет')
+    itembtn1 = types.KeyboardButton('Нет?')
+    itembtn4 = types.KeyboardButton('Неуверена, что нет')
+    itembtn5 = types.KeyboardButton('Я в телеграме не знакомлюсь')
+    itembtn6 = types.KeyboardButton('Ты не в моем вкусе')
+    itembtn7 = types.KeyboardButton('Я сейчас занята')
+    itembtn8 = types.KeyboardButton('Вы кажется ошиблись')
+    itembtn3 = types.KeyboardButton('Возможно нет')
+    itembtn15 = types.KeyboardButton('Отшить по-своему')  
+    itembtn9 = types.KeyboardButton('Зачем так далеко листаешь?')
+    itembtn10 = types.KeyboardButton('НЕТ!')
+    itembtn11= types.KeyboardButton('НЕТ!!!')
+    itembtn12= types.KeyboardButton('Ну попробуй')
+    itembtn13= types.KeyboardButton('Ты итак знаешь, что меня зовут Ксения и мне 16')
+    itembtn14= types.KeyboardButton('Ну давай')
 
-# # The text you want to translate
-# templates = load_templates("templates\\")
+    markup.add(itembtn1)
+    markup.add(itembtn2)
+    markup.add(itembtn4)
+    markup.add(itembtn5)
+    markup.add(itembtn6)
+    markup.add(itembtn7)
+    markup.add(itembtn8)
+    markup.add(itembtn3)
+    markup.add(itembtn15)
+    markup.add(itembtn9)
+    markup.add(itembtn10)
+    markup.add(itembtn11)
+    markup.add(itembtn12)
+    markup.add(itembtn13)
+    markup.add(itembtn14)
 
-# txt = templates["account_info.txt"].format(
-#         first_name='MichaeLRoman',
-#         subscription="SMALL BUSINESS",
-#         tokens=3100000,
-#         left_tokens = 3094300,
-#         groups=3,
-#         left_groups=3 - 0,
-#         temp_memory_limit=100,
-#         temp_memory=20,
-#         dyn_gen_per='allowed',
-#         voice_in_per='allowed',
-#         voice_out_per='allowed',
-#         set_up_per='allowed'
-#         )#templates["sub_small_business_description.txt"].format(plan="BIG BUSINESS")
-
-# # Check if the entered language is supported
-# if target_language not in supported_languages and target_language not in supported_languages.values():
-#     print(f"Sorry, the language '{target_language}' is not supported.")
-# else:
-#     # If the user entered a language name, convert it to the corresponding language code
-#     if target_language in supported_languages.values():
-#         target_language = list(supported_languages.keys())[list(supported_languages.values()).index(target_language)]
-
-#     # Initialize the Translator object and specify the target language
-#     translator = Translator(to_lang="ru")
-
-#     # Define regex patterns
-#     command_pattern = r'\/\w+'
-#     tag_pattern = r'<\w+>'
-#     dollar_pattern = r'\$'
-#     emoji_pattern = r'[\U00010000-\U0010ffff]'
-
-#     # Find all patterns in the text
-#     commands = re.findall(command_pattern, txt)
-#     tags = re.findall(tag_pattern, txt)
-#     dollars = re.findall(dollar_pattern, txt)
-#     emojis = re.findall(emoji_pattern, txt)
-
-#     # Replace patterns with placeholders
-#     for i, command in enumerate(commands):
-#         txt = txt.replace(command, f'{{command{i}}}')
-#     for i, tag in enumerate(tags):
-#         txt = txt.replace(tag, f'{{tag{i}}}')
-#     for i, dollar in enumerate(dollars):
-#         txt = txt.replace(dollar, f'{{dollar{i}}}')
-#     for i, emoji in enumerate(emojis):
-#         txt = txt.replace(emoji, f'{{emoji{i}}}')
-
-#     # Split the text into chunks of 4900 characters each
-#     chunks = textwrap.wrap(txt, 490)
-
-#     # Translate each chunk and concatenate the translated chunks
-#     translated = ""
-#     for chunk in chunks:
-#         translated_chunk = translator.translate(chunk)
-#         translated += translated_chunk
-
-#     # Replace placeholders with original patterns
-#     for i, command in enumerate(commands):
-#         translated = translated.replace(f'{{command{i}}}', command)
-#     for i, tag in enumerate(tags):
-#         translated = translated.replace(f'{{tag{i}}}', tag)
-#     for i, dollar in enumerate(dollars):
-#         translated = translated.replace(f'{{dollar{i}}}', dollar)
-#     for i, emoji in enumerate(emojis):
-#         translated = translated.replace(f'{{emoji{i}}}', emoji)
-
-#     # The translation is now a string that contains the translated text
-#     print(translated)  # "Привет, мир!"
+    bot.send_message(message.chat.id, "Познакомимся?", reply_markup=markup)
 
 
 
 
 
 
-
-
-
-
-from test import *
-
-def func():
-    global templates
-    templates = ["YES"]
+bot.polling(none_stop=True)

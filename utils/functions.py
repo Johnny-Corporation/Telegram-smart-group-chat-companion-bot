@@ -4,7 +4,7 @@ import re
 from googletrans import Translator
 from bs4 import BeautifulSoup, NavigableString
 import textwrap
-#import tiktoken
+import tiktoken
 
 
 def load_templates(dir: str) -> dict:
@@ -418,3 +418,130 @@ def translate_text(lang, text):
         translator = Translator()
         translated = translator.translate(text, dest=lang)
         return translated.text
+    
+
+def load_buttons(types, groups, chat_id, language_code):
+
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=2)
+
+    if chat_id>0:
+
+        text1 = translate_text(language_code,'ㅤAsk a question without contextㅤ')
+        itembtn1 = types.KeyboardButton(text1)
+        groups[chat_id].button_commands.append(text1)
+
+        text2 = translate_text(language_code,'ㅤStart a conversation againㅤ')
+        itembtn2 = types.KeyboardButton(text2)
+        groups[chat_id].button_commands.append(text2)
+
+        text3 = translate_text(language_code,'ㅤTurn on/off manual modeㅤ')
+        itembtn3 = types.KeyboardButton(text3)
+        groups[chat_id].button_commands.append(text3)
+
+        text4 = translate_text(language_code,'ㅤView current modeㅤ')
+        itembtn9 = types.KeyboardButton(text4)
+        groups[chat_id].button_commands.append(text4)
+
+        text5 = translate_text(language_code,'ㅤGet account infoㅤ')
+        itembtn4 = types.KeyboardButton(text5)
+        groups[chat_id].button_commands.append(text5)
+
+        text6 = translate_text(language_code,'ㅤChange bot settingsㅤ')
+        itembtn5 = types.KeyboardButton(text6)
+        groups[chat_id].button_commands.append(text6)
+
+        text7 = translate_text(language_code,'ㅤBuy subscription or tokensㅤ')
+        itembtn6 = types.KeyboardButton(text7)
+        groups[chat_id].button_commands.append(text7)
+
+        text8 = translate_text(language_code,'ㅤReport bugㅤ')
+        itembtn7 = types.KeyboardButton(text8)
+        groups[chat_id].button_commands.append(text8)
+
+        text9 = translate_text(language_code,'ㅤSuggest an ideaㅤ')
+        itembtn8 = types.KeyboardButton(text9)
+        groups[chat_id].button_commands.append(text9)
+
+        # text10 = translate_text(language_code,'ㅤSupport usㅤ')
+        # itembtn10 = types.KeyboardButton(text10)
+        # groups[chat_id].button_commands.append(text10)
+
+        markup.add(itembtn1)
+        markup.add(itembtn2)
+        markup.add(itembtn3)
+        markup.add(itembtn9)
+        markup.add(itembtn4)
+        markup.add(itembtn5)
+        markup.add(itembtn6)
+        markup.add(itembtn7, itembtn8)
+        # markup.add(itembtn10)
+
+    elif chat_id<0:
+
+        #Dialog
+
+        text11 = translate_text(language_code,'ㅤEnable/Disable Johnnyㅤ')
+        itembtn11 = types.KeyboardButton(text11)
+        groups[chat_id].button_commands.append(text11)
+
+        text1 = translate_text(language_code,'ㅤAsk a question without contextㅤ')
+        itembtn1 = types.KeyboardButton(text1)
+        groups[chat_id].button_commands.append(text1)
+
+        text2 = translate_text(language_code,'ㅤStart a conversation againㅤ')
+        itembtn2 = types.KeyboardButton(text2)
+        groups[chat_id].button_commands.append(text2)
+
+        text13 = translate_text(language_code,'ㅤTurn on/off dialog modeㅤ')
+        itembtn13 = types.KeyboardButton(text13)
+        groups[chat_id].button_commands.append(text13)
+
+        text3 = translate_text(language_code,'ㅤTurn on/off manual modeㅤ')
+        itembtn3 = types.KeyboardButton(text3)
+        groups[chat_id].button_commands.append(text3)
+
+        text4 = translate_text(language_code,'ㅤView current modeㅤ')
+        itembtn9 = types.KeyboardButton(text4)
+        groups[chat_id].button_commands.append(text4)
+
+        text12 = translate_text(language_code,'ㅤGet group infoㅤ')
+        itembtn12 = types.KeyboardButton(text12)
+        groups[chat_id].button_commands.append(text12)
+
+        text5 = translate_text(language_code,'ㅤGet account infoㅤ')
+        itembtn4 = types.KeyboardButton(text5)
+        groups[chat_id].button_commands.append(text5)
+
+        text6 = translate_text(language_code,'ㅤChange bot settingsㅤ')
+        itembtn5 = types.KeyboardButton(text6)
+        groups[chat_id].button_commands.append(text6)
+
+        text7 = translate_text(language_code,'ㅤBuy subscription or tokensㅤ')
+        itembtn6 = types.KeyboardButton(text7)
+        groups[chat_id].button_commands.append(text7)
+
+        text8 = translate_text(language_code,'ㅤReport bugㅤ')
+        itembtn7 = types.KeyboardButton(text8)
+        groups[chat_id].button_commands.append(text8)
+
+        text9 = translate_text(language_code,'ㅤSuggest an ideaㅤ')
+        itembtn8 = types.KeyboardButton(text9)
+        groups[chat_id].button_commands.append(text9)
+
+        # text10 = translate_text(language_code,'ㅤSupport usㅤ')
+        # itembtn10 = types.KeyboardButton(text10)
+        # groups[chat_id].button_commands.append(text10)
+
+        markup.add(itembtn11)
+        markup.add(itembtn1)
+        markup.add(itembtn2)
+        markup.add(itembtn13)
+        markup.add(itembtn3)
+        markup.add(itembtn9)
+        markup.add(itembtn4, itembtn12)
+        markup.add(itembtn5)
+        markup.add(itembtn6)
+        markup.add(itembtn7, itembtn8)
+        # markup.add(itembtn10)
+
+    return markup

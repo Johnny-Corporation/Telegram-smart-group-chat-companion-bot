@@ -1,3 +1,5 @@
-Thank you for adding me to this group! I am a Johnny - smart group-chat companion bot, you can use command -  /about to know more!
+Thank you for adding me to this group! I am a Johnny - smart companion bot.
 
-Bot is off now, use command  /enable for activation
+<i>*Use  /about to know more!*</i>
+
+Bot is off now, use buttons below <i>(or command /enable ) </i>

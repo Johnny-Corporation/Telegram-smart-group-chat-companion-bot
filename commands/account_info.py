@@ -33,6 +33,16 @@ def account_info_command(message):
     if groups[message.from_user.id].sphere_permission == False:
         set_up_per = translate_text(language_code, 'not allowed')
 
+    name_of_groups = ''
+    for name in groups[message.from_user.id].id_groups:
+        chat_info = bot.get_chat(name)
+        name_of_groups = name_of_groups + chat_info.title
+        if name != groups[message.from_user.id].id_groups[-1]:
+            name_of_groups = name_of_groups + ' , '
+
+    if name_of_groups == '':
+        name_of_groups = 'None'
+
     bot.reply_to(
         message,
         groups[message.chat.id].templates[language_code]["account_info.txt"].format(
@@ -42,6 +52,7 @@ def account_info_command(message):
         left_tokens=left_tokens,
         groups=groups[message.from_user.id].allowed_groups,
         left_groups=groups[message.from_user.id].allowed_groups - len(groups[message.from_user.id].id_groups),
+        name_of_groups=name_of_groups,
         temp_memory_limit=groups[message.from_user.id].temporary_memory_size_limit,
         temp_memory=groups[message.from_user.id].temporary_memory_size,
         dyn_gen_per=dyn_gen_per,

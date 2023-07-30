@@ -22,6 +22,7 @@ def extract_text(completion: openai.ChatCompletion) -> str:
 
 def create_chat_completion(
     messages: list,
+    lang: str = 'en',
     system_content: str = None,
     answer_length: int = "as you need",
     reply: bool = False,  # SYS
@@ -49,7 +50,7 @@ def create_chat_completion(
     previous_messages = [
         {
             "role": "system",
-            "content": system_content,
+            "content": functions.translate_text(lang,system_content),
         }
     ]
 

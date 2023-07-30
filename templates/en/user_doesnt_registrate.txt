@@ -1,3 +1,1 @@
 User {first_name} is not registered.
-
-The changing of group's owner was canceled.

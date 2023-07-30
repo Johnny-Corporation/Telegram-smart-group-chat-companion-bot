@@ -1,19 +1,22 @@
 <i>Group: {group_name}</i>
-<b>Owner: {usermame}</b>
+<b>Owner: {username}</b>
+
+
+<b>INFO about owner</b>
 
 <b>Subscription</b>
-Not implemented
+Subscription: {subscription} 
 
 <b>Tokens</b>
+Your limit on tokens: {tokens}
 Group have spent <b>{spent_tokens} tokens</b>.
 It is approximately <b>{dollars}$</b>
 
-
-<b>Tokens last</b>
-Not implemented
+Tokens left: {tokens_left}
 
 
 <b>Set-up functions</b>
+
 All of this you can find here: /set_up
 
 <b>{temperature}</b> - Response randomness
@@ -45,3 +48,9 @@ Dynamic generation is {dynamic_gen_en}.
 
 Bot works on {language} language.
  /change_language - for change the language
+
+Voice input is {voice_in}
+
+
+<i>/change_owner_of_group to change owner of group</i>
+<i>To know about rates /subs_list </i>

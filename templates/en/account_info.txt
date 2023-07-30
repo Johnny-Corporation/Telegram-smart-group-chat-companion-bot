@@ -9,6 +9,8 @@ Tokens: Have {tokens} free tokens.
 Groups: Can have {groups} groups.
 <b>Left {left_groups} groups</b>
 
+Groups: {name_of_groups}
+
 Memory: Can have {temp_memory_limit} messages maximum.
 <b>Established: {temp_memory}</b>
 

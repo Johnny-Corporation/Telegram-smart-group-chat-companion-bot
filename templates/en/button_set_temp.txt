@@ -1,1 +1,1 @@
-Change the bot randomness of bot's answers
+Bot's randomness of answers

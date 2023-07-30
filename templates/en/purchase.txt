@@ -1,3 +1,3 @@
-At the moment you have a plan: {plan}. Here are the rates we provide:
+At the moment you have a plan:<b> {plan} </b>. Here are the rates we provide:
 
-<i>To know about rates:  /subs_list</i>
+<i>To know about rates:  /subs_list </i>

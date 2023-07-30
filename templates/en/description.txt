@@ -2,15 +2,18 @@ Hey! I am Johnny – smart AI bot! I can solve problems, suggest solutions, answ
 
 You can chat as in private messages, as in group chats – just add it to group!
 
-<b> /enable</b> – <b>turn on</b> the bot in <b>automode</b> by default.
+Johnny reads messages and give his opinion, solution.
+
+<b> /enable </b> – <b>turn on</b> the bot in <b>automode</b> by default.
 In this mode, Johnny gives respone with some chance.
  /set_prob to change probability
 
-Also you can change other parameters to Johnny as you want!
+Also you can change other parameters to do Johnny as you want!
 
-Put this command to get set up functions:
+<b> /settings </b>
 
-<b> /set_up</b>
+For example, you can set sphere of conservation, so Johnny will better understand you!
+Or, you can set dynamic generation - Johnny will write message in front your eyes!
 
 
 Also you can apply these modes:
@@ -18,15 +21,14 @@ Also you can apply these modes:
  /enable_manual – here you manually call a bot
 
 
-Make your bot more unique and convenient with <b>Customization</b> settings:
+We works on tokens - 0.75 of word = 1 token. Different subscriptions have different value of free tokens.
 
- /change_language for changing language.
- /dynamic_generation for dynamic typing. Bot prints message in front your eyes!
+<b> /subs_list </b> to know more
 
 
 Don't forget <b>track your account</b>: 
 
-<b> /account_info</b>
+<b> /account_info </b>
 
 
 Here is your assistant! Try it out!

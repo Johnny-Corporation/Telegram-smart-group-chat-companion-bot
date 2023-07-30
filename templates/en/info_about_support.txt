@@ -1,0 +1,5 @@
+Thanks for supporting. You wanna donate: {cost} rubles.
+
+<i> /subs_list to know more</i> 
+
+Press button to buy:

@@ -1,28 +1,31 @@
 <i>Группа: {group_name}</i>
-<b>Владелец: {usermame}</b>
+<b>Владелец: {username}</b>
+
+
+<b>ИНФОРМАЦИЯ о владельце</b>
 
 <b>Подписка</b>
-Не реализована
+Подписка: {subscription}
 
 <b>Токены</b>
+Ваш лимит токенов: {tokens}
 Группа потратила <b>{spent_tokens} токенов</b>.
 Это примерно <b>{dollars}$</b>
 
-
-<b>Жетоны сохраняются</b>
-Не реализована
+Осталось токенов: {tokens_left}
 
 
 <b>Функции настройки</b>
+
 Все это вы можете найти здесь: /set_up
 
 <b>{temperature}</b> — случайный ответ.
  /set_temperature - для изменения случайности ответа бота
 
 <b>{answers_frequency}</b> - Частота ответов бота в AutoMode
- /set_answer_probability - для изменения частоты ответов бота
+ /set_answer_probability - для частоты смены ботаответы
 
-<b>{temporary_memory_size}</b> — бот считает<b>{temporary_memory_size}</b> предыдущие сообщения.
+<b>{temporary_memory_size}</b> — бот учитывает <b>{temporary_memory_size}</b> предыдущих сообщений.
  /temporary_memory_size - для частоты смены ответов бота
 
 <b>{frequency_penalty}</b> - Разнообразие ответов бота
@@ -34,7 +37,7 @@
 <b>{length}</b> - размер ответов бота
  /set_length_answer - для изменения размера сообщений бота обратно
 
-<b>'{sphere}'</b> - Сфера вашего сохранения.
+<b>'{sphere}'</b> -Сфера вашего сохранения.
  /set_sphere - для добавления/изменения сферы сохранения
 
 
@@ -45,3 +48,9 @@
 
 Бот работает на {language} языке.
  /change_language - для смены языка
+
+Голосовой ввод {voice_in}
+
+
+<i>/change_owner_of_group, чтобы изменить владельца группы</i>
+<i>Чтобы узнать о ставках /subs_list </i>

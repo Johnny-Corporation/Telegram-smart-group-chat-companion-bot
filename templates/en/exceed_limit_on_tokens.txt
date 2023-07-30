@@ -1,3 +1,3 @@
-You exceed the limit.
+You exceed the limit on tokens.
 
-<i> /subs_list to know more</i>
+<i> /purchase to buy subscriprion </i>

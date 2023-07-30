@@ -16,6 +16,8 @@ def enter_promocode_reply_handler(inner_message):
         return
     
     code_back = check_code(inner_message.text)
+
+    
     
     if len(code_back) == 1:
         groups[inner_message.chat.id].add_purchase_of_tokens(inner_message.chat.id, code_back[0])
@@ -25,9 +27,11 @@ def enter_promocode_reply_handler(inner_message):
     elif len(code_back) == 11:
         groups[inner_message.chat.id].add_new_user(inner_message.chat.id, inner_message.from_user.first_name, inner_message.from_user.last_name, inner_message.from_user.username, code_back[0], code_back[1], code_back[2], code_back[3], code_back[4], code_back[5], code_back[6], code_back[7], code_back[8], code_back[9], code_back[10])
         groups[inner_message.chat.id].load_subscription(inner_message.chat.id)
+
+        print(f"!!!!!!!!!!!!             {groups[inner_message.chat.id].id_groups}")
         for group_id in groups[inner_message.chat.id].id_groups:
             groups[group_id].subscription = groups[inner_message.chat.id].subscription
-            grops[group_id].tokens_limit = groups[inner_message.chat.id].tokens_limit
+            groups[group_id].tokens_limit = groups[inner_message.chat.id].tokens_limit
             groups[group_id].dynamic_gen_permission = groups[inner_message.chat.id].dynamic_gen_permission
             groups[group_id].voice_input_permission = groups[inner_message.chat.id].voice_input_permission
             groups[group_id].voice_output_permission = groups[inner_message.chat.id].voice_output_permission

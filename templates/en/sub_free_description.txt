@@ -2,7 +2,7 @@ Free plan - <i>(free)</i>
 
 <i>Try out the bot. For people that are going to use the Bot not often.</i>
 
-<b>100 000 free tokens</b>
-<b>1 group with Johnny</b>
-<b>Memory size equals 20</b>
-<b>Price to buy more tokens: 0.000004$ on 1 token (0.0004 Руб)</b>
+<b>• 100 000 free tokens</b>
+<b>• 1 group with Johnny</b>
+<b>• Memory size equals 20</b>
+<b>• Price to buy more tokens: 0.000004$ on 1 token (0.0004 Руб) </b>

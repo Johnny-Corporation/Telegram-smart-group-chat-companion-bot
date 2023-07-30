@@ -8,6 +8,19 @@ from utils.functions_for_developers import *
 def keyboard_buttons_handler(call):
     previous_language_code = groups[call.message.chat.id].lang_code
     match call.data:
+
+        #Translations
+
+        case 'back_to_settings':
+            settings_command(message=call.message, back_from=True)
+
+        case 'set_up':
+            set_up_command(call.message)
+
+        case 'customization':
+            customization_command(call.message)
+            
+
         # Set up funcs
 
         case "temperature":
@@ -52,12 +65,12 @@ def keyboard_buttons_handler(call):
                     groups[call.message.chat.id].templates[previous_language_code]["no_rights.txt"],
                     parse_mode = "HTML"
                 )
+        case "change_lang":
+            change_language(call.message.chat.id)
             
 
         # Customization
 
-        case "change_lang":
-            change_language_command(call.message)
         case "dyn_gen":
             if groups[call.message.chat.id].temperature_permission == True:
                 dynamic_generation_command(call.message)
@@ -159,9 +172,28 @@ def keyboard_buttons_handler(call):
 
         # Purchase the subscription
 
+
+        case "free_sub":
+
+            groups[call.message.chat.id].add_new_user(call.message.chat.id, call.message.from_user.first_name, call.message.from_user.last_name, call.message.from_user.username, 'SMALL BUSINESS (trial)', 5, 100, 3000000, True, True, True, True, True, True, True)
+            groups[call.message.chat.id].load_subscription(call.message.chat.id)
+            for group_id in groups[call.message.chat.id].id_groups:
+                groups[group_id].subscription = groups[call.message.chat.id].subscription
+                groups[group_id].tokens_limit = groups[call.message.chat.id].tokens_limit
+                groups[group_id].dynamic_gen_permission = groups[call.message.chat.id].dynamic_gen_permission
+                groups[group_id].voice_input_permission = groups[call.message.chat.id].voice_input_permission
+                groups[group_id].voice_output_permission = groups[call.message.chat.id].voice_output_permission
+
+            groups[call.message.chat.id].track_sub(call.message.chat.id, new=True)
+
         case "easy":
 
-            pay = accept_payment(call.message, "You buy USER subscription", 400)
+            price = 399
+            if groups[call.message.chat.id].total_spent_tokens[0] + groups[call.message.chat.id].total_spent_tokens[1] <= 30000 and groups[call.message.chat.id].subscription == "Free":
+                bot.send_message(call.message.chat.id, groups[call.message.chat.id].templates[previous_language_code]["discount_yes.txt"])
+                price = price * 0.8
+
+            pay = accept_payment(call.message, "You buy USER subscription", price)
 
             if pay:
                 groups[call.message.chat.id].add_new_user(call.message.chat.id, call.message.from_user.first_name, call.message.from_user.last_name, call.message.from_user.username, 'USER', 3, 50, 1000000, False, True, False, False, False, False, False)
@@ -180,7 +212,12 @@ def keyboard_buttons_handler(call):
 
         case "middle":
 
-            pay = accept_payment(call.message, "You buy SMALL BUSINESS subscription", 700)
+            price = 699
+            if groups[call.message.chat.id].total_spent_tokens[0] + groups[call.message.chat.id].total_spent_tokens[1] <= 30000 and groups[call.message.chat.id].subscription == "Free":
+                bot.send_message(call.message.chat.id, groups[call.message.chat.id].templates[previous_language_code]["discount_yes.txt"])
+                price = price * 0.8
+
+            pay = accept_payment(call.message, "You buy SMALL BUSINESS subscription", price)
 
             if pay:
                 groups[call.message.chat.id].add_new_user(call.message.chat.id, call.message.from_user.first_name, call.message.from_user.last_name, call.message.from_user.username, 'SMALL BUSINESS', 5, 100, 3000000, True, True, True, True, True, True, True)
@@ -199,12 +236,18 @@ def keyboard_buttons_handler(call):
 
         case "pro":
 
-            pay = accept_payment(call.message, "You buy BIG BUSINESS subscription", 1200)
+            price = 1299
+            if groups[call.message.chat.id].total_spent_tokens[0] + groups[call.message.chat.id].total_spent_tokens[1] <= 30000 and groups[call.message.chat.id].subscription == "Free":
+                bot.send_message(call.message.chat.id, groups[call.message.chat.id].templates[previous_language_code]["discount_yes.txt"])
+                price = price * 0.8
+
+            pay = accept_payment(call.message, "You buy BIG BUSINESS subscription", price)
 
             if pay:
 
                 groups[call.message.chat.id].add_new_user(call.message.chat.id, call.message.from_user.first_name, call.message.from_user.last_name, call.message.from_user.username, 'BIG BUSINESS', 10, 1000000000000, 5000000, True, True, True, True, True, True, True)
                 groups[call.message.chat.id].load_subscription(call.message.chat.id)
+
                 for group_id in groups[call.message.chat.id].id_groups:
                     groups[group_id].subscription = groups[call.message.chat.id].subscription
                     groups[group_id].tokens_limit = groups[call.message.chat.id].tokens_limit
@@ -225,11 +268,11 @@ def keyboard_buttons_handler(call):
         case "extend_sub":
 
             if groups[call.message.chat.id].subscription == "USER":
-                pay = accept_payment(call.message, "You buy USER subscription", 400)
+                pay = accept_payment(call.message, "You buy USER subscription", 399)
             elif groups[call.message.chat.id].subscription == "SMALL BUSINESS":
-                pay = accept_payment(call.message, "You buy SMALL BUSINESS subscription", 700)
+                pay = accept_payment(call.message, "You buy SMALL BUSINESS subscription", 699)
             elif groups[call.message.chat.id].subscription == "BIG BUSINESS":
-                pay = accept_payment(call.message, "You buy BIG BUSINESS subscription", 1200)
+                pay = accept_payment(call.message, "You buy BIG BUSINESS subscription", 1299)  
             else:
                 bot.send_message(call.message.chat.id, "Problem")
                 pay = False
@@ -245,6 +288,34 @@ def keyboard_buttons_handler(call):
 
         case "change_owner":
             change_owner_of_group(call.message)
+
+
+
+
+        case "rus_payment":
+
+            # Генерация случайного 8-значного числа для label
+            label = random.randint(10000000, 99999999)
+
+            # Создание формы оплаты
+            quickpay = Quickpay(
+                receiver="4100118270605528",
+                quickpay_form="shop",
+                targets="Sponsor this project",
+                paymentType="SB",
+                sum=cost,
+                label=label,
+            )
+
+        case "eng_pay":
+
+            send_invoice(call.message)
+
+
+
+
+
+
 
         # Unexpected case
 

@@ -9,6 +9,8 @@
 Группы: Может иметь {groups} групп.
 <b>Левые {left_groups} группы</b>
 
+Группы: {name_of_groups}
+
 Память: Максимум {temp_memory_limit} сообщений.
 <b>Установлено: {temp_memory}</b>
 

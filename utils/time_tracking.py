@@ -54,3 +54,46 @@ promocode_scheduler.add_job(get_exist_code, 'interval', days=7)
 
 # start the scheduler
 promocode_scheduler.start()
+
+
+
+# create a scheduler
+load_scheduler = BackgroundScheduler()
+
+# create a scheduler
+load_scheduler.start()
+
+def typing(bot, message):
+
+    def send(bot, message, message_id):
+            
+            try:
+
+                bot.edit_message_text(f"Johnny is typing. ", message.chat.id, message_id)
+
+                time.sleep(0.5)
+
+                bot.edit_message_text(f"Johnny is typing.. ", message.chat.id, message_id)
+
+                time.sleep(0.5)
+
+                bot.edit_message_text(f"Johnny is typing... ", message.chat.id, message_id)
+
+            except:
+                None
+    
+    load_message = bot.send_message(message.chat.id, "Johnny is typing")
+
+    label = random.randint(10000000, 99999999)
+    id = 'loading_' + str(label)
+
+    # add a job that runs every day
+    load_scheduler.add_job(send, 'interval', seconds=0.5, args=[bot, message, load_message.message_id], id=id)
+
+    return [load_message.message_id, id]
+
+def stop_load(bot, message, message_id, id):
+    load_scheduler.remove_job(id)
+
+    bot.delete_message(message.chat.id, message_id)
+

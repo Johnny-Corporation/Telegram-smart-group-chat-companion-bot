@@ -6,8 +6,9 @@ from __main__ import *
 @error_handler
 def purchase(message):
 
+    language_code = groups[message.chat.id].lang_code
+
     if message.chat.type == 'private':
-        language_code = groups[message.chat.id].lang_code
 
         purchase_markup = types.InlineKeyboardMarkup()
 

@@ -10,13 +10,17 @@ def set_up_command(message):
     set_up_markup = types.InlineKeyboardMarkup()
 
     # --- Buttons ---
+
+    if message.chat.id<0:
+        answer_probability_button = types.InlineKeyboardButton(
+            text=groups[message.chat.id].templates[language_code]["button_set_ans.txt"],
+            callback_data="answer_probability",
+        )
+        set_up_markup.add(answer_probability_button)
+
     temp_button = types.InlineKeyboardButton(
         text=groups[message.chat.id].templates[language_code]["button_set_temp.txt"],
         callback_data="temperature",
-    )
-    answer_probability_button = types.InlineKeyboardButton(
-        text=groups[message.chat.id].templates[language_code]["button_set_ans.txt"],
-        callback_data="answer_probability",
     )
     memory_button = types.InlineKeyboardButton(
         text=groups[message.chat.id].templates[language_code]["button_set_memory.txt"],
@@ -44,20 +48,36 @@ def set_up_command(message):
         text=groups[message.chat.id].templates[language_code]["button_set_sphere.txt"],
         callback_data="sphere",
     )
+    change_lang_button = types.InlineKeyboardButton(
+        text=groups[message.chat.id].templates[language_code]["button_change_lang.txt"], 
+        callback_data="change_lang"
+    )
+    back_button = types.InlineKeyboardButton(
+        text="<<<",
+        callback_data="back_to_settings",
+    )
 
     # Adding buttons to keyboard
-    set_up_markup.add(temp_button)
-    set_up_markup.add(answer_probability_button)
-    set_up_markup.add(memory_button)
-    set_up_markup.add(freq_penalty_button)
-    set_up_markup.add(pres_penalty_button)
-    set_up_markup.add(len_button)
     set_up_markup.add(sphere_button)
+    set_up_markup.add(freq_penalty_button, pres_penalty_button)
+    set_up_markup.add(memory_button, temp_button)
+    set_up_markup.add(len_button)
+    set_up_markup.add(change_lang_button)
+    set_up_markup.add(back_button)
+    
+    
 
-    # Seconding keyboard
-    bot.send_message(
-        message.chat.id,
-        groups[message.chat.id].templates[language_code]["set_up_functions.txt"],
+    bot.edit_message_text(
+        groups[message.chat.id].templates[language_code]["set_up_functions.txt"], 
+        message.chat.id, 
+        message.message_id, 
         reply_markup=set_up_markup,
-        parse_mode="HTML",
-    )
+        parse_mode="HTML",)
+
+    # # Seconding keyboard
+    # bot.send_message(
+    #     message.chat.id,
+    #     groups[message.chat.id].templates[language_code]["set_up_functions.txt"],
+    #     reply_markup=set_up_markup,
+    #     parse_mode="HTML",
+    # )

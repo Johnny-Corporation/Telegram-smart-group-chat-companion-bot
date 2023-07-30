@@ -1,3 +1,11 @@
-Hey! I am a Johnny - smart group-chat companion bot, you can use command -  /about to know more!
+Hey! I am a Johnny - smart companion bot. 
 
-Bot is off now, use  /enable for activation
+Ask a question, suggest a problem or an idea. Johnny is ready to help you!
+
+<i>You can add Johnny to group!</i>
+
+<i>Below you can see additional tools</i>
+
+<i>*Use  /about to know more!*</i>
+
+<b>Bot is on! Write him now!</b>
