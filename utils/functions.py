@@ -92,6 +92,8 @@ def tokens_to_dollars(model: str, prompt_tokens: int, completion_tokens: int) ->
     coefficients = {
         "gpt-3.5-turbo": {"input": 0.0015, "output": 0.002},
         "gpt-3.5-turbo-16k": {"input": 0.003, "output": 0.004},
+        "gpt-3.5-turbo-0613": {"input": 0.0015, "output": 0.002},
+        "gpt-3.5-turbo-16k-0613": {"input": 0.003, "output": 0.004},
     }
     input_price = (prompt_tokens / 1000) * coefficients[model]["input"]
     output_price = (completion_tokens / 1000) * coefficients[model]["output"]

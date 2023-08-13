@@ -1,12 +1,11 @@
 # ---------------  Imports ---------------
-from os import environ, path, mkdir, execl
-from sys import argv, executable
+from os import environ, makedirs
 
-if not path.exists("output"):
-    mkdir("output")
+makedirs("output", exist_ok=True)
 
 # Bot API
 from telebot import TeleBot, types
+from telebot.apihelper import ApiException
 
 # Local modules
 from Johnny import Johnny
@@ -23,7 +22,6 @@ from typing import Dict
 
 
 # --------------- Initialization ---------------
-
 
 load_dotenv(".env")
 
@@ -51,11 +49,9 @@ blacklist = {}  # chat_id:[messages_ids] needed for filtering messages
 reply_blacklist = {}  # chat_id:[messages_ids] needed for filtering replies to messages
 groups: Dict[int, Johnny] = {}  # {group chat_id:Johnny object}
 
-if not path.exists("output\\groups_info"):
-    mkdir("output\\groups_info")
 
-if not path.exists("output\\clients_info"):
-    mkdir("output\\clients_info")
+makedirs("output\\groups_info", exist_ok=True)
+makedirs("output\\clients_info", exist_ok=True)
 
 
 bot = TeleBot(bot_token)
@@ -72,7 +68,7 @@ keyboard.add(
 # --------------- Error handling ---------------
 
 
-def error_handler(func):
+def error_handler(args):
     """Handles all occurred errors, logs them, sends error and logs.log to developers
 
     Args:
@@ -81,19 +77,12 @@ def error_handler(func):
 
     def wrapper(message: types.Message):
         try:
-            func(message)
+            args(message)
         except KeyError:
-            chat_id = (
-                message.chat.id
-                if isinstance(message, types.Message)
-                else message.message.chat.id
-            )
-
-            bot.send_message(
-                chat_id,
-                "Sorry, bot was restarted. Your data saved!",
-            )
-            init_new_group(chat_id)
+            if (message.chat.id in groups) and (
+                groups[message.chat.id].lang_code is None
+            ):
+                bot.send_message(message.chat.id, "Bot is not initialized yet!")
         except Exception:
             chat_id = (
                 message.chat.id
@@ -106,7 +95,7 @@ def error_handler(func):
                 "Sorry, unexpected error occurred, developers have been already notified!",
             )
             send_to_developers(
-                f"Error occurred!!!: \n -----------\n {traceback.format_exc()}\n ---------- ",
+                f"Error occurred: \n ❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️\n {traceback.format_exc()}\n ❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️",
                 bot,
                 developer_chat_IDs,
             )
@@ -128,8 +117,32 @@ def error_handler(func):
                     f'Message "{message.text}" sent in chat with id {message.chat.id} by user with id {message.from_user.id}'
                 )
 
-    return wrapper
+    if callable(args):
+        return wrapper
+    else:
+        chat_id = args.thread.chat_id
+        logger.error(f"Unexpected error: {traceback.format_exc()}")
+        bot.send_message(
+            chat_id,
+            "Sorry, unexpected error occurred, developers have been already notified!",
+        )
+        try:
+            send_to_developers(
+                f"Error occurred!!!: \n ❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️\n {traceback.format_exc()}\n ❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️ ",
+                bot,
+                developer_chat_IDs,
+            )
+        except ApiException:  # Most probably too long message
+            send_to_developers(
+                "Error occurred, but output is too long, see logs!",
+                bot,
+                developer_chat_IDs,
+            )
+        send_to_developers("output\\debug_logs.log", bot, developer_chat_IDs, file=True)
+        send_to_developers("output\\info_logs.log", bot, developer_chat_IDs, file=True)
 
+
+threading.excepthook = error_handler
 
 # --------------- Filters ---------------
 
@@ -207,7 +220,6 @@ def send_welcome_text_and_load_data(chat_id: int, language_code: str = "en") -> 
 
 
 @bot.message_handler(content_types=["new_chat_members"], func=time_filter)
-@error_handler
 def handle_new_chat_members(message):
     for new_chat_member in message.new_chat_members:
         if new_chat_member.id == bot_id:
@@ -303,15 +315,16 @@ from commands.buttons_handler import *
     and blacklist_filter(message)
     and time_filter(message),
 )
-@error_handler
 def main_messages_handler(message: types.Message):
     """Handles all messages"""
     if (message.chat.id not in groups) or (not groups[message.chat.id].lang_code):
         init_new_group(message.chat.id)
     else:
-        threading.Thread(
+        new_thread = threading.Thread(
             target=groups[message.chat.id].new_message, args=(message,)
-        ).start()
+        )
+        new_thread.chat_id = message.chat.id
+        new_thread.start()
         logger.info(
             f"Created new thread for handling message, now threads running: {threading.active_count()}, 4 of which are system"
         )
@@ -319,5 +332,5 @@ def main_messages_handler(message: types.Message):
 
 # --------------- Running ---------------
 
-logger.info("Bot started")
+logger.info(" ---->>>> BOT STARTED <<<<---- ")
 bot.polling()

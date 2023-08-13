@@ -31,7 +31,7 @@ def group_info_command(message):
             temperature=groups[message.chat.id].temperature,
             answers_frequency=groups[message.chat.id].trigger_probability,
             temporary_memory_size=groups[message.chat.id].temporary_memory_size,
-            presense_penalty=groups[message.chat.id].presense_penalty,
+            presense_penalty=groups[message.chat.id].presence_penalty,
             frequency_penalty=groups[message.chat.id].frequency_penalty,
             length=answer_length,
             sphere=groups[message.chat.id].sphere,
