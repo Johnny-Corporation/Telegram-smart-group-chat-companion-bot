@@ -1,1 +1,0 @@
-El bot está encendido y Lee los mensajes para responderlos.

@@ -2,7 +2,7 @@ from __main__ import *
 
 
 # --- Set sphere of conservation ---
-@bot.message_handler(commands=["set_sphere"], func=time_filter)
+@bot.message_handler(commands=["set_sphere"], func=time_filter and member_filter)
 @error_handler
 def set_sphere_command(message):
     language_code = groups[message.chat.id].lang_code
@@ -12,7 +12,7 @@ def set_sphere_command(message):
         sphere_in = groups[message.chat.id].sphere
     bot_reply = bot.reply_to(
         message,
-        templates[language_code]["set_sphere.txt"].format(sphere=sphere_in),
+        groups[message.chat.id].templates[language_code]["set_sphere.txt"].format(sphere=sphere_in),
         parse_mode="HTML",
     )
     reply_blacklist[message.chat.id].append(bot_reply.message_id)

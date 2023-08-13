@@ -1,1 +1,1 @@
-The size of memory didn't change.
+The size of temporary memory didn't change.

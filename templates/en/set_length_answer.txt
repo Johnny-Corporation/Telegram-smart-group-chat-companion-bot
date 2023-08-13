@@ -1,1 +1,1 @@
-Choose, how long bot will answer you:
+Choose, how long will the bot's responses be:

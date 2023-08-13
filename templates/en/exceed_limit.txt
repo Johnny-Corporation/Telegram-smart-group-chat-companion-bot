@@ -1,0 +1,4 @@
+Limit on temporary memory was exceeded. 
+Now you can have {temp_memory_size} messages maximum.
+
+<i> /subs_list to know about limits</i>

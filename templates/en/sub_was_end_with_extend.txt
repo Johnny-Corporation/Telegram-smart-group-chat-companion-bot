@@ -1,0 +1,3 @@
+Your subscription in previous month was ended. Because you were renewing your subscription, it didn't go away!
+
+<i> /subs_list to know more </i>

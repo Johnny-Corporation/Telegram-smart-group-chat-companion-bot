@@ -1,1 +1,1 @@
-Change the size of your messages-memory
+Size of your messages-memory

@@ -1,15 +1,12 @@
 Bot is turned on now and reading new messsage to debate!
 
-<i>/about to know about bot </i>
+<i> /about to know about bot </i>
 
-Now, bot answers with this <b>{probability}</b> probability.
-Change it: /set_prob
+Now, bot answers with <b>{probability}</b> probability.
+Change it:  /set_answer_probability
 
-Other modes:
-/enable_dialog - bot will answer on each message
-/enable_manual - here you manually call a bot
+We recommend look at  /settings to do Johnny as you want!
 
-Anytime, you can clean memory /clean_memory to start conservation from scratch
-For better understanding recommend set up the sphere of dialog /set_sphere
+<i>Another tools you can see below! </i>
 
-/disable to turn off a bot
+ /disable to turn off a bot

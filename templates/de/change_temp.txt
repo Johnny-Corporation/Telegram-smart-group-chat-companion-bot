@@ -1,1 +1,0 @@
-Bitte geben Sie einen Wert von 0 bis 2 als Antwort auf diese Nachricht ein. Der Temperaturparameter definiert, wie zufällig GPT-Antworten sind, wobei 0 am deterministischsten und 2 am zufälligsten ist

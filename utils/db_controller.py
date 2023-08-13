@@ -44,15 +44,21 @@ class Controller:
             CREATE TABLE UserSubscriptions (
                 ID INTEGER PRIMARY KEY AUTOINCREMENT,
                 ChatID INTEGER,
-                GroupChatIDs TEXT,
+                TypeOfSubscription TEXT,
+                NumAllowedGroups INTEGER,
+                TemporaryMemorySize INTEGER,
+                DateOfStart TEXT,
                 SenderFirstName TEXT,
                 SenderLastName TEXT,
                 SenderUsername TEXT,
-                PromptTokensTotal INTEGER,
-                CompletionTokensTotal INTEGER,
+                TokensTotal INTEGER,
                 DYNAMIC_GENERATION TINYINT,
                 VOICE_INPUT TINYINT,
-                VOICE_OUTPUT TINYINT
+                VOICE_OUTPUT TINYINT,
+                SphereContext TINYINT,
+                Temperature TINYINT,
+                FrequencyPenalty TINYINT,
+                PresensePenalty TINYINT
             )
         """
         )
@@ -64,44 +70,62 @@ class Controller:
     def add_user_with_sub(
         self,
         chat_id: int,
-        group_chat_ids: str,
+        type_of_subscription: str,
+        num_allowed_groups: int,
+        temporary_memory_size: int,
+        date_of_start: int,
         sender_first_name: str,
         sender_last_name: str,
         sender_username: str,
-        prompt_tokens_total: int,
-        completion_tokens_total: int,
+        tokens_total: int,
         dynamic_generation: bool,
         voice_input: bool,
         voice_output: bool,
+        sphere_context: bool,
+        temperature: bool,
+        freq_penalty: bool,
+        presense_penalty: bool
     ) -> None:
         sql = """
             INSERT INTO UserSubscriptions (
                 ChatID,
-                GroupChatIDs,
+                TypeOfSubscription,
+                NumAllowedGroups,
+                TemporaryMemorySize,
+                DateOfStart,
                 SenderFirstName,
                 SenderLastName,
                 SenderUsername,
-                PromptTokensTotal,
-                CompletionTokensTotal,
+                TokensTotal,
                 DYNAMIC_GENERATION,
                 VOICE_INPUT,
-                VOICE_OUTPUT
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VOICE_OUTPUT,
+                SphereContext,
+                Temperature,
+                FrequencyPenalty,
+                PresensePenalty 
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
 
         self.cursor.execute(
             sql,
             (
                 chat_id,
-                group_chat_ids,
+                type_of_subscription,
+                num_allowed_groups,
+                temporary_memory_size,
+                date_of_start,
                 sender_first_name,
                 sender_last_name,
                 sender_username,
-                prompt_tokens_total,
-                completion_tokens_total,
+                tokens_total,
                 int(dynamic_generation),
                 int(voice_input),
                 int(voice_output),
+                int(sphere_context),
+                int(temperature),
+                int(freq_penalty),
+                int(presense_penalty)
             ),
         )
 
@@ -136,9 +160,107 @@ class Controller:
         )
         self.conn.commit()
 
+
+    def update_tokens_of_user_with_sub(self, chat_id, data) -> None:
+        """Update tokens of user by chat_id"""
+        
+        query = "UPDATE UserSubscriptions SET TokensTotal = ? WHERE ChatID = ?"
+        self.cursor.execute(query, (data, chat_id))
+
+        self.conn.commit()
+
+    def update_days_of_subscription_of_user_with_sub(self, chat_id, data) -> None:
+        """Update days of subscription of user by chat_id"""
+        
+        query = "UPDATE UserSubscriptions SET DaysOfSubscription = ? WHERE ChatID = ?"
+        self.cursor.execute(query, (data, chat_id))
+
+        self.conn.commit()
+
+
+    def check_the_existing_of_user_with_sub(self, chat_id) -> bool:
+        """Check the existing of user in db by chat_id"""
+        # Проверка наличия строки с определенным id
+
+        query = "SELECT * FROM UserSubscriptions WHERE ChatID = ?"
+
+        self.cursor.execute(query, (chat_id,))
+
+        # Получение результатов
+        row = self.cursor.fetchone()
+
+        if row is None:
+            return False
+        else:
+            return True
+        
+
+    def delete_the_existing_of_user_with_sub(self, chat_id) -> None:
+        """delete data of user by chat_id"""
+        
+        query = "DELETE FROM UserSubscriptions WHERE ChatID = ?"
+        self.cursor.execute(query, (chat_id,))
+
+        self.conn.commit()
+
+    def delete_the_existing_of_user_with_sub_by_date(self, date_of_start) -> None:
+        """delete data of user by chat_id"""
+        
+        query = "DELETE FROM UserSubscriptions WHERE DateOfStart = ?"
+        self.cursor.execute(query, (date_of_start,))
+
+        self.conn.commit()
+
+
+    def get_users_with_sub_by_chat_id(self, user_chat_id: int):
+        """aa"""
+        query = "SELECT DateOfStart FROM UserSubscriptions WHERE ChatID=?"
+        self.cursor.execute(query, (user_chat_id,))
+        result = self.cursor.fetchall()
+
+        return result
+
+
+
+    def get_first_date_of_start_of_user(self, user_chat_id: int):
+        """Get the days of subscription of user by id"""
+        query = "SELECT DateOfStart FROM UserSubscriptions WHERE ChatID = ? ORDER BY DateOfStart ASC LIMIT 1"
+        self.cursor.execute(query, (user_chat_id,))
+        result = self.cursor.fetchone()
+
+        return result[0]
+    
+    def get_last_date_of_start_of_user(self, user_chat_id: int):
+        """Get the days of subscription of user by id"""
+        query = "SELECT DateOfStart FROM UserSubscriptions WHERE ChatID = ? ORDER BY DateOfStart DESC LIMIT 1"
+        self.cursor.execute(query, (user_chat_id,))
+        result = self.cursor.fetchone()
+
+        return result[0]
+    
+    def get_user_with_sub_by_username(self, user_username: int) -> dict:
+        """Returns dict with data about user where each key is a column name"""
+        query = "SELECT * FROM UserSubscriptions WHERE SenderUsername = ? ORDER BY DateOfStart ASC LIMIT 1"
+        self.cursor.execute(query, (user_username,))
+        result = self.cursor.fetchone()
+
+        if result is None:
+            return {}  # User not found
+
+        # Convert the row into a dictionary
+        columns = [description[0] for description in self.cursor.description]
+        users_dict = {}
+        for i, column in enumerate(columns):
+            if (column != "TokensTotal") and (column != "NumAllowedGroups") and (column != "TemporaryMemorySize") and (column != "TypeOfSubscription") and (column != "DateOfStart"):
+                users_dict[column] = bool(result[i])
+            else:
+                users_dict[column] = result[i]
+
+        return users_dict
+
     def get_user_with_sub_by_chat_id(self, user_chat_id: int) -> dict:
         """Returns dict with data about user where each key is a column name"""
-        query = "SELECT * FROM UserSubscriptions WHERE ChatID = ?"
+        query = "SELECT * FROM UserSubscriptions WHERE ChatID = ? ORDER BY DateOfStart ASC LIMIT 1"
         self.cursor.execute(query, (user_chat_id,))
         result = self.cursor.fetchone()
 
@@ -149,15 +271,10 @@ class Controller:
         columns = [description[0] for description in self.cursor.description]
         users_dict = {}
         for i, column in enumerate(columns):
-            if column == "GroupChatIDs":
-                users_dict[column] = result[i].split(",")
+            if (column != "TokensTotal") and (column != "NumAllowedGroups") and (column != "TemporaryMemorySize") and (column != "TypeOfSubscription") and (column != "DateOfStart"):
+                users_dict[column] = bool(result[i])
             else:
-                if (column != "PromptTokensTotal") and (
-                    column != "CompletionTokensTotal"
-                ):
-                    users_dict[column] = bool(result[i])
-                else:
-                    users_dict[column] = result[i]
+                users_dict[column] = result[i]
 
         return users_dict
 

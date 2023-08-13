@@ -1,4 +1,4 @@
-Please enter a value <b>more than 0 in reply to this </b>. 
-Temporary memory size in GPT relates to the number of messages it considers per request.
+Please enter a value <b>more than 0 in reply to this message</b>. 
+Johnny relates to messages in temporary memory per request. 
 
-<i>Sets {memory} now</i>
+<i>Set up {memory} now</i>

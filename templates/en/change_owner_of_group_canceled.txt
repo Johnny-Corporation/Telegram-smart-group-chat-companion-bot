@@ -1,0 +1,1 @@
+The changing of group's owner was canceled. Incorrect format of data.

@@ -2,7 +2,7 @@ from __main__ import *
 
 
 # --- set_up functions ---
-@bot.message_handler(commands=["dev_tools"], func=time_filter)
+@bot.message_handler(commands=["dev_tools"], func=time_filter and member_filter)
 @error_handler
 def dev_tools(message):
     if str(message.chat.id) not in developer_chat_IDs and (
@@ -53,6 +53,11 @@ def dev_tools(message):
     button = types.InlineKeyboardButton(
         text="Add to Johnny.py TODO list",
         callback_data="add_to_todo",
+    )
+    dev_tools_markup.add(button)
+    button = types.InlineKeyboardButton(
+        text="Get avaible promocodes.",
+        callback_data="get_promocodes",
     )
     dev_tools_markup.add(button)
 

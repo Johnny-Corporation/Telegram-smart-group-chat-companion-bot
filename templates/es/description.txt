@@ -1,9 +1,0 @@
-¡Te presentamos a Johnny, tu bot de chat grupal versátil e inteligente! Johnny va más allá de lo habitual al aprovechar las capacidades de la API de representación vectorial de OpenAI para crear un sistema de memoria sólido. Con la capacidad de recordar conversaciones enteras, Johnny trae un nuevo nivel de contexto y consistencia a su chat grupal.
-
-Johnny no es solo un observador pasivo; participa activamente en discusiones grupales, ofreciendo ideas profundas y ayudando a las personas a resolver problemas. ¿Necesitas sugerencias para una noche de cine? Johnny te ayudará. ¿Estás planeando un viaje de fin de semana? Johnny dará recomendaciones sobre destinos basados en conversaciones anteriores. No importa el tema, Johnny siempre está dispuesto a ayudar.
-
-La belleza de Johnny radica en su perfecta integración con su chat grupal. Se adapta fácilmente a la conversación actual, proporcionando respuestas relevantes y contextualmente relevantes. Respeta la privacidad del usuario y sigue estrictamente las pautas de protección de datos para que pueda comunicarse con una sensación de tranquilidad.
-
-Desata el poder de Johnny, un bot que recuerda e interactúa. Invita a Johnny a tu grupo en Telegram y experimenta la alegría de hablar con un compañero inteligente que siempre está listo para ayudar e inspirar.
-
-¡Solo agrégalo al grupo para comenzar!

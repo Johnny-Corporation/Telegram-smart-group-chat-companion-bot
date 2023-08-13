@@ -1,3 +1,11 @@
-Hey! I am a Johnny - smart group-chat companion bot, you can use /about@SmartGroupParticipant_bot to know more!
+Hey! I am a Johnny - smart companion bot. 
 
-Bot is diasbled now, use /enable for activation
+Ask a question, suggest a problem or an idea. Johnny is ready to help you!
+
+<i>You can add Johnny to group!</i>
+
+<i>Below you can see additional tools</i>
+
+<i>*Use  /about to know more!*</i>
+
+<b>Bot is on! Write him now!</b>
