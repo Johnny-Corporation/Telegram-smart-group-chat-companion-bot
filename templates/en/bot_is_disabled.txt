@@ -1,2 +1,2 @@
 You bot is disbaled.
-/enable to activate him
+ /enable to activate him

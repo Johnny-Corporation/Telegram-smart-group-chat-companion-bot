@@ -83,3 +83,8 @@ def add_to_todo_reply_handler(inner_message):
     with open("Johnny.py", "a") as f:
         f.write(f"\n# [ ] {inner_message.text}\n")
     bot.reply_to(inner_message, "Done!")
+
+@error_handler
+def get_promocodes(inner_message):
+    bot.send_message(inner_message.chat.id, f"BIG BUSINESS: {big_business_promocode}\nSMALL BUSINESS: {small_business_promocode}\nUSER BUSINESS: {user_promocode}\nGet 100000 messages: {promocode_100000}")
+

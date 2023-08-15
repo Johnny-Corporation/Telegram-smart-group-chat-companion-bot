@@ -4,37 +4,36 @@ Si es nuevo en JohnnyBot, consulte la / descripción
 Puedes controlarme enviando estos comandos:
 
 <b>Funciones de configuración</b>
-/change_language - cambia el idioma del bot
+ /change_language - cambia el idioma del bot
 
-/set_temperature - establece lo caótico en las respuestas
-/temporary_memory_size: establece el valor máximo de mensajes memorables
-
+ /set_temperature - establece lo caótico en las respuestas
+ /temporary_memory_size: establece el valor máximo de mensajes memorables
 
 
 <b>Funciones de interacción</b>
-/question_to_bot - haz una pregunta, que se toma fuera de contexto
+ /question_to_bot - haz una pregunta, que se toma fuera de contexto
 
-/enable - activa el modo automático. Bot lee mensajes y decide cuándo debe responder a los mensajes
-/disable - activa el modo automático
+ /enable - enciende el automodo Bot lee mensajes y decide cuándo debe responder a los mensajes
+ /disable - activa el modo automático
 
-/enable_dialog - activa el modo de diálogo. Es un chat, respuesta de bot en cada mensaje.
-/disable_dialog - desactiva el modo de diálogo.
+ /enable_dialog: activa el modo de diálogo. Es un chat, respuesta de bot en cada mensaje.
+ /disable_dialog - desactiva el modo de diálogo.
 
 
 <b>Personalización</b>
-/dynamic_generation - activa la generación dinámica. Bot imprime el mensaje frente a tus ojos
+ /dynamic_generation - activa la generación dinámica. Bot imprime el mensaje frente a tus ojos
 
 
-<b>INFO</b>
-/description - ver la descripción del bot
-/commands - lista de todos los comandos con explicación
+<b>INFORMACIÓN</b>
+ /description - ver la descripción del bot
+ /commands - lista de todos los comandos con explicación
 
 
 <b>Configuración de la cuenta</b>
-/tokens_info - cuántos tokens usaste
-/about - mensaje de inicio
+ /messages_info - cuántos messages usaste
+ /acerca de - mensaje de inicio
 
 
-<b>Soporte</b>
-/report_bug - enviar a los desarrolladores información sobre el error
-/request_feature: sugiere una nueva característica del bot a los desarrolladores
+<b>Asistencia</b>
+ /report_bug - enviar a los desarrolladores información sobre el error
+ /request_feature: sugiere una nueva característica del bot a los desarrolladores

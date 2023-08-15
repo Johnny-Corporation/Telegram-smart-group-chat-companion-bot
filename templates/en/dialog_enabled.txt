@@ -1,3 +1,3 @@
-Dialog mode was enabled. Johnny ready to chat with you.
+Mode Dialog was enabled. Johnny ready to chat with you.
 
-/disable_dialog - to leave this mode
+ /disable_dialog - to leave this mode

@@ -1,5 +1,5 @@
 # ---------------  Imports ---------------
-from os import environ, makedirs
+from os import environ
 
 makedirs("output", exist_ok=True)
 
@@ -12,6 +12,8 @@ from Johnny import Johnny
 from utils.internet_access import *
 from utils.functions import *
 from utils.logger import logger
+from utils.time_tracking import *
+from utils.text_to_voice import *
 
 # Other
 from dotenv import load_dotenv
@@ -32,6 +34,8 @@ ignored_messages = 0  # count number of ignored messages when bot was offline fo
 
 
 bot_token = environ.get("BOT_API_TOKEN")
+
+yoomoney_token = environ.get("PAYMENT_RUS_TOKEN")
 
 developer_chat_IDs = environ.get("DEVELOPER_CHAT_IDS")
 if not bot_token:
@@ -57,12 +61,6 @@ makedirs("output\\clients_info", exist_ok=True)
 bot = TeleBot(bot_token)
 bot_id = bot.get_me().id
 bot_username = bot.get_me().username
-
-# Init quick access keyboard
-keyboard = types.ReplyKeyboardMarkup()
-keyboard.add(
-    *[types.KeyboardButton(text="/enable"), types.KeyboardButton(text="/disable")]
-)
 
 
 # --------------- Error handling ---------------
@@ -108,6 +106,15 @@ def error_handler(args):
         else:
             if isinstance(message, types.CallbackQuery):
                 logger.info("Callback query processed without errors")
+
+            elif message.content_type == "voice":
+                logger.info(
+                    f"Voice message executed in chat with id {message.chat.id} by user with id {message.from_user.id}"
+                )
+            elif message.content_type == "video_note":
+                logger.info(
+                    f"Video note executed in chat with id {message.chat.id} by user with id {message.from_user.id}"
+                )
             elif message.text[0] == "/":  # command
                 logger.info(
                     f'Command "{message.text}" executed in chat with id {message.chat.id} by user with id {message.from_user.id}'
@@ -145,6 +152,34 @@ def error_handler(args):
 threading.excepthook = error_handler
 
 # --------------- Filters ---------------
+
+
+def member_filter(message: types.Message):
+    global skip_old_messages
+    print(skip_old_messages)
+    if not skip_old_messages:
+        # Check, there is a owner of group
+        try:
+            if groups[message.chat.id].owner_id != None:
+                return True
+
+        # Check a registration of user, if a group didn't initialize
+        except:
+            # Messages handlers
+            if message.content_type in [
+                "audio",
+                "photo",
+                "voice",
+                "video",
+                "document",
+                "text",
+                "location",
+                "contact",
+                "sticker",
+            ]:
+                if message.chat.type != "private":
+                    return False
+            return True
 
 
 def time_filter(message: types.Message):
@@ -187,33 +222,180 @@ def change_language(chat_id):
     keyboard = types.InlineKeyboardMarkup()
     keyboard.add(types.InlineKeyboardButton(text="Русский", callback_data="ru"))
     keyboard.add(types.InlineKeyboardButton(text="English", callback_data="en"))
-    # keyboard.add(types.InlineKeyboardButton(text="Deutsch", callback_data="de"))
-    # keyboard.add(types.InlineKeyboardButton(text="Español", callback_data="es"))
+    keyboard.add(types.InlineKeyboardButton(text="Other", callback_data="other"))
+
     bot.send_message(chat_id, "Choose language", reply_markup=keyboard)
 
 
-def send_welcome_text_and_load_data(chat_id: int, language_code: str = "en") -> None:
+def send_welcome_text_and_load_data(
+    chat_id: int, owner_id: int, language_code: str = "en"
+) -> None:
     """Sends initialization messages to group and loads data in group's object
 
     Args:
         chat_id (int)
     """
 
-    if chat_id > 0:
-        bot.send_message(chat_id, templates[language_code]["new_user_welcome.txt"])
-    else:
-        bot.send_message(chat_id, templates[language_code]["new_group_welcome.txt"])
+    try:
+        groups[owner_id]
+    except:
+        bot.send_message(chat_id, f"Register in @{bot_username}")
+        return
 
-    bot.send_message(chat_id, templates[language_code]["initialization.txt"])
-    if language_code == "ru":
-        send_sticker(chat_id, stickers["initializing"], bot)
+    groups[chat_id].activated = True
 
+    # Check group
+    if chat_id < 0:
+        if (
+            len(groups[owner_id].id_groups)
+            == groups[owner_id].permissions[groups[owner_id].subscription][
+                "allowed_groups"
+            ]
+        ):
+            bot.send_message(
+                chat_id,
+                "Your limits on groups was exceeded. Pay the subscription to use Johnny in more groups.",
+            )
+            return
+
+    # Dynamic loading of group
+    loading = bot.send_message(chat_id, "Loading...10% ")
+    bot.edit_message_text(f"Loading...11% ", chat_id, loading.message_id)
+    bot.edit_message_text(f"Loading...16% ", chat_id, loading.message_id)
+    bot.edit_message_text(f"Loading...24% ", chat_id, loading.message_id)
+
+    # Load messages
     groups[chat_id].load_data()
 
-    bot.send_message(
-        chat_id,
-        templates[language_code]["done_initializing.txt"],
-    )
+    # Dynamic loading of group
+    bot.edit_message_text(f"Loading...30% ", chat_id, loading.message_id)
+    bot.edit_message_text(f"Loading...51% ", chat_id, loading.message_id)
+
+    # Signing in (registration) of user
+    new_user = False  # It's using for detection of new user or not
+
+    # User or group
+    if chat_id > 0:
+        # Try to get info from database
+        sub_exist = groups[chat_id].load_subscription(chat_id)
+
+        bot.edit_message_text(f"Loading...60% ", chat_id, loading.message_id)
+        bot.edit_message_text(f"Loading...71% ", chat_id, loading.message_id)
+
+        # If there isn't data, registrate new user
+        if not sub_exist:
+            groups[chat_id].add_new_user(chat_id, " ", " ", " ", "Free", 100000)
+            groups[chat_id].load_subscription(chat_id)
+
+            bot.edit_message_text(f"Loading...90% ", chat_id, loading.message_id)
+
+            new_user = True
+
+        else:
+            # Turn on the time-tracker of subscription (if user bought ut before)
+            groups[chat_id].track_sub(
+                chat_id, new=False
+            )  # If user have free plan - in track_sub it considering
+
+            bot.edit_message_text(f"Loading...90% ", chat_id, loading.message_id)
+
+    # For group/chat
+    else:
+        # Load info to group from loader of group (owner_id)
+        groups[chat_id].subscription = groups[owner_id].subscription
+        groups[chat_id].permissions[groups[chat_id].subscription][
+            "allowed_groups"
+        ] = groups[owner_id].permissions[groups[owner_id].subscription][
+            "allowed_groups"
+        ]
+        groups[chat_id].permissions[groups[chat_id].subscription][
+            "messages_limit"
+        ] = groups[owner_id].permissions[groups[owner_id].subscription][
+            "messages_limit"
+        ]
+        groups[chat_id].permissions[groups[chat_id].subscription][
+            "dynamic_gen_permission"
+        ] = groups[owner_id].permissions[groups[owner_id].subscription][
+            "dynamic_gen_permission"
+        ]
+        groups[chat_id].permissions[groups[chat_id].subscription][
+            "voice_output_permission"
+        ] = groups[owner_id].permissions[groups[owner_id].subscription][
+            "voice_output_permission"
+        ]
+        groups[chat_id].permissions[groups[chat_id].subscription][
+            "sphere_permission"
+        ] = groups[owner_id].permissions[groups[owner_id].subscription][
+            "sphere_permission"
+        ]
+        groups[chat_id].permissions[groups[chat_id].subscription][
+            "temperature_permission"
+        ] = groups[owner_id].permissions[groups[owner_id].subscription][
+            "temperature_permission"
+        ]
+        groups[chat_id].permissions[groups[chat_id].subscription][
+            "frequency_penalty_permission"
+        ] = groups[owner_id].permissions[groups[owner_id].subscription][
+            "frequency_penalty_permission"
+        ]
+        groups[chat_id].permissions[groups[chat_id].subscription][
+            "presense_penalty_permission"
+        ] = groups[owner_id].permissions[groups[owner_id].subscription][
+            "presense_penalty_permission"
+        ]
+        groups[chat_id].permissions[groups[chat_id].subscription][
+            "temporary_memory_size_limit"
+        ] = groups[owner_id].permissions[groups[owner_id].subscription][
+            "temporary_memory_size_limit"
+        ]
+        groups[chat_id].owner_id = owner_id
+
+        # Add to owner's data info about him group
+        groups[owner_id].id_groups.append(chat_id)
+
+        bot.edit_message_text(f"Loading...70% ", chat_id, loading.message_id)
+
+    # End and Delete the 'loading message'
+    bot.edit_message_text(f"Loading...100% ", chat_id, loading.message_id)
+    time.sleep(0.1)
+    bot.delete_message(chat_id, loading.message_id)
+
+    # Load buttons
+    markup = load_buttons(types, groups, chat_id, language_code, owner_id=owner_id)
+
+    # Welcome text for group and user
+    if chat_id > 0:
+        groups[chat_id].trigger_probability = 1
+        bot.send_message(
+            chat_id,
+            groups[chat_id].templates[language_code]["new_user_welcome.txt"],
+            reply_markup=markup,
+            parse_mode="HTML",
+        )
+    else:
+        bot.send_message(
+            chat_id,
+            groups[chat_id].templates[language_code]["new_group_welcome.txt"],
+            reply_markup=markup,
+            parse_mode="HTML",
+        )
+
+    # Suggestion to user try trial subscription
+    if new_user:
+        markup = types.InlineKeyboardMarkup()
+
+        button = types.InlineKeyboardButton(
+            text=groups[chat_id].templates[language_code]["button_activate.txt"],
+            callback_data="free_sub",
+        )
+        markup.add(button)
+
+        bot.send_message(
+            chat_id,
+            groups[chat_id].templates[language_code]["free_use_subscription.txt"],
+            reply_markup=markup,
+            parse_mode="HTML",
+        )
 
 
 # ---------------  Handling and initialing new groups ---------------
@@ -223,7 +405,27 @@ def send_welcome_text_and_load_data(chat_id: int, language_code: str = "en") -> 
 def handle_new_chat_members(message):
     for new_chat_member in message.new_chat_members:
         if new_chat_member.id == bot_id:
-            init_new_group(message.chat.id)
+            clients = listdir("output\\clients_info")
+
+            if not check_file_existing(
+                message.from_user.first_name, "output\\clients_info"
+            ):
+                bot.send_message(
+                    message.chat.id,
+                    f"Please, sign in in private messages in @{bot_username}. It will take less than a minute",
+                )
+            if message.from_user.id not in groups.keys():
+                bot.send_message(
+                    message.chat.id,
+                    f"Please, sign in in private messages in @{bot_username}. It will take less than a minute",
+                )
+
+    try:
+        remove(f"output\\groups_info\\{clean_string(message.chat.title)}.json")
+        groups.pop(message.chat.id)
+        groups[message.from_user.id].id_groups.remove(message.chat.id)
+    except:
+        None
 
 
 def init_new_group(chat_id):
@@ -233,7 +435,6 @@ def init_new_group(chat_id):
             chat_id,
             "You haven't set the language. English sets by default.\nUse /change_language for changing language",
         )
-        send_welcome_text_and_load_data(chat_id)
 
     else:
         chat = bot.get_chat(chat_id)
@@ -256,6 +457,7 @@ def init_new_group(chat_id):
                 f.write(convert_to_json(str(chat)))
 
         groups[chat_id] = Johnny(bot, chat_id, str(bot_username))
+        groups[chat_id].templates = load_templates("templates\\")
 
         blacklist[chat_id] = []
         reply_blacklist[chat_id] = []
@@ -268,44 +470,53 @@ def init_new_group(chat_id):
 # --------------- Commands ---------------
 
 # Reply handlers (important to import them before commands, because commands are using them)
-from commands.reply_handlers.feature_request import *
 from commands.reply_handlers.bug_report import *
+from commands.reply_handlers.feature_request import *
+from commands.reply_handlers.purchase_enter_new_messages import *
+from commands.reply_handlers.purchase_enter_promocode import *
+from commands.reply_handlers.purchase_support_us import *
 from commands.reply_handlers.question_to_bot import *
-from commands.reply_handlers.set_temp import *
-from commands.reply_handlers.frequency_penalty import *
-from commands.reply_handlers.presense_penalty import *
-from commands.reply_handlers.set_sphere import *
-from commands.reply_handlers.temp_memory_size import *
-from commands.reply_handlers.set_probability import *
+from commands.reply_handlers.settings_bot_answers import *
+from commands.reply_handlers.settings_change_language import *
+from commands.reply_handlers.settings_change_owner import *
 
 # Commands
 from commands.about import *
+from commands.account import *
+from commands.bot_on_view_mode import *
+from commands.bot_on_change_mode_command import *
+from commands.clean_memory import *
+from commands.converts import *
+from commands.dev_tools import *
+from commands.enable_disable import *
+from commands.group import *
 from commands.help import *
-from commands.start import *
-from commands.set_up_command import *
-from commands.view_mode import *
-from commands.tokens_info import *
-from commands.dynamic_generation import *
-from commands.set_temp import *
-from commands.set_prob import *
-from commands.set_memory_size import *
-from commands.set_freq_penalty import *
-from commands.set_sphere import *
-from commands.set_answer_len import *
+from commands.purchase_enter_promocode import *
+from commands.purchase_extend_sub import *
+from commands.purchase_pay_subscription import *
+from commands.purchase_pay_messages import *
+from commands.purchase_support_us import *
+from commands.purchase_update_sub import *
+from commands.purchase import *
+from commands.question_to_bot import *
 from commands.report_bug import *
 from commands.request_feature import *
-from commands.question_to_bot import *
-from commands.enable_disable import *
-from commands.dialog_mode_dis_en import *
-from commands.manual_mode_en_dis import *
-from commands.clean_memory import *
-from commands.commands_list import *
-from commands.group_info import *
-from commands.change_lang import *
-from commands.dev_tools import *
+from commands.settings import *
+from commands.settings_change_language import *
+from commands.settings_bot_answers import *
+from commands.settings_change_owner_of_group import *
+from commands.settings_special_features import *
+from commands.about import *
+from commands.start import *
+from commands.subs_list import *
+from commands.tranzzo import *
 
 # Buttons handler
 from commands.buttons_handler import *
+from commands.commands_handler import *
+
+# Payment handler (need be there)
+from utils.yoomoney import *
 
 # --------------- Main messages handler ---------------
 
@@ -328,11 +539,29 @@ from commands.buttons_handler import *
 )
 def main_messages_handler(message: types.Message):
     """Handles all messages"""
+
     if (message.chat.id not in groups) or (not groups[message.chat.id].lang_code):
         init_new_group(message.chat.id)
+
     else:
+        # Check for existing of buttons
+        try:
+            groups[message.chat.id].button_commands[-1]
+        except:
+            return
+        # Checks the command of ReplyButtons
+        button_on = reply_keyboard_buttons_handler(
+            message, groups[message.chat.id].button_commands
+        )
+        if button_on:
+            return
+
+        # Checks the regisration of user
+        if groups[message.chat.id].activated == False:
+            return
+
         new_thread = threading.Thread(
-            target=groups[message.chat.id].new_message, args=(message,)
+            target=groups[message.chat.id].new_message, args=(message, groups)
         )
         new_thread.chat_id = message.chat.id
         new_thread.start()

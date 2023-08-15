@@ -2,4 +2,4 @@ Manual mode is enabled.
 
 Now Bot answers, when you <b>tag</b> him or <b>reply to his message</b>.
 
-/disable_manual to leave this mode.
+ /disable_manual to leave this mode.

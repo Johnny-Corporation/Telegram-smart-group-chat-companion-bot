@@ -1,0 +1,3 @@
+¡Felicidades! ¡Tus fichas aumentaron!
+
+<i> /account_info para ver los cambios</i>

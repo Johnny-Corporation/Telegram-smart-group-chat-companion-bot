@@ -1,4 +1,5 @@
-Manual mode was enabled.
+El modo manual está habilitado.
 
-/remember in reply_to to message - memorize message. Bot will keep in mind him.
-/answer - bot gives an response
+Ahora Bot responde cuando lo <b>etiquetas</b> o <b>respondes a su mensaje</b>.
+
+ /disable_manual para salir de este modo.

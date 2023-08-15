@@ -1,0 +1,6 @@
+Aquí hay comandos para configurar su bot:
+
+ /dynamic_generation - para habilitarlo/deshabilitarlo
+ /change_language - para cambiar el idioma
+
+<i>Para conocer los valores actuales  /group_info </i>

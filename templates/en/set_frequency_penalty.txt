@@ -1,0 +1,4 @@
+Enter a value <b>from 0</b> (the least various) <b>to 2</b> (the most various) <b>in reply to this message</b>. 
+Diversity of answers makes the bot responds more various.
+
+<i>Set up {frequency_penalty} now</i>

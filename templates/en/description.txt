@@ -1,32 +1,7 @@
-Hey! I am Johnny - smart AI bot. I can solve problems, suggest solutions, answer questions, expresse his opinion and more.
+Hey! I am Johnny – smart AI bot! I can solve problems, suggest solutions, answer questions, expresse his opinion and more!
 
-You can chat as in private messages, as in group chats - just add it to group!
+Weather for tomorrow? What to give for a birthday? Write a simple programm on python - that's all for you!
 
-<b>/enable</b> - <b>turn on</b> the bot in <b>automode</b> by default.
-In this mode, Johnny gives respone with <b>{probability} probability</b>.
-/set_prob to change probability
+You can chat as in private messages, as in group chats – just add it to group!
 
-Also you can change other parameters to Johnny as you want!
-
-Put this command to get set up functions:
-
-<b>/set_up</b>
-
-
-Also you can apply these modes:
-/enable_dialog - bot will answer on each message
-/enable_manual - here you manually call a bot
-
-
-Make your bot more unique and convenient with <b>Customization</b> settings:
-
-/change_language for changing language.
-/dynamic_generation for dynamic typing. Bot prints message in front your eyes!
-
-
-Don't forget <b>track your account</b>: 
-
-<b>/account_info</b>
-
-
-Here is your assistant! Try it out!
+Johnny reads messages and give his opinion, solution.

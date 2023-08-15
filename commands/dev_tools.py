@@ -55,6 +55,11 @@ def dev_tools(message):
         callback_data="add_to_todo",
     )
     dev_tools_markup.add(button)
+    button = types.InlineKeyboardButton(
+        text="Get avaible promocodes.",
+        callback_data="get_promocodes",
+    )
+    dev_tools_markup.add(button)
 
     # Seconding keyboard
     bot.send_message(

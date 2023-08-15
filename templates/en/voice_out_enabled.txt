@@ -1,0 +1,3 @@
+Sending voice answers was enabled. Anytime, you can disable it in settings.
+
+<b>Anytime, you can send /totext in reply to voice message, and bot resend it in text format.</b>

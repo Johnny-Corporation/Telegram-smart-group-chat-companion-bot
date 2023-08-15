@@ -1,0 +1,4 @@
+Introduzca <b>el alcance de su conservación (por ejemplo, negocio etp) en respuesta al mensaje</b>.
+Bot ahora responderá solo cuando discuta este tema.
+
+<i>Configurar ahora: {sphere}</i>

@@ -1,1 +1,1 @@
-Has gastado {spent_tokens} tokens. Aproximadamente {dollars}$
+Ha gastado {spent_messages} fichas. es aproximadamente {dollars}$

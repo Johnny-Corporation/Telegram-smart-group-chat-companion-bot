@@ -1,0 +1,9 @@
+<b>Personalización</b>
+
+La generación dinámica es {dynamic_gen_en}.
+
+La entrada de voz es {voice_in}
+
+La salida de voz es {voice_out}
+
+En <i>Configuración/Oportunidades especiales</i> puedes cambiarlo

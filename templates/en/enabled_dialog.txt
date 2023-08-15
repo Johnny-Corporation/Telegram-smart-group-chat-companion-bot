@@ -1,0 +1,3 @@
+Your bot is working in Dialog Mode! 
+
+Change mode or disable him you can below!

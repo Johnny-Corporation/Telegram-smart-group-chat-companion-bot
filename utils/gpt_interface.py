@@ -67,6 +67,7 @@ def generate_image_and_send(bot, chat_id, prompt, n=1, size="1024x1024"):
 
 def create_chat_completion(
     messages: list,
+    lang: str = 'en',
     system_content: str = None,
     answer_length: int = "as you need",
     use_functions: bool = False,
@@ -96,7 +97,7 @@ def create_chat_completion(
     previous_messages = [
         {
             "role": "system",
-            "content": system_content,
+            "content": functions.translate_text(lang,system_content),
         }
     ]
 
@@ -181,7 +182,7 @@ def check_context_understanding(answer):
             }
         ],
         temperature=0,
-        max_tokens=1,
+        max_messages=1,
     )
     return extract_text(completion) == "No"
 
@@ -197,6 +198,26 @@ def check_theme_context(answer, theme):
             }
         ],
         temperature=0,
-        max_tokens=1,
+        max_messages=1,
     )
     return extract_text(completion) == "Yes"
+
+
+def get_messages_in_official_format(messages):
+    """Converts messages kept in Johnny to official format"""
+    previous_messages = []
+    for m in messages:
+        previous_messages.append(
+            {
+                "role": ("assistant" if m[0] == "assistant" else "user"),
+                "content": m[1],
+                "name": functions.remove_utf8_chars(m[0]),
+            }
+        )
+    return previous_messages
+
+
+def speech_to_text(path):
+    audio_file= open(path, "rb")
+    transcript = openai.Audio.transcribe("whisper-1", audio_file)
+    return transcript.text

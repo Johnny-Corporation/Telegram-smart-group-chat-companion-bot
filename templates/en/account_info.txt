@@ -1,0 +1,11 @@
+<i>Account: {first_name} </i>
+
+<b>Subscription: {subscription}</b>
+
+<b>Left {left_messages} messages</b>
+
+<b>Left {left_groups} groups</b>
+
+Groups: {name_of_groups}
+
+Below you can see more:

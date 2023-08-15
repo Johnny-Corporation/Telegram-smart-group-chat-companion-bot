@@ -1,3 +1,5 @@
-¡Gracias por agregarme a este grupo! Soy Johnny, un compañero de bot inteligente para el chat grupal, ¡puedes usar / about@Smart Group Participants_bat para obtener más información!
+¡Gracias por agregarme a este grupo! Soy un Johnny, un bot compañero inteligente.
 
-Bot deshabilitado, use /enable para activar
+<i>*Usa  /about para saber más.*</i>
+
+El bot está desactivado ahora, use los botones debajo de <i> (o comando /habilitar) </i>

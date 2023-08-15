@@ -16,5 +16,5 @@ def feature_request_reply_handler(inner_message):
     )
     bot.reply_to(
         inner_message,
-        templates[language_code]["feature_request_thanks.txt"],
+        groups[inner_message.chat.id].templates[language_code]["feature_request_thanks.txt"],
     )

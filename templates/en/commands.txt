@@ -4,36 +4,36 @@ If you're new to the JohnnyBot, please see the /description
 You can control me by sending these commands:
 
 <b>Set-up functions</b>
-/change_language - change the language of bot
+ /change_language - change the language of bot
 
-/set_temperature - set the chaotic in responses
-/temporary_memory_size - set the max value of memorable messages
+ /set_temperature - set the chaotic in responses
+ /temporary_memory_size - set the max value of memorable messages
 
 
 <b>Interaction functions</b>
-/question_to_bot - ask one question, which taken out of context
+ /question_to_bot - ask one question, which taken out of context
 
-/enable - turn on the automode. Bot reads messages and decides when he must answer to messages
-/disable - turn on the automode
+ /enable - turn on the automode. Bot reads messages and decides when he must answer to messages
+ /disable - turn on the automode
 
-/enable_dialog - turn on the dialog mode. It's a chat, bot answer on each your message
-/disable_dialog - turn off the dialog mode.
+ /enable_dialog - turn on the dialog mode. It's a chat, bot answer on each your message
+ /disable_dialog - turn off the dialog mode.
 
 
 <b>Customization</b>
-/dynamic_generation - turn on the dynamic generation. Bot print the message in front of your eyes
+ /dynamic_generation - turn on the dynamic generation. Bot print the message in front of your eyes
 
 
 <b>INFO</b>
-/description - see the description of bot
-/commands - list of all commands with explanation
+ /description - see the description of bot
+ /commands - list of all commands with explanation
 
 
 <b>Account Settings</b>
-/tokens_info - how much tokens you used
-/about - getting started message
+ /messages_info - how much messages you used
+ /about - getting started message
 
 
 <b>Support</b>
-/report_bug - send todevelopers info about bug
-/request_feature - suggest new feature of bot to developers 
+ /report_bug - send todevelopers info about bug
+ /request_feature - suggest new feature of bot to developers 

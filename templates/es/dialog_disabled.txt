@@ -1,1 +1,1 @@
-The dialog mode was disabled.
+El modo Diálogo estaba deshabilitado. Ahora está en modo automático.

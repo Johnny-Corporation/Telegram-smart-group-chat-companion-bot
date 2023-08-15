@@ -1,1 +1,1 @@
-Generación dinámica {} ahora
+La generación dinámica es {} ahora
