@@ -30,5 +30,25 @@
                 "link"
             ]
         }
+    },
+    {
+        "name": "generate_image",
+        "description": "Uses DALLE to generate and send image(s)",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "prompt": {
+                    "type": "string",
+                    "description": "DALLE prompt"
+                },
+                "n": {
+                    "type": "integer",
+                    "description": "Number of images to generate, all generated messages will be sent one by one"
+                }
+            },
+            "required": [
+                "prompt"
+            ]
+        }
     }
 ]

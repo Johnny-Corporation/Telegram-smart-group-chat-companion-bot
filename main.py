@@ -92,7 +92,7 @@ def error_handler(args):
             logger.error(f"Unexpected error: {traceback.format_exc()}")
             bot.send_message(
                 chat_id,
-                "Sorry, unexpected error occurred, developers have been already notified!",
+                "Sorry, unexpected error occurred, developers have been already notified! Don't worry, you and other people can still use bot, error has been reported and will be fixed as soon as possible! Despite we can see where bug takes place, we can't see your last messages because of the privacy reasons, you can help us by using /report_bug command and providing some details.",
             )
             send_to_developers(
                 f"Error occurred: \n ❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️\n {traceback.format_exc()}\n ❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️",
@@ -124,7 +124,7 @@ def error_handler(args):
         logger.error(f"Unexpected error: {traceback.format_exc()}")
         bot.send_message(
             chat_id,
-            "Sorry, unexpected error occurred, developers have been already notified!",
+            "Sorry, unexpected error occurred, developers have been already notified! Don't worry, you and other people can still use bot, error has been reported and will be fixed as soon as possible! Despite we can see where bug takes place, we can't see your last messages because of the privacy reasons, you can help us by using /report_bug command and providing some details.",
         )
         try:
             send_to_developers(
@@ -311,6 +311,17 @@ from commands.buttons_handler import *
 
 
 @bot.message_handler(
+    content_types=[
+        "text",
+        "audio",
+        "document",
+        "photo",
+        "sticker",
+        "video",
+        "video_note",
+        "voice",
+        "location",
+    ],
     func=lambda message: reply_blacklist_filter(message)
     and blacklist_filter(message)
     and time_filter(message),

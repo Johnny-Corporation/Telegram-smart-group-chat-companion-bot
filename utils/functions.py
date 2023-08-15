@@ -1,7 +1,7 @@
 from os import path, listdir
 import json
 import re
-import tiktoken
+import replicate
 
 
 def load_templates(dir: str) -> dict:
@@ -56,6 +56,11 @@ def send_file(path: str, id: int, bot) -> None:
         bot.send_document(id, file)
 
 
+def send_image_from_link(bot, url, chat_id):
+    "Takes straight url to image and sends it to chat with specified id"
+    bot.send_photo(chat_id, url)
+
+
 def send_to_developers(
     msg: str, bot, developer_chat_IDs: list, file: bool = False
 ) -> None:
@@ -76,28 +81,6 @@ def send_to_developers(
                     id,
                     msg,
                 )
-
-
-def tokens_to_dollars(model: str, prompt_tokens: int, completion_tokens: int) -> float:
-    """Converts tokens to dollars
-
-    Args:
-        model (str): model name (ex: gpt-3.5-turbo)
-        input_tokens (int)
-        output_tokens (int)
-
-    Returns:
-        float
-    """
-    coefficients = {
-        "gpt-3.5-turbo": {"input": 0.0015, "output": 0.002},
-        "gpt-3.5-turbo-16k": {"input": 0.003, "output": 0.004},
-        "gpt-3.5-turbo-0613": {"input": 0.0015, "output": 0.002},
-        "gpt-3.5-turbo-16k-0613": {"input": 0.003, "output": 0.004},
-    }
-    input_price = (prompt_tokens / 1000) * coefficients[model]["input"]
-    output_price = (completion_tokens / 1000) * coefficients[model]["output"]
-    return input_price + output_price
 
 
 def convert_to_json(s: str) -> str:
@@ -128,17 +111,6 @@ def send_sticker(chat_id: int, sticker_id: str, bot) -> None:
     bot.send_sticker(chat_id, sticker_id)
 
 
-def tokenize(text: str) -> int:
-    """Takes text and returns number of tokens
-
-    Args:
-        text (str)
-    Returns:
-        tokens (int)
-    """
-    raise NotImplementedError("Make this please")
-
-
 def remove_utf8_chars(string: str) -> str:
     """Removes all strange chars, if all symbols were removed, returns "empty" """
     # Use a regular expression to remove non-alphanumeric characters
@@ -159,55 +131,30 @@ def clean_string(string: str) -> str:
     return cleaned_string
 
 
-def num_tokens_from_string(string: str, encoding_name: str = "cl100k_base") -> int:
-    """Returns the number of tokens in a text string."""
-    encoding = tiktoken.get_encoding(encoding_name)
-    num_tokens = len(encoding.encode(string))
-    return num_tokens
-
-
-def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0613"):
-    """Return the number of tokens used by a list of messages."""
+def get_file_content(bot, message):
+    """Returns file content"""
     try:
-        encoding = tiktoken.encoding_for_model(model)
-    except KeyError:
-        print("Warning: model not found. Using cl100k_base encoding.")
-        encoding = tiktoken.get_encoding("cl100k_base")
-    if model in {
-        "gpt-3.5-turbo-0613",
-        "gpt-3.5-turbo-16k-0613",
-        "gpt-4-0314",
-        "gpt-4-32k-0314",
-        "gpt-4-0613",
-        "gpt-4-32k-0613",
-    }:
-        tokens_per_message = 3
-        tokens_per_name = 1
-    elif model == "gpt-3.5-turbo-0301":
-        tokens_per_message = (
-            4  # every message follows <|start|>{role/name}\n{content}<|end|>\n
-        )
-        tokens_per_name = -1  # if there's a name, the role is omitted
-    elif "gpt-3.5-turbo" in model:
-        print(
-            "Warning: gpt-3.5-turbo may update over time. Returning num tokens assuming gpt-3.5-turbo-0613."
-        )
-        return num_tokens_from_messages(messages, model="gpt-3.5-turbo-0613")
-    elif "gpt-4" in model:
-        print(
-            "Warning: gpt-4 may update over time. Returning num tokens assuming gpt-4-0613."
-        )
-        return num_tokens_from_messages(messages, model="gpt-4-0613")
-    else:
-        raise NotImplementedError(
-            f"""num_tokens_from_messages() is not implemented for model {model}. See https://github.com/openai/openai-python/blob/main/chatml.md for information on how messages are converted to tokens."""
-        )
-    num_tokens = 0
-    for message in messages:
-        num_tokens += tokens_per_message
-        for key, value in message.items():
-            num_tokens += len(encoding.encode(value))
-            if key == "name":
-                num_tokens += tokens_per_name
-    num_tokens += 3  # every reply is primed with <|start|>assistant<|message|>
-    return num_tokens
+        # Download the file
+        file_info = bot.get_file(message.document.file_id)
+        downloaded_file = bot.download_file(file_info.file_path)
+
+        # Convert the file's binary content to string
+        file_content = downloaded_file.decode("utf-8")
+
+        # Send back the first 1000 characters of the file (to avoid message length limits)
+        return file_content[:1000]
+    except Exception as e:
+        return "file content cant be read"
+
+
+def describe_image(link: str, prompt: str = "Describe image") -> str:
+    # In our case 50 images approximately 1$
+    model = "daanelson/minigpt-4:b96a2f33cc8e4b0aa23eacfce731b9c41a7d9466d9ed4e167375587b54db9423"
+    output = replicate.run(
+        model,
+        input={
+            "image": link,
+            "prompt": prompt,
+        },
+    )
+    return output

@@ -7,6 +7,8 @@ from dotenv import load_dotenv
 from datetime import datetime
 from random import random
 import json
+from utils.functions import get_file_content, describe_image
+from os import environ
 
 load_dotenv(".env")
 
@@ -16,6 +18,7 @@ db_controller = Controller()
 functions_waiting_messages = {
     "google": "Googling question '{}'",
     "read_from_link": "Reading content from link {}",
+    "generate_image": "Generating image(s) with prompt '{}'",
 }
 
 
@@ -38,29 +41,11 @@ class Johnny:
     system_content: str = ""
     allow_functions: bool = True
 
-    """
-    Args:
-        id_ (int): chat id
-        trigger_messages_count (int): sets the numbers of messages needed to trigger the bot in cycle.
-        (eg: if set to 5, bot will read conversation each time after 5 new messages, only when there were no replies to bot's message)
-        temporary_memory_size (int): sets number of messages given to GPT (eg: if set to 5, gpt will read only 5 last messages;
-        This does not affect persistent memory! Persistent memory keeps whole conversation.)
-        language_code (str): Language
-        random_trigger (bool) If set to True, bot triggers randomly. When enabled, trigger_messages_count is ignored
-        random_trigger_probability (float from 0 to 1) = Triggering probability on each message. Works only when random trigger is True 
-        temperature (float) temperature value, used in requests to GPT
-
-        system_content (str) it includes. "answer_length". "spheres of conservation". "user_requests".
-        allow_functions (bool): if set to True, bot will use functions to generate answers        
-    """
-
     def __post_init__(self):
         # list of lists, where each list follows format: [senders_name, text]
         self.messages_history = []
-        self.messages_count = 0  # incremented by one each message, think() function is called when hit trigger_messages_count
         self.lang_code = None
         self.enabled = False
-        self.total_spent_tokens = [0, 0]  # prompt and completion tokens
         self.dynamic_gen = False
         # Needed to store requested links and restrict repeating useless requests
         self.dynamic_gen_chunks_frequency = 30  # when dynamic generation is enabled, this value controls how often to edit telegram message, for example when set to 3, message will be updated each 3 chunks from OpenAI API stream
@@ -88,16 +73,23 @@ class Johnny:
         response = gpt.create_chat_completion(
             [message.text], reply=None, model=self.model, stream=self.dynamic_gen
         )
-        tokens_used = gpt.extract_tokens(response)
-        self.total_spent_tokens[0] += tokens_used[0]
-        self.total_spent_tokens[1] += tokens_used[1]
         return gpt.extract_text(response)
 
     def new_message(
         self,
         message: Message,
     ):
-        text = message.text
+        match message.content_type:
+            case "document":
+                text = "[FILE] Content:" + get_file_content(self.bot, message)
+            case "photo":
+                image_info = self.bot.get_file(message.photo[-1].file_id)
+                image_url = f"https://api.telegram.org/file/bot{environ['BOT_API_TOKEN']}/{image_info.file_path}"
+                text = "[IMAGE] Description:" + describe_image(image_url)
+            case "text":
+                text = message.text
+            case _:
+                return  # unsupported event type
         db_controller.add_message_event(
             self.chat_id,
             text,
@@ -105,8 +97,6 @@ class Johnny:
             message.from_user.first_name,
             message.from_user.last_name,
             message.from_user.username,
-            self.total_spent_tokens[0],
-            self.total_spent_tokens[1],
         )
         self.message = message
         self.messages_history.append([message.from_user.first_name, text])
@@ -143,8 +133,6 @@ class Johnny:
                 "$BOT$",
                 "$BOT$",
                 self.bot_username,
-                self.total_spent_tokens[0],
-                self.total_spent_tokens[1],
             )
 
             self.messages_history.append(["$BOT$", text_answer])
@@ -179,17 +167,23 @@ class Johnny:
 
             self.last_function_request = (function_name, function_args)
 
+            # Additional arguments
+            additional_args = {}
+            if function_name == "generate_image":
+                additional_args = {"bot": self.bot, "chat_id": self.chat_id}
+
             # Saving function result to history
             self.messages_history.append(
                 [
                     "$FUNCTION$",
                     gpt.get_official_function_response(
-                        function_name,
-                        function_args,
+                        function_name, function_args, additional_args=additional_args
                     ),
                 ]
             )
 
+            if function_name == "generate_image":
+                return "[IMAGES]"  # this will be saved as bot message in history
             return self.static_generation(self.get_completion())
 
         self.response = completion
@@ -249,16 +243,25 @@ class Johnny:
 
                 self.last_function_request = (function_name, function_args)
 
+                # Additional arguments
+                additional_args = {}
+                if function_name == "generate_image":
+                    additional_args = {"bot": self.bot, "chat_id": self.chat_id}
+
+                # Saving function result to history
                 self.messages_history.append(
                     [
                         "$FUNCTION$",
                         gpt.get_official_function_response(
                             function_name,
                             function_args,
+                            additional_args=additional_args,
                         ),
                     ]
                 )
 
+                if function_name == "generate_image":
+                    return "[IMAGES]"  # this will be saved as bot message in history
                 return self.dynamic_generation(self.get_completion())
                 # End of handling function call
 

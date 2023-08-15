@@ -33,9 +33,7 @@ class Controller:
                 Time TEXT,
                 SenderFirstName TEXT,
                 SenderLastName TEXT,
-                SenderUsername TEXT,
-                PromptTokensTotal INTEGER,
-                CompletionTokensTotal INTEGER
+                SenderUsername TEXT
             )
         """
         )
@@ -47,12 +45,7 @@ class Controller:
                 GroupChatIDs TEXT,
                 SenderFirstName TEXT,
                 SenderLastName TEXT,
-                SenderUsername TEXT,
-                PromptTokensTotal INTEGER,
-                CompletionTokensTotal INTEGER,
-                DYNAMIC_GENERATION TINYINT,
-                VOICE_INPUT TINYINT,
-                VOICE_OUTPUT TINYINT
+                SenderUsername TEXT
             )
         """
         )
@@ -68,8 +61,6 @@ class Controller:
         sender_first_name: str,
         sender_last_name: str,
         sender_username: str,
-        prompt_tokens_total: int,
-        completion_tokens_total: int,
         dynamic_generation: bool,
         voice_input: bool,
         voice_output: bool,
@@ -81,12 +72,8 @@ class Controller:
                 SenderFirstName,
                 SenderLastName,
                 SenderUsername,
-                PromptTokensTotal,
-                CompletionTokensTotal,
                 DYNAMIC_GENERATION,
-                VOICE_INPUT,
-                VOICE_OUTPUT
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?)
         """
 
         self.cursor.execute(
@@ -97,8 +84,6 @@ class Controller:
                 sender_first_name,
                 sender_last_name,
                 sender_username,
-                prompt_tokens_total,
-                completion_tokens_total,
                 int(dynamic_generation),
                 int(voice_input),
                 int(voice_output),
@@ -115,13 +100,11 @@ class Controller:
         first_name: str,
         last_name: str,
         username: str,
-        prompt_tokens_total: int,
-        completion_tokens_total: int,
     ):
         self.cursor.execute(
             f"""
-            INSERT INTO MessageEvents (ChatID, MessageText, Time, SenderFirstName, SenderLastName, SenderUsername, PromptTokensTotal, CompletionTokensTotal)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO MessageEvents (ChatID, MessageText, Time, SenderFirstName, SenderLastName, SenderUsername)
+            VALUES (?, ?, ?, ?, ?, ?)
             """,
             (
                 chat_id,
@@ -130,8 +113,6 @@ class Controller:
                 first_name,
                 last_name,
                 username,
-                prompt_tokens_total,
-                completion_tokens_total,
             ),
         )
         self.conn.commit()

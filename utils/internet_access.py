@@ -1,8 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-
 from utils.logger import logger
-from utils.functions import num_tokens_from_string
 
 tokens_limit = 16000  # depends on model!!!!
 headers = {

@@ -12,11 +12,6 @@ if not openAI_api_key:
 openai.api_key = openAI_api_key
 
 
-def extract_tokens(completion: openai.ChatCompletion) -> int:
-    """Extracts tokens from OpenAI API response"""
-    return [completion.usage.prompt_tokens, completion.usage.completion_tokens]
-
-
 def extract_text(completion: openai.ChatCompletion) -> str:
     """Extracts text from OpenAI API response"""
     return completion.choices[0].message.content
@@ -50,6 +45,24 @@ def get_messages_in_official_format(messages):
             }
         )
     return previous_messages
+
+
+def generate_image(prompt, n, size):
+    """Returns links to image"""
+    response = openai.Image.create(prompt=prompt, n=n, size=size)
+    links = []
+    for i in response["data"]:
+        links.append(i["url"])
+    return links
+
+
+def generate_image_and_send(bot, chat_id, prompt, n=1, size="1024x1024"):
+    """Returns message which will be added to history, prompt and info about image"""
+    urls = generate_image(prompt, n, size)
+    for url in urls:
+        functions.send_image_from_link(bot, url, chat_id)
+
+    return f"Function has sent {n} AI-generated image(s). (prompt:'{prompt}')"
 
 
 def create_chat_completion(
@@ -126,26 +139,18 @@ def create_chat_completion(
 available_functions = {
     "google": google,
     "read_from_link": read_from_link,
+    "generate_image": generate_image_and_send,
 }
 
 
 def get_official_function_response(
-    function_name: str, function_args, function_responses: list = None
+    function_name: str, function_args: dict, additional_args: dict = {}
 ) -> list:
     """Takes function name and arguments and returns official response (dict in list)"""
 
     function_to_call = available_functions[function_name]
-    function_response = function_to_call(**function_args)
-    if function_responses:
-        function_responses.append(
-            {
-                "role": "function",
-                "name": function_name,
-                "content": f"This function was called with such parameters: {function_args}, do not call it again with the same parameters. Returned value: "
-                + function_response,
-            }
-        )
-        return function_responses
+    args = {**function_args, **additional_args}
+    function_response = function_to_call(**args)
     return {
         "role": "function",
         "name": function_name,
