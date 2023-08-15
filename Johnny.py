@@ -238,9 +238,6 @@ class Johnny:
                     text=text_answer,
                 )
 
-                # counting messages
-                self.total_spent_messages += 1
-
             else:
 
                 text_answer = gpt.extract_text(response)
@@ -261,8 +258,6 @@ class Johnny:
                 ):
                     return
 
-                self.total_spent_messages += 1
-
                 # If message was a reply to bot message, bot will reply to reply
 
                 if self.voice_out_enabled:
@@ -275,6 +270,9 @@ class Johnny:
                 self.bot.send_message(
                     message.chat.id, text_answer, parse_mode="Markdown"
                 )
+
+            # counting messages
+            self.total_spent_messages += 1
 
 
             if message.chat.id<0:
