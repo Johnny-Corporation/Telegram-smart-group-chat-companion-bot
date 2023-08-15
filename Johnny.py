@@ -46,7 +46,7 @@ class Johnny:
         self.messages_history = []
         self.lang_code = None
         self.enabled = False
-        self.dynamic_gen = False
+        self.dynamic_gen = True
         # Needed to store requested links and restrict repeating useless requests
         self.dynamic_gen_chunks_frequency = 30  # when dynamic generation is enabled, this value controls how often to edit telegram message, for example when set to 3, message will be updated each 3 chunks from OpenAI API stream
         self.last_function_request = None
@@ -237,6 +237,7 @@ class Johnny:
                         self.message.chat.id,
                         "Can't find needed data. (Function call failed)",
                     )
+                    self.last_function_request = None
                     return self.dynamic_generation(
                         self.get_completion(allow_function_call=False)
                     )
