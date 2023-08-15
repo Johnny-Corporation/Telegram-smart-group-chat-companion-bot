@@ -1,0 +1,1 @@
+Ha gastado {spent_messages} fichas. es aproximadamente {dollars}$

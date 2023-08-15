@@ -1,0 +1,3 @@
+¡Felicidades! ¡Tienes más 100000 fichas!
+
+Ahora tienes {messages} fichas.

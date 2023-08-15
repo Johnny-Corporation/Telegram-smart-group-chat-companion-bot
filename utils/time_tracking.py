@@ -31,16 +31,16 @@ def check_code(promocode_in):
     global big_business_promocode, small_business_promocode, user_promocode, promocode_100000
 
     if promocode_in == big_business_promocode:
-        return ['BIG BUSINESS', 10, 1000000000000, 5000000, True, True, True, True, True, True, True]
+        return ['BIG BUSINESS', 50000]
 
     elif promocode_in == small_business_promocode:
-        return ['SMALL BUSINESS', 5, 100, 3000000, True, True, True, True, True, True, True]
+        return ['SMALL BUSINESS', 30000]
 
     elif promocode_in == user_promocode:
-        return ['USER', 3, 50, 1000000, False, True, False, False, False, False, False]
+        return ['USER', 10000]
 
     elif promocode_in == promocode_100000:
-        return [100000]
+        return [100]
 
     else:
         return []

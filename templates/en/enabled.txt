@@ -1,12 +1,1 @@
-Bot is turned on now and reading new messsage to debate!
-
-<i> /about to know about bot </i>
-
-Now, bot answers with <b>{probability}</b> probability.
-Change it:  /set_answer_probability
-
-We recommend look at  /settings to do Johnny as you want!
-
-<i>Another tools you can see below! </i>
-
- /disable to turn off a bot
+Choose a chat mode:

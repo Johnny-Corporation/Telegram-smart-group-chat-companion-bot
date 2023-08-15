@@ -9,23 +9,52 @@ def keyboard_buttons_handler(call):
     previous_language_code = groups[call.message.chat.id].lang_code
     match call.data:
 
+
+        #Choosing mode
+
+        case 'auto_mode':
+            auto_enable(message=call.message)
+        case 'dialog_mode':
+            dialog_enable(message=call.message)
+        case 'manual_mode':
+            manual_enable(message=call.message)
+    
+
+        #Account info
+        
+        case "purchase":
+            purchase(message=call.message)
+        case "about_sub":
+            sub_info(message=call.message)
+        case "back_to_account":
+            account(message=call.message, back_from=True)
+
+
+        #Group info
+
+        case "see_settings_of_bot_answers":
+            see_settings_of_bot_answers(message=call.message)
+        case "see_settings_of_special_functions":
+            see_settings_of_special_functions(message=call.message)
+        case "back_to_group":
+            group(message=call.message, back_from=True)
+
+
         #Translations
 
         case 'back_to_settings':
-            settings_command(message=call.message, back_from=True)
-
-        case 'set_up':
-            set_up_command(call.message)
-
-        case 'customization':
-            customization_command(call.message)
+            settings(message=call.message, back_from=True)
+        case 'bot_answers':
+            bot_answers_settings(call.message)
+        case 'special_features':
+            special_features_settings(call.message)
             
 
         # Set up funcs
 
         case "temperature":
-            if groups[call.message.chat.id].temperature_permission == True:
-                set_temp_command(call.message)
+            if groups[call.message.chat.id].permissions[groups[call.message.chat.id].subscription]["temperature_permission"] == True:
+                set_temp(call.message)
             else:
                 bot.send_message(
                     call.message.chat.id, 
@@ -33,12 +62,12 @@ def keyboard_buttons_handler(call):
                     parse_mode = "HTML"
                 )
         case "answer_probability":
-            set_probability_command(call.message)
+            set_probability(call.message)
         case "memory_length":
-            set_temp_memory_size_command(call.message)
+            set_temp_memory_size(call.message)
         case "variety":
-            if groups[call.message.chat.id].temperature_permission == True:
-                set_frequency_penalty_command(call.message)
+            if groups[call.message.chat.id].permissions[groups[call.message.chat.id].subscription]["temperature_permission"] == True:
+                set_frequency_penalty(call.message)
             else:
                 bot.send_message(
                     call.message.chat.id, 
@@ -46,8 +75,8 @@ def keyboard_buttons_handler(call):
                     parse_mode = "HTML"
                 )
         case "creativity":
-            if groups[call.message.chat.id].temperature_permission == True:
-                set_presence_penalty_command(call.message)
+            if groups[call.message.chat.id].permissions[groups[call.message.chat.id].subscription]["temperature_permission"] == True:
+                set_presence_penalty(call.message)
             else:
                 bot.send_message(
                     call.message.chat.id, 
@@ -55,10 +84,10 @@ def keyboard_buttons_handler(call):
                     parse_mode = "HTML"
                 )
         case "answer_length":
-            set_length_answer_command(call.message)
+            set_length_answer(call.message)
         case "sphere":
-            if groups[call.message.chat.id].temperature_permission == True:
-                set_sphere_command(call.message)
+            if groups[call.message.chat.id].permissions[groups[call.message.chat.id].subscription]["temperature_permission"] == True:
+                set_sphere(call.message)
             else:
                 bot.send_message(
                     call.message.chat.id, 
@@ -67,13 +96,21 @@ def keyboard_buttons_handler(call):
                 )
         case "change_lang":
             change_language(call.message.chat.id)
+        case "change_owner":
+            change_owner_of_group(call.message)
             
 
         # Customization
 
         case "dyn_gen":
-            if groups[call.message.chat.id].temperature_permission == True:
-                dynamic_generation_command(call.message)
+
+            if groups[call.message.chat.id].permissions[groups[call.message.chat.id].subscription]["dynamic_gen_permission"] == True:
+
+                if groups[call.message.chat.id].voice_out_enabled == True:
+                    bot.send_message(call.message.chat.id, groups[call.message.chat.id].templates[previous_language_code]["voice_out_already_enabled.txt"])
+                    groups[call.message.chat.id].voice_out_enabled = False
+
+                enable_disable_dynamic_generation(call.message)
             else:
                 bot.send_message(
                     call.message.chat.id, 
@@ -81,6 +118,22 @@ def keyboard_buttons_handler(call):
                     parse_mode = "HTML"
                 )
             
+
+        case "voice_out":
+            if groups[call.message.chat.id].voice_output_permission == False:
+                bot.send_message(call.message.chat.id, groups[call.message.chat.id].templates[previous_language_code]["no_rights.txt"], parse_mode="HTML")
+                return 
+            
+
+            if groups[call.message.chat.id].dynamic_gen == True:
+                bot.send_message(call.message.chat.id, groups[call.message.chat.id].templates[previous_language_code]["dyn_gen_already_enabled.txt"])
+                groups[call.message.chat.id].dynamic_gen_permission = False
+
+            
+            enable_disable_voice_out(call.message)
+
+
+
 
         # Answer length
 
@@ -174,114 +227,25 @@ def keyboard_buttons_handler(call):
 
 
         case "free_sub":
-
-            groups[call.message.chat.id].add_new_user(call.message.chat.id, call.message.from_user.first_name, call.message.from_user.last_name, call.message.from_user.username, 'SMALL BUSINESS (trial)', 5, 100, 3000000, True, True, True, True, True, True, True)
-            groups[call.message.chat.id].load_subscription(call.message.chat.id)
-            for group_id in groups[call.message.chat.id].id_groups:
-                groups[group_id].subscription = groups[call.message.chat.id].subscription
-                groups[group_id].tokens_limit = groups[call.message.chat.id].tokens_limit
-                groups[group_id].dynamic_gen_permission = groups[call.message.chat.id].dynamic_gen_permission
-                groups[group_id].voice_input_permission = groups[call.message.chat.id].voice_input_permission
-                groups[group_id].voice_output_permission = groups[call.message.chat.id].voice_output_permission
-
-            groups[call.message.chat.id].track_sub(call.message.chat.id, new=True)
+            rus_payment(call.message, type_of_sub="free_sub")
 
         case "easy":
-
-            price = 399
-            if groups[call.message.chat.id].total_spent_tokens[0] + groups[call.message.chat.id].total_spent_tokens[1] <= 30000 and groups[call.message.chat.id].subscription == "Free":
-                bot.send_message(call.message.chat.id, groups[call.message.chat.id].templates[previous_language_code]["discount_yes.txt"])
-                price = price * 0.8
-
-            pay = accept_payment(call.message, "You buy USER subscription", price)
-
-            if pay:
-                groups[call.message.chat.id].add_new_user(call.message.chat.id, call.message.from_user.first_name, call.message.from_user.last_name, call.message.from_user.username, 'USER', 3, 50, 1000000, False, True, False, False, False, False, False)
-                groups[call.message.chat.id].load_subscription(call.message.chat.id)
-                for group_id in groups[call.message.chat.id].id_groups:
-                    groups[group_id].subscription = groups[call.message.chat.id].subscription
-                    groups[group_id].tokens_limit = groups[call.message.chat.id].tokens_limit
-                    groups[group_id].dynamic_gen_permission = groups[call.message.chat.id].dynamic_gen_permission
-                    groups[group_id].voice_input_permission = groups[call.message.chat.id].voice_input_permission
-                    groups[group_id].voice_output_permission = groups[call.message.chat.id].voice_output_permission
-
-                groups[call.message.chat.id].track_sub(call.message.chat.id, new=True)
-
-            else:
-                bot.send_message(call.message.chat.id, groups[call.message.chat.id].templates[previous_language_code]["buy_was_canceled.txt"])
+            rus_payment(call.message, type_of_sub="easy")
 
         case "middle":
-
-            price = 699
-            if groups[call.message.chat.id].total_spent_tokens[0] + groups[call.message.chat.id].total_spent_tokens[1] <= 30000 and groups[call.message.chat.id].subscription == "Free":
-                bot.send_message(call.message.chat.id, groups[call.message.chat.id].templates[previous_language_code]["discount_yes.txt"])
-                price = price * 0.8
-
-            pay = accept_payment(call.message, "You buy SMALL BUSINESS subscription", price)
-
-            if pay:
-                groups[call.message.chat.id].add_new_user(call.message.chat.id, call.message.from_user.first_name, call.message.from_user.last_name, call.message.from_user.username, 'SMALL BUSINESS', 5, 100, 3000000, True, True, True, True, True, True, True)
-                groups[call.message.chat.id].load_subscription(call.message.chat.id)
-                for group_id in groups[call.message.chat.id].id_groups:
-                    groups[group_id].subscription = groups[call.message.chat.id].subscription
-                    groups[group_id].tokens_limit = groups[call.message.chat.id].tokens_limit
-                    groups[group_id].dynamic_gen_permission = groups[call.message.chat.id].dynamic_gen_permission
-                    groups[group_id].voice_input_permission = groups[call.message.chat.id].voice_input_permission
-                    groups[group_id].voice_output_permission = groups[call.message.chat.id].voice_output_permission
-        
-                groups[call.message.chat.id].track_sub(call.message.chat.id, new=True)
-
-            else:
-                bot.send_message(call.message.chat.id, groups[call.message.chat.id].templates[previous_language_code]["buy_was_canceled.txt"])
+            rus_payment(call.message, type_of_sub="middle")
 
         case "pro":
+            rus_payment(call.message, type_of_sub="pro")
 
-            price = 1299
-            if groups[call.message.chat.id].total_spent_tokens[0] + groups[call.message.chat.id].total_spent_tokens[1] <= 30000 and groups[call.message.chat.id].subscription == "Free":
-                bot.send_message(call.message.chat.id, groups[call.message.chat.id].templates[previous_language_code]["discount_yes.txt"])
-                price = price * 0.8
 
-            pay = accept_payment(call.message, "You buy BIG BUSINESS subscription", price)
-
-            if pay:
-
-                groups[call.message.chat.id].add_new_user(call.message.chat.id, call.message.from_user.first_name, call.message.from_user.last_name, call.message.from_user.username, 'BIG BUSINESS', 10, 1000000000000, 5000000, True, True, True, True, True, True, True)
-                groups[call.message.chat.id].load_subscription(call.message.chat.id)
-
-                for group_id in groups[call.message.chat.id].id_groups:
-                    groups[group_id].subscription = groups[call.message.chat.id].subscription
-                    groups[group_id].tokens_limit = groups[call.message.chat.id].tokens_limit
-                    groups[group_id].dynamic_gen_permission = groups[call.message.chat.id].dynamic_gen_permission
-                    groups[group_id].voice_input_permission = groups[call.message.chat.id].voice_input_permission
-                    groups[group_id].voice_output_permission = groups[call.message.chat.id].voice_output_permission
-
-                groups[call.message.chat.id].track_sub(call.message.chat.id, new=True)
-
-            else:
-                bot.send_message(call.message.chat.id, groups[call.message.chat.id].templates[previous_language_code]["buy_was_canceled.txt"])
-
-        case "more_tokens":
-            enter_purchase_of_tokens(call.message)
+        case "more_messages":
+            enter_purchase_of_messages(call.message)
         case "promocode":
             enter_promocode(call.message)
 
         case "extend_sub":
-
-            if groups[call.message.chat.id].subscription == "USER":
-                pay = accept_payment(call.message, "You buy USER subscription", 399)
-            elif groups[call.message.chat.id].subscription == "SMALL BUSINESS":
-                pay = accept_payment(call.message, "You buy SMALL BUSINESS subscription", 699)
-            elif groups[call.message.chat.id].subscription == "BIG BUSINESS":
-                pay = accept_payment(call.message, "You buy BIG BUSINESS subscription", 1299)  
-            else:
-                bot.send_message(call.message.chat.id, "Problem")
-                pay = False
-
-            if pay:
-                groups[call.message.chat.id].extend_sub(call.message.chat.id, call.message.from_user.first_name, call.message.from_user.last_name, call.message.from_user.username)
-                groups[call.message.chat.id].track_sub(call.message.chat.id, new=True)
-            else:
-                bot.send_message(call.message.chat.id, groups[call.message.chat.id].templates[previous_language_code]["buy_was_canceled.txt"])
+            extend_sub(call.message)
         
         case "update_sub":
             update_sub(call.message)
@@ -323,6 +287,10 @@ def keyboard_buttons_handler(call):
             logger.warning(f"Unexpected callback data: {call.data}")
 
     if not previous_language_code:
-        send_welcome_text_and_load_data(
-            call.message.chat.id, call.from_user.id, groups[call.message.chat.id].lang_code
-        )
+        if call.message.chat.id>0:
+            send_welcome_text_and_load_data(
+                call.message.chat.id, call.from_user.id, groups[call.message.chat.id].lang_code
+            )
+        elif call.message.chat.id<0:
+            markup = load_buttons(types, groups, call.message.chat.id, groups[call.message.chat.id].lang_code)
+            bot.send_message(call.message.chat.id, "Activate bot below", reply_markup=markup)

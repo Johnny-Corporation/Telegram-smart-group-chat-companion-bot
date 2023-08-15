@@ -1,10 +1,16 @@
-from os import path, listdir, makedirs
+from os import path, listdir, makedirs, remove
 import json
 import re
 from googletrans import Translator
-from bs4 import BeautifulSoup, NavigableString
-import textwrap
+import soundfile as sf
 import tiktoken
+
+from gtts import gTTS
+from langdetect import detect
+
+import utils.gpt_interface as gpt
+
+# from moviepy.editor import VideoFileClip  #It's for video content
 
 
 def load_templates(dir: str) -> dict:
@@ -55,7 +61,7 @@ def send_file(path: str, id: int, bot) -> None:
         id (int): chat id
         bot (_type_): TeleBot object
     """
-    with open(path, "rb") as file:
+    with open(path, "rb") as file:        
         bot.send_document(id, file)
 
 
@@ -81,13 +87,13 @@ def send_to_developers(
                 )
 
 
-def tokens_to_dollars(model: str, prompt_tokens: int, completion_tokens: int) -> float:
-    """Converts tokens to dollars
+def messages_to_dollars(model: str, prompt_messages: int, completion_messages: int) -> float:
+    """Converts messages to dollars
 
     Args:
         model (str): model name (ex: gpt-3.5-turbo)
-        input_tokens (int)
-        output_tokens (int)
+        input_messages (int)
+        output_messages (int)
 
     Returns:
         float
@@ -96,8 +102,8 @@ def tokens_to_dollars(model: str, prompt_tokens: int, completion_tokens: int) ->
         "gpt-3.5-turbo": {"input": 0.0015, "output": 0.002},
         "gpt-3.5-turbo-16k": {"input": 0.003, "output": 0.004},
     }
-    input_price = (prompt_tokens / 1000) * coefficients[model]["input"]
-    output_price = (completion_tokens / 1000) * coefficients[model]["output"]
+    input_price = (prompt_messages / 1000) * coefficients[model]["input"]
+    output_price = (completion_messages / 1000) * coefficients[model]["output"]
     return input_price + output_price
 
 
@@ -130,12 +136,12 @@ def send_sticker(chat_id: int, sticker_id: str, bot) -> None:
 
 
 def tokenize(text: str) -> int:
-    """Takes text and returns number of tokens
+    """Takes text and returns number of messages
 
     Args:
         text (str)
     Returns:
-        tokens (int)
+        messages (int)
     """
     raise NotImplementedError("Make this please")
 
@@ -160,15 +166,15 @@ def clean_string(string: str) -> str:
     return cleaned_string
 
 
-def num_tokens_from_string(string: str, encoding_name: str = "cl100k_base") -> int:
-    """Returns the number of tokens in a text string."""
+def num_messages_from_string(string: str, encoding_name: str = "cl100k_base") -> int:
+    """Returns the number of messages in a text string."""
     encoding = tiktoken.get_encoding(encoding_name)
-    num_tokens = len(encoding.encode(string))
-    return num_tokens
+    num_messages = len(encoding.encode(string))
+    return num_messages
 
 
-def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0613"):
-    """Return the number of tokens used by a list of messages."""
+def num_messages_from_messages(messages, model="gpt-3.5-turbo-0613"):
+    """Return the number of messages used by a list of messages."""
     try:
         encoding = tiktoken.encoding_for_model(model)
     except KeyError:
@@ -182,36 +188,36 @@ def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0613"):
         "gpt-4-0613",
         "gpt-4-32k-0613",
     }:
-        tokens_per_message = 3
-        tokens_per_name = 1
+        messages_per_message = 3
+        messages_per_name = 1
     elif model == "gpt-3.5-turbo-0301":
-        tokens_per_message = (
+        messages_per_message = (
             4  # every message follows <|start|>{role/name}\n{content}<|end|>\n
         )
-        tokens_per_name = -1  # if there's a name, the role is omitted
+        messages_per_name = -1  # if there's a name, the role is omitted
     elif "gpt-3.5-turbo" in model:
         print(
-            "Warning: gpt-3.5-turbo may update over time. Returning num tokens assuming gpt-3.5-turbo-0613."
+            "Warning: gpt-3.5-turbo may update over time. Returning num messages assuming gpt-3.5-turbo-0613."
         )
-        return num_tokens_from_messages(messages, model="gpt-3.5-turbo-0613")
+        return num_messages_from_messages(messages, model="gpt-3.5-turbo-0613")
     elif "gpt-4" in model:
         print(
-            "Warning: gpt-4 may update over time. Returning num tokens assuming gpt-4-0613."
+            "Warning: gpt-4 may update over time. Returning num messages assuming gpt-4-0613."
         )
-        return num_tokens_from_messages(messages, model="gpt-4-0613")
+        return num_messages_from_messages(messages, model="gpt-4-0613")
     else:
         raise NotImplementedError(
-            f"""num_tokens_from_messages() is not implemented for model {model}. See https://github.com/openai/openai-python/blob/main/chatml.md for information on how messages are converted to tokens."""
+            f"""num_messages_from_messages() is not implemented for model {model}. See https://github.com/openai/openai-python/blob/main/chatml.md for information on how messages are converted to messages."""
         )
-    num_tokens = 0
+    num_messages = 0
     for message in messages:
-        num_tokens += tokens_per_message
+        num_messages += messages_per_message
         for key, value in message.items():
-            num_tokens += len(encoding.encode(value))
+            num_messages += len(encoding.encode(value))
             if key == "name":
-                num_tokens += tokens_per_name
-    num_tokens += 3  # every reply is primed with <|start|>assistant<|message|>
-    return num_tokens
+                num_messages += messages_per_name
+    num_messages += 3  # every reply is primed with <|start|>assistant<|message|>
+    return num_messages
 
 
 def check_file_existing(client_first_name, file_path):
@@ -420,128 +426,265 @@ def translate_text(lang, text):
         return translated.text
     
 
-def load_buttons(types, groups, chat_id, language_code):
+def load_buttons(types, groups, chat_id, language_code, owner_id=None):
 
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=2)
+    print("IAM IN LOADBUTTONS")
+    print(f"ENABLING: {groups[chat_id].enabled}")
+    print(f"CHAT_ID: {chat_id}")
+
+    groups[chat_id].button_commands = []
+
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False)
 
     if chat_id>0:
 
+        if groups[chat_id].enabled == True:
+            text2 = translate_text(language_code,'ㅤStart a conversation from scratchㅤ')
+            itembtn1 = types.KeyboardButton(text2)
+
+        elif groups[chat_id].enabled == False:
+            text2 = translate_text(language_code,'ㅤStart a conversationㅤ')
+            itembtn1 = types.KeyboardButton(text2)
+
         text1 = translate_text(language_code,'ㅤAsk a question without contextㅤ')
-        itembtn1 = types.KeyboardButton(text1)
-        groups[chat_id].button_commands.append(text1)
+        itembtn2 = types.KeyboardButton(text1)
 
-        text2 = translate_text(language_code,'ㅤStart a conversation againㅤ')
-        itembtn2 = types.KeyboardButton(text2)
-        groups[chat_id].button_commands.append(text2)
-
-        text3 = translate_text(language_code,'ㅤTurn on/off manual modeㅤ')
-        itembtn3 = types.KeyboardButton(text3)
-        groups[chat_id].button_commands.append(text3)
-
-        text4 = translate_text(language_code,'ㅤView current modeㅤ')
-        itembtn9 = types.KeyboardButton(text4)
-        groups[chat_id].button_commands.append(text4)
-
-        text5 = translate_text(language_code,'ㅤGet account infoㅤ')
+        text5 = translate_text(language_code,'ㅤAccountㅤ')
         itembtn4 = types.KeyboardButton(text5)
-        groups[chat_id].button_commands.append(text5)
 
-        text6 = translate_text(language_code,'ㅤChange bot settingsㅤ')
+        text6 = translate_text(language_code,'ㅤSettingsㅤ')
         itembtn5 = types.KeyboardButton(text6)
-        groups[chat_id].button_commands.append(text6)
-
-        text7 = translate_text(language_code,'ㅤBuy subscription or tokensㅤ')
-        itembtn6 = types.KeyboardButton(text7)
-        groups[chat_id].button_commands.append(text7)
 
         text8 = translate_text(language_code,'ㅤReport bugㅤ')
-        itembtn7 = types.KeyboardButton(text8)
-        groups[chat_id].button_commands.append(text8)
+        itembtn6 = types.KeyboardButton(text8)
 
         text9 = translate_text(language_code,'ㅤSuggest an ideaㅤ')
-        itembtn8 = types.KeyboardButton(text9)
-        groups[chat_id].button_commands.append(text9)
+        itembtn7 = types.KeyboardButton(text9)
 
         # text10 = translate_text(language_code,'ㅤSupport usㅤ')
         # itembtn10 = types.KeyboardButton(text10)
         # groups[chat_id].button_commands.append(text10)
 
+        groups[chat_id].button_commands.append(text2)
+        groups[chat_id].button_commands.append(text1)
+
         markup.add(itembtn1)
         markup.add(itembtn2)
-        markup.add(itembtn3)
-        markup.add(itembtn9)
         markup.add(itembtn4)
         markup.add(itembtn5)
-        markup.add(itembtn6)
-        markup.add(itembtn7, itembtn8)
+        markup.add(itembtn6, itembtn7)
         # markup.add(itembtn10)
+        
+        groups[chat_id].button_commands.append(text5)
+        groups[chat_id].button_commands.append(text6)
+        groups[chat_id].button_commands.append(text8)
+        groups[chat_id].button_commands.append(text9)
 
     elif chat_id<0:
 
-        #Dialog
+        print("GROUP CONDITION")
 
-        text11 = translate_text(language_code,'ㅤEnable/Disable Johnnyㅤ')
-        itembtn11 = types.KeyboardButton(text11)
-        groups[chat_id].button_commands.append(text11)
+        if owner_id == None:
+            text1 = translate_text(language_code,'ㅤActivate botㅤ')
+            itembtn1 = types.KeyboardButton(text1)
+            text2 = translate_text(language_code,'ㅤAboutㅤ')
+            itembtn2 = types.KeyboardButton(text2)
+            markup.add(itembtn1)
+            markup.add(itembtn2)
 
-        text1 = translate_text(language_code,'ㅤAsk a question without contextㅤ')
-        itembtn1 = types.KeyboardButton(text1)
-        groups[chat_id].button_commands.append(text1)
+            groups[chat_id].button_commands.append(text1)
+            groups[chat_id].button_commands.append(text2)
 
-        text2 = translate_text(language_code,'ㅤStart a conversation againㅤ')
+            return markup
+
+
+
+        print(groups[chat_id].enabled)
+        if groups[chat_id].enabled == True:
+            print("ENABLED")
+            text1 = translate_text(language_code,'ㅤStop conservationㅤ')
+            itembtn1 = types.KeyboardButton(text1)
+
+        elif groups[chat_id].enabled == False:
+            text1 = translate_text(language_code,'ㅤStart a conversationㅤ')
+            itembtn1 = types.KeyboardButton(text1)
+
+        text2 = translate_text(language_code,'ㅤAsk a question without contextㅤ')
         itembtn2 = types.KeyboardButton(text2)
-        groups[chat_id].button_commands.append(text2)
 
-        text13 = translate_text(language_code,'ㅤTurn on/off dialog modeㅤ')
-        itembtn13 = types.KeyboardButton(text13)
-        groups[chat_id].button_commands.append(text13)
+        text5 = translate_text(language_code,'ㅤGroupㅤ')
+        itembtn5 = types.KeyboardButton(text5)
 
-        text3 = translate_text(language_code,'ㅤTurn on/off manual modeㅤ')
-        itembtn3 = types.KeyboardButton(text3)
-        groups[chat_id].button_commands.append(text3)
+        text6 = translate_text(language_code,'ㅤSettingsㅤ')
+        itembtn6 = types.KeyboardButton(text6)
 
-        text4 = translate_text(language_code,'ㅤView current modeㅤ')
-        itembtn9 = types.KeyboardButton(text4)
-        groups[chat_id].button_commands.append(text4)
+        text7 = translate_text(language_code,'ㅤReport bugㅤ')
+        itembtn7 = types.KeyboardButton(text7)
 
-        text12 = translate_text(language_code,'ㅤGet group infoㅤ')
-        itembtn12 = types.KeyboardButton(text12)
-        groups[chat_id].button_commands.append(text12)
-
-        text5 = translate_text(language_code,'ㅤGet account infoㅤ')
-        itembtn4 = types.KeyboardButton(text5)
-        groups[chat_id].button_commands.append(text5)
-
-        text6 = translate_text(language_code,'ㅤChange bot settingsㅤ')
-        itembtn5 = types.KeyboardButton(text6)
-        groups[chat_id].button_commands.append(text6)
-
-        text7 = translate_text(language_code,'ㅤBuy subscription or tokensㅤ')
-        itembtn6 = types.KeyboardButton(text7)
-        groups[chat_id].button_commands.append(text7)
-
-        text8 = translate_text(language_code,'ㅤReport bugㅤ')
-        itembtn7 = types.KeyboardButton(text8)
-        groups[chat_id].button_commands.append(text8)
-
-        text9 = translate_text(language_code,'ㅤSuggest an ideaㅤ')
-        itembtn8 = types.KeyboardButton(text9)
-        groups[chat_id].button_commands.append(text9)
+        text8 = translate_text(language_code,'ㅤSuggest an ideaㅤ')
+        itembtn8 = types.KeyboardButton(text8)
 
         # text10 = translate_text(language_code,'ㅤSupport usㅤ')
         # itembtn10 = types.KeyboardButton(text10)
         # groups[chat_id].button_commands.append(text10)
 
-        markup.add(itembtn11)
+        groups[chat_id].button_commands.append(text1)
+        groups[chat_id].button_commands.append(text2)
+
         markup.add(itembtn1)
         markup.add(itembtn2)
-        markup.add(itembtn13)
-        markup.add(itembtn3)
-        markup.add(itembtn9)
-        markup.add(itembtn4, itembtn12)
+
+        if groups[chat_id].enabled == True:
+
+            text3 = translate_text(language_code,'ㅤView current modeㅤ')
+            itembtn3 = types.KeyboardButton(text3)
+            groups[chat_id].button_commands.append(text3)
+            markup.add(itembtn3)
+            text4 = translate_text(language_code,'ㅤChange modeㅤ')
+            itembtn4 = types.KeyboardButton(text4)
+            groups[chat_id].button_commands.append(text4)
+            markup.add(itembtn4)
+
         markup.add(itembtn5)
         markup.add(itembtn6)
         markup.add(itembtn7, itembtn8)
         # markup.add(itembtn10)
 
+        groups[chat_id].button_commands.append(text5)
+        groups[chat_id].button_commands.append(text6)
+        groups[chat_id].button_commands.append(text7)
+        groups[chat_id].button_commands.append(text8)
+
+        print(f"TEXTS OF BUTTONS : {groups[chat_id].button_commands}")
+
+        return markup
+    
     return markup
+
+
+def to_text(bot, message, reply_to=None):
+    """Take a voice message + circle and translate to text"""
+
+    if reply_to!=None:
+        message = reply_to
+
+    file_name_full="output\\voice_in\\"+message.voice.file_id+".ogg"
+    file_name_full_converted="output\\voice_in\\"+message.voice.file_id+".wav"
+    file_info = bot.get_file(message.voice.file_id)
+
+    makedirs("output\\voice_in", exist_ok=True)
+
+    downloaded_file = bot.download_file(file_info.file_path)
+    with open(file_name_full, 'wb') as new_file:
+        new_file.write(downloaded_file)
+
+    # Load ogg file
+    data, samplerate = sf.read(file_name_full)
+
+    # Export as wav
+    sf.write(file_name_full_converted, data, samplerate)
+
+    #Delete .ogg file
+    remove(file_name_full)
+
+    text = gpt.speech_to_text(file_name_full_converted)
+
+    remove(file_name_full_converted)
+
+    return text
+
+
+
+def generate_voice_message(message,text,reply_to=None):
+    """Got a text and generate voice file and return path to voice file"""
+
+    if reply_to!=None:
+        message = reply_to
+
+    language = detect(text)
+
+    voice_obj = gTTS(text=text, lang=language, slow=False)
+
+    voice_obj.save(f"output\\voice_out\\voice_out_{message.message_id}.mp3")
+
+    return f"output\\voice_out\\voice_out_{message.message_id}.mp3"
+
+def video_note_to_audio(bot, message, reply_to=None):
+    
+    print("!!!!!!!!!!!!!!!!!!!!!!!!")
+
+    video_file_path = f"output\\video_notes\\video_note_{message.message_id}.mp4"
+    audio_file_path= f"output\\video_notes\\audio_{message.message_id}.mp3"
+
+    file_info = bot.get_file(message.video_note.file_id)
+    downloaded_file = bot.download_file(file_info.file_path)
+
+    with open(video_file_path, 'wb') as new_file:
+        new_file.write(downloaded_file)
+
+    video = VideoFileClip(video_file_path)
+    video.audio.write_audiofile(audio_file_path)
+
+    text = gpt.speech_to_text(audio_file_path)
+
+    return text
+
+
+def take_info_about_sub(subscription):
+    subscriptions = {"Free":                               #{type_of_sub: {point: value_of_point}}
+                        {
+                        "allowed_groups": 1,
+                        "messages_limit": 100,
+                        "temporary_memory_size_limit": 20, 
+                        "dynamic_gen_permission": False,
+                        "sphere_permission": False,
+                        "temperature_permission": False,
+                        "frequency_penalty_permission": False,
+                        "presense_penalty_permission": False,
+                        "voice_output_permission": False,
+                        "generate_picture_permission": False
+                        },
+                    "USER":
+                        {
+                        "allowed_groups": 3,
+                        "messages_limit": 10000,
+                        "temporary_memory_size_limit": 50, 
+                        "dynamic_gen_permission": False,
+                        "sphere_permission": False,
+                        "temperature_permission": False,
+                        "frequency_penalty_permission": False,
+                        "presense_penalty_permission": False,
+                        "voice_output_permission": False,
+                        "generate_picture_permission": False
+                        },
+                    "SMALL BUSINESS":
+                        {
+                        "allowed_groups": 5,
+                        "messages_limit": 30000,
+                        "temporary_memory_size_limit": 100, 
+                        "dynamic_gen_permission": True,
+                        "sphere_permission": True,
+                        "temperature_permission": True,
+                        "frequency_penalty_permission": True,
+                        "presense_penalty_permission": True,
+                        "voice_output_permission": True,
+                        "generate_picture_permission": True
+                        },
+                    "BIG BUSINESS":
+                        {
+                        "allowed_groups": 10,
+                        "messages_limit": 50000,
+                        "temporary_memory_size_limit": 1000000000000000000, 
+                        "dynamic_gen_permission": True,
+                        "sphere_permission": True,
+                        "temperature_permission": True,
+                        "frequency_penalty_permission": True,
+                        "presense_penalty_permission": True,
+                        "voice_output_permission": True,
+                        "generate_picture_permission": True
+                        },
+    }
+
+    permissions = subscriptions[subscription]
+
+    return permissions

@@ -34,8 +34,7 @@ class Controller:
                 SenderFirstName TEXT,
                 SenderLastName TEXT,
                 SenderUsername TEXT,
-                PromptTokensTotal INTEGER,
-                CompletionTokensTotal INTEGER
+                MessagesTotal INTEGER
             )
         """
         )
@@ -45,20 +44,11 @@ class Controller:
                 ID INTEGER PRIMARY KEY AUTOINCREMENT,
                 ChatID INTEGER,
                 TypeOfSubscription TEXT,
-                NumAllowedGroups INTEGER,
-                TemporaryMemorySize INTEGER,
                 DateOfStart TEXT,
                 SenderFirstName TEXT,
                 SenderLastName TEXT,
                 SenderUsername TEXT,
-                TokensTotal INTEGER,
-                DYNAMIC_GENERATION TINYINT,
-                VOICE_INPUT TINYINT,
-                VOICE_OUTPUT TINYINT,
-                SphereContext TINYINT,
-                Temperature TINYINT,
-                FrequencyPenalty TINYINT,
-                PresensePenalty TINYINT
+                MessagesTotal INTEGER
             )
         """
         )
@@ -71,40 +61,22 @@ class Controller:
         self,
         chat_id: int,
         type_of_subscription: str,
-        num_allowed_groups: int,
-        temporary_memory_size: int,
         date_of_start: int,
         sender_first_name: str,
         sender_last_name: str,
         sender_username: str,
-        tokens_total: int,
-        dynamic_generation: bool,
-        voice_input: bool,
-        voice_output: bool,
-        sphere_context: bool,
-        temperature: bool,
-        freq_penalty: bool,
-        presense_penalty: bool
+        messages_total: int,
     ) -> None:
         sql = """
             INSERT INTO UserSubscriptions (
                 ChatID,
                 TypeOfSubscription,
-                NumAllowedGroups,
-                TemporaryMemorySize,
                 DateOfStart,
                 SenderFirstName,
                 SenderLastName,
                 SenderUsername,
-                TokensTotal,
-                DYNAMIC_GENERATION,
-                VOICE_INPUT,
-                VOICE_OUTPUT,
-                SphereContext,
-                Temperature,
-                FrequencyPenalty,
-                PresensePenalty 
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                MessagesTotal
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
         """
 
         self.cursor.execute(
@@ -112,20 +84,11 @@ class Controller:
             (
                 chat_id,
                 type_of_subscription,
-                num_allowed_groups,
-                temporary_memory_size,
                 date_of_start,
                 sender_first_name,
                 sender_last_name,
                 sender_username,
-                tokens_total,
-                int(dynamic_generation),
-                int(voice_input),
-                int(voice_output),
-                int(sphere_context),
-                int(temperature),
-                int(freq_penalty),
-                int(presense_penalty)
+                messages_total
             ),
         )
 
@@ -139,13 +102,12 @@ class Controller:
         first_name: str,
         last_name: str,
         username: str,
-        prompt_tokens_total: int,
-        completion_tokens_total: int,
+        messages_total: int
     ):
         self.cursor.execute(
             f"""
-            INSERT INTO MessageEvents (ChatID, MessageText, Time, SenderFirstName, SenderLastName, SenderUsername, PromptTokensTotal, CompletionTokensTotal)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO MessageEvents (ChatID, MessageText, Time, SenderFirstName, SenderLastName, SenderUsername, MessagesTotal)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 chat_id,
@@ -154,17 +116,16 @@ class Controller:
                 first_name,
                 last_name,
                 username,
-                prompt_tokens_total,
-                completion_tokens_total,
+                messages_total
             ),
         )
         self.conn.commit()
 
 
-    def update_tokens_of_user_with_sub(self, chat_id, data) -> None:
-        """Update tokens of user by chat_id"""
+    def update_messages_of_user_with_sub(self, chat_id, data) -> None:
+        """Update messages of user by chat_id"""
         
-        query = "UPDATE UserSubscriptions SET TokensTotal = ? WHERE ChatID = ?"
+        query = "UPDATE UserSubscriptions SET MessagesTotal = ? WHERE ChatID = ?"
         self.cursor.execute(query, (data, chat_id))
 
         self.conn.commit()
@@ -251,7 +212,7 @@ class Controller:
         columns = [description[0] for description in self.cursor.description]
         users_dict = {}
         for i, column in enumerate(columns):
-            if (column != "TokensTotal") and (column != "NumAllowedGroups") and (column != "TemporaryMemorySize") and (column != "TypeOfSubscription") and (column != "DateOfStart"):
+            if (column != "MessagesTotal") and (column != "TypeOfSubscription") and (column != "DateOfStart"):
                 users_dict[column] = bool(result[i])
             else:
                 users_dict[column] = result[i]
@@ -271,7 +232,7 @@ class Controller:
         columns = [description[0] for description in self.cursor.description]
         users_dict = {}
         for i, column in enumerate(columns):
-            if (column != "TokensTotal") and (column != "NumAllowedGroups") and (column != "TemporaryMemorySize") and (column != "TypeOfSubscription") and (column != "DateOfStart"):
+            if (column != "MessagesTotal") and (column != "NumAllowedGroups") and (column != "TemporaryMemorySize") and (column != "TypeOfSubscription") and (column != "DateOfStart"):
                 users_dict[column] = bool(result[i])
             else:
                 users_dict[column] = result[i]

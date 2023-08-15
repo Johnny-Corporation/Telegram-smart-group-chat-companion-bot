@@ -1,1 +1,1 @@
-You used less than 30000 tokens, so you got a dicount 20%!
+You used less than 30000 messages, so you got a dicount 20%!

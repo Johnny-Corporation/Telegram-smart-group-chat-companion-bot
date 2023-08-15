@@ -1,3 +1,0 @@
-Congratulations! Your tokens was increased!
-
-<i> /account_info to see changes</i>

@@ -1,0 +1,11 @@
+¡El bot está encendido ahora y lee un nuevo mensaje para debatir!
+
+Otros modos:
+ /enable_manual - aquí llamas manualmente a un bot
+
+En cualquier momento, puedes limpiar la memoria  /clean_memory para comenzar la conservación desde cero
+Para una mejor comprensión recomendamos configurar la esfera de diálogo /set_sphere
+
+<i> /a punto de saber sobre el bot </i>
+
+/disable para apagar un bot

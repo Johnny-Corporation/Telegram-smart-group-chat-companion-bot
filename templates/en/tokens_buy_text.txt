@@ -1,1 +1,0 @@
-You buy new {val} tokens. You have a {sub} plan, so this price downer.

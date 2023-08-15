@@ -1,0 +1,1 @@
+The buy of new messages was canceled. Incorrect format of data.

@@ -1,0 +1,4 @@
+Su suscripción fue finalizada. Ahora estás en modo Libre.
+
+<i> /compra para comprar suscripción</i>
+<i> /account_info para ver los cambios</i>

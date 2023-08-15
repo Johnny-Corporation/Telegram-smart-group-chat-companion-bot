@@ -10,9 +10,9 @@ if not openAI_api_key:
 openai.api_key = openAI_api_key
 
 
-def extract_tokens(completion: openai.ChatCompletion) -> int:
-    """Extracts tokens from OpenAI API response"""
-    return [completion.usage.prompt_tokens, completion.usage.completion_tokens]
+def extract_messages(completion: openai.ChatCompletion) -> int:
+    """Extracts messages from OpenAI API response"""
+    return [completion.usage.prompt_messages, completion.usage.completion_messages]
 
 
 def extract_text(completion: openai.ChatCompletion) -> str:
@@ -63,6 +63,8 @@ def create_chat_completion(
             }
         )
 
+    print(F"PREVIOIS MESSAGES IN CREATE CHAT COMPLETION:    {previous_messages}")
+
     completion = openai.ChatCompletion.create(
         model=model,
         messages=previous_messages,
@@ -89,7 +91,7 @@ def check_context_understanding(answer):
             }
         ],
         temperature=0,
-        max_tokens=1,
+        max_messages=1,
     )
     return extract_text(completion) == "No"
 
@@ -105,7 +107,7 @@ def check_theme_context(answer, theme):
             }
         ],
         temperature=0,
-        max_tokens=1,
+        max_messages=1,
     )
     return extract_text(completion) == "Yes"
 

@@ -14,6 +14,7 @@ from utils.internet_access import *
 from utils.functions import *
 from utils.logger import logger
 from utils.time_tracking import *
+from utils.text_to_voice import *
 
 # Other
 from dotenv import load_dotenv
@@ -34,7 +35,9 @@ skip_old_messages = True  # True until message older than bot start time receive
 ignored_messages = 0  # count number of ignored messages when bot was offline for logs
 
 
-bot_token = environ.get("BOT_API_TOKEN_OFFICIAL")
+bot_token = environ.get("BOT_API_TOKEN")
+
+yoomoney_token = environ.get("PAYMENT_RUS_TOKEN")
 
 developer_chat_IDs = environ.get("DEVELOPER_CHAT_IDS")
 if not bot_token:
@@ -77,18 +80,18 @@ def error_handler(func):
     def wrapper(message: types.Message):
         try:
             func(message)
-        except KeyError:
-            chat_id = (
-                message.chat.id
-                if isinstance(message, types.Message)
-                else message.message.chat.id
-            )
+        # except KeyError:
+        #     chat_id = (
+        #         message.chat.id
+        #         if isinstance(message, types.Message)
+        #         else message.message.chat.id
+        #     )
 
-            bot.send_message(
-                chat_id,
-                "Sorry, bot was restarted. Your data saved!",
-            )
-            init_new_group(chat_id, message.from_user.id)
+        #     bot.send_message(
+        #         chat_id,
+        #         "Sorry, bot was restarted. Your data saved!",
+        #     )
+        #     init_new_group(chat_id, message.from_user.id)
         except Exception:
             chat_id = (
                 message.chat.id
@@ -114,6 +117,15 @@ def error_handler(func):
         else:
             if isinstance(message, types.CallbackQuery):
                 logger.info("Callback query processed without errors")
+
+            elif message.content_type == 'voice':
+                logger.info(
+                    f'Voice message executed in chat with id {message.chat.id} by user with id {message.from_user.id}'
+                )
+            elif message.content_type == 'video_note':
+                logger.info(
+                    f'Video note executed in chat with id {message.chat.id} by user with id {message.from_user.id}'
+                )
             elif message.text[0] == "/":  # command
                 logger.info(
                     f'Command "{message.text}" executed in chat with id {message.chat.id} by user with id {message.from_user.id}'
@@ -136,7 +148,7 @@ def member_filter(message: types.Message):
 
         #Check, there is a owner of group
         try:
-            
+
             if groups[message.chat.id].owner_id != None:
                 return True
         
@@ -145,17 +157,8 @@ def member_filter(message: types.Message):
 
             #Messages handlers
             if message.content_type in ['audio', 'photo', 'voice', 'video', 'document', 'text', 'location', 'contact', 'sticker']:
-
                 if message.chat.type != "private":
-
-                    if not check_file_existing(message.from_user.first_name,"output\\clients_info"):
-                        bot.send_message(message.chat.id, f"Please, sign in in private messages in @{bot_username}. It will take less than a minute")
-                        return False
-                    if message.from_user.id not in groups.keys():
-                        bot.send_message(message.chat.id, f"Please, sign in in private messages in @{bot_username}. It will take less than a minute")
-                        return False
-                    
-                    return True
+                    return False
             return True
 
 def time_filter(message: types.Message):
@@ -210,7 +213,21 @@ def send_welcome_text_and_load_data(chat_id: int, owner_id: int, language_code: 
         chat_id (int)
     """
 
+    try:
+        groups[owner_id]
+    except:
+        bot.send_message(chat_id, f"Register in @{bot_username}")
+        return
     
+
+    groups[chat_id].activated = True
+
+    #Check group
+    if chat_id < 0:
+        if len(groups[owner_id].id_groups)==groups[owner_id].permissions[groups[owner_id].subscription]["allowed_groups"]:
+            bot.send_message(chat_id, "Your limits on groups was exceeded. Pay the subscription to use Johnny in more groups.")
+            return 
+        
     #Dynamic loading of group
     loading = bot.send_message(chat_id, "Loading...10% ")
     bot.edit_message_text(f"Loading...11% ", chat_id, loading.message_id)
@@ -249,16 +266,7 @@ def send_welcome_text_and_load_data(chat_id: int, owner_id: int, language_code: 
                 " ",
                 " ",
                 "Free",
-                1,
-                20,
-                100000,
-                False,
-                False,
-                False,
-                False,
-                False,
-                False,
-                False
+                100000
             )
             groups[chat_id].load_subscription(chat_id)
 
@@ -282,16 +290,15 @@ def send_welcome_text_and_load_data(chat_id: int, owner_id: int, language_code: 
 
         #Load info to group from loader of group (owner_id)
         groups[chat_id].subscription = groups[owner_id].subscription
-        groups[chat_id].allowed_groups = groups[owner_id].allowed_groups
-        groups[chat_id].tokens_limit = groups[owner_id].tokens_limit
-        groups[chat_id].dynamic_gen_permission = groups[owner_id].dynamic_gen_permission
-        groups[chat_id].voice_input_permission = groups[owner_id].voice_input_permission
-        groups[chat_id].voice_output_permission = groups[owner_id].voice_output_permission
-        groups[chat_id].sphere_permission = groups[owner_id].sphere_permission
-        groups[chat_id].temperature_permission = groups[owner_id].temperature_permission
-        groups[chat_id].frequency_penalty_permission = groups[owner_id].frequency_penalty_permission
-        groups[chat_id].presense_penalty_permission = groups[owner_id].presense_penalty_permission
-        groups[chat_id].temporary_memory_size_limit = groups[owner_id].temporary_memory_size_limit
+        groups[chat_id].permissions[groups[chat_id].subscription]["allowed_groups"] = groups[owner_id].permissions[groups[owner_id].subscription]["allowed_groups"]
+        groups[chat_id].permissions[groups[chat_id].subscription]['messages_limit'] = groups[owner_id].permissions[groups[owner_id].subscription]['messages_limit']
+        groups[chat_id].permissions[groups[chat_id].subscription]['dynamic_gen_permission'] = groups[owner_id].permissions[groups[owner_id].subscription]['dynamic_gen_permission']
+        groups[chat_id].permissions[groups[chat_id].subscription]['voice_output_permission'] = groups[owner_id].permissions[groups[owner_id].subscription]['voice_output_permission']
+        groups[chat_id].permissions[groups[chat_id].subscription]['sphere_permission'] = groups[owner_id].permissions[groups[owner_id].subscription]['sphere_permission']
+        groups[chat_id].permissions[groups[chat_id].subscription]['temperature_permission'] = groups[owner_id].permissions[groups[owner_id].subscription]['temperature_permission']
+        groups[chat_id].permissions[groups[chat_id].subscription]['frequency_penalty_permission'] = groups[owner_id].permissions[groups[owner_id].subscription]['frequency_penalty_permission']
+        groups[chat_id].permissions[groups[chat_id].subscription]['presense_penalty_permission'] = groups[owner_id].permissions[groups[owner_id].subscription]['presense_penalty_permission']
+        groups[chat_id].permissions[groups[chat_id].subscription]['temporary_memory_size_limit'] = groups[owner_id].permissions[groups[owner_id].subscription]['temporary_memory_size_limit']
         groups[chat_id].owner_id = owner_id
 
         #Add to owner's data info about him group
@@ -308,11 +315,10 @@ def send_welcome_text_and_load_data(chat_id: int, owner_id: int, language_code: 
 
 
     #Load buttons
-    markup = load_buttons(types, groups, chat_id, language_code)
+    markup = load_buttons(types, groups, chat_id, language_code, owner_id=owner_id)
 
     #Welcome text for group and user
     if chat_id > 0:
-        groups[chat_id].enabled = True
         groups[chat_id].trigger_probability = 1
         bot.send_message(chat_id, groups[chat_id].templates[language_code]["new_user_welcome.txt"], reply_markup=markup, parse_mode="HTML")
     else:
@@ -355,14 +361,13 @@ def handle_new_chat_members(message):
         None
 
 
-def init_new_group(chat_id, owner_id):
+def init_new_group(chat_id):
     if chat_id in groups:
         groups[chat_id].lang_code = "en"
         bot.send_message(
             chat_id,
             "You haven't set the language. English sets by default.\nUse /change_language for changing language",
         )
-        send_welcome_text_and_load_data(chat_id, owner_id)
 
     else:
         chat = bot.get_chat(chat_id)
@@ -387,14 +392,6 @@ def init_new_group(chat_id, owner_id):
         groups[chat_id] = Johnny(bot, chat_id, str(bot_username))
         groups[chat_id].templates = load_templates("templates\\")
 
-        #Check group
-        if chat_id < 0:
-            if len(groups[owner_id].id_groups)==groups[owner_id].allowed_groups:
-                bot.send_message(chat_id, "Your limits on groups was exceeded. Pay the subscription to add Johnny to more groups.")
-                bot.leave_chat(chat_id)
-                return 
-
-
         blacklist[chat_id] = []
         reply_blacklist[chat_id] = []
 
@@ -408,79 +405,70 @@ def init_new_group(chat_id, owner_id):
 # --------------- Commands ---------------
 
 # Reply handlers (important to import them before commands, because commands are using them)
-from commands.reply_handlers.feature_request import *
 from commands.reply_handlers.bug_report import *
+from commands.reply_handlers.feature_request import *
+from commands.reply_handlers.purchase_enter_new_messages import *
+from commands.reply_handlers.purchase_enter_promocode import *
+from commands.reply_handlers.purchase_support_us import *
 from commands.reply_handlers.question_to_bot import *
-from commands.reply_handlers.set_temp import *
-from commands.reply_handlers.frequency_penalty import *
-from commands.reply_handlers.presense_penalty import *
-from commands.reply_handlers.set_sphere import *
-from commands.reply_handlers.temp_memory_size import *
-from commands.reply_handlers.set_probability import *
-from commands.reply_handlers.enter_new_tokens import *
-from commands.reply_handlers.enter_promocode import *
-from commands.reply_handlers.change_owner import *
-from commands.reply_handlers.change_language import *
-from commands.reply_handlers.support_us import *
+from commands.reply_handlers.settings_bot_answers import *
+from commands.reply_handlers.settings_change_language import *
+from commands.reply_handlers.settings_change_owner import *
 
 # Commands
 from commands.about import *
+from commands.account import *
+from commands.bot_on_view_mode import *
+from commands.bot_on_change_mode_command import *
+from commands.clean_memory import *
+from commands.converts import *
+from commands.dev_tools import *
+from commands.enable_disable import *
+from commands.group import *
 from commands.help import *
-from commands.start import *
-from commands.set_up_command import *
-from commands.view_mode import *
-from commands.tokens_info import *
-from commands.dynamic_generation import *
-from commands.set_temp import *
-from commands.set_prob import *
-from commands.set_memory_size import *
-from commands.set_freq_penalty import *
-from commands.set_sphere import *
-from commands.set_answer_len import *
+from commands.purchase_enter_promocode import *
+from commands.purchase_extend_sub import *
+from commands.purchase_pay_subscription import *
+from commands.purchase_pay_messages import *
+from commands.purchase_support_us import *
+from commands.purchase_update_sub import *
+from commands.purchase import *
+from commands.question_to_bot import *
 from commands.report_bug import *
 from commands.request_feature import *
-from commands.question_to_bot import *
-from commands.enable_disable import *
-from commands.dialog_mode_dis_en import *
-from commands.manual_mode_en_dis import *
-from commands.clean_memory import *
-from commands.commands_list import *
-from commands.group_info import *
-from commands.change_lang import *
-from commands.dev_tools import *
-from commands.purchase import *
-from commands.enter_purchase_of_tokens import *
-from commands.enter_promocode import *
-from commands.account_info import *
-from commands.update_sub import *
-from commands.change_owner_of_group import *
-from commands.yoomoney import *
-from commands.subs_list import *
-from commands.customization import *
-from commands.tranzzo import *
 from commands.settings import *
-from commands.support_us import *
+from commands.settings_change_language import *
+from commands.settings_bot_answers import *
+from commands.settings_change_owner_of_group import *
+from commands.settings_special_features import *
+from commands.about import *
+from commands.start import *
+from commands.subs_list import *
+from commands.tranzzo import *
 
 # Buttons handler
 from commands.buttons_handler import *
 from commands.commands_handler import *
 
+# Payment handler (need be there)
+from utils.yoomoney import *
+
 # --------------- Main messages handler ---------------
 
 
 @bot.message_handler(
-    content_types=["text", "voice"],
+    content_types=['text', 'audio', 'document', 'photo', 'sticker', 'video', 'video_note', 'voice'],
     func=lambda message: reply_blacklist_filter(message)
     and blacklist_filter(message)
-    and time_filter(message)
-    and member_filter(message),
+    and time_filter(message),
 )
 @error_handler
 def main_messages_handler(message: types.Message):
     """Handles all messages"""
 
     if (message.chat.id not in groups) or (not groups[message.chat.id].lang_code):
-        init_new_group(message.chat.id, message.from_user.id)
+        init_new_group(message.chat.id)
+
     else:
 
 
@@ -489,13 +477,17 @@ def main_messages_handler(message: types.Message):
             groups[message.chat.id].button_commands[-1]
         except:
             return
-
         #Checks the command of ReplyButtons
         button_on = reply_keyboard_buttons_handler(message, groups[message.chat.id].button_commands)
         if button_on:
             return
         
+
+        #Checks the regisration of user
+        if groups[message.chat.id].activated == False:
+            return
         
+
         threading.Thread(
             target=groups[message.chat.id].new_message, args=(message,groups)
         ).start()

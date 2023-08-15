@@ -1,0 +1,21 @@
+<i>Account: {first_name} </i>
+
+
+<b>Subscription: {subscription}</b>
+
+messages: Have {messages} free messages.
+<b>Left {left_messages} messages</b>
+
+Groups: Can have {groups} groups.
+<b>Left {left_groups} groups</b>
+
+Groups: {name_of_groups}
+
+Memory: Can have {temp_memory_limit} messages maximum.
+<b>Established: {temp_memory}</b>
+
+Dynamic generation {dyn_gen_per}
+
+Voice output {voice_out_per}
+
+Settings of Johnny's answers {set_up_per}

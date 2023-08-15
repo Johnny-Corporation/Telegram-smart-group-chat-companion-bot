@@ -1,10 +1,12 @@
 from __main__ import *
 
 
-# --- set_up functions ---
-@bot.message_handler(commands=["purchase"], func=time_filter and member_filter)
+# ---------- Main message ----------
+
+# --- Purchase ---
+@bot.message_handler(commands=["purchase"], func=time_filter)
 @error_handler
-def purchase(message):
+def purchase(message, back_from=False):
 
     language_code = groups[message.chat.id].lang_code
 
@@ -27,6 +29,7 @@ def purchase(message):
                 callback_data="pro",
             )
 
+
             purchase_markup.add(user_button)
             purchase_markup.add(small_business_button)
             purchase_markup.add(big_business_button)
@@ -44,9 +47,9 @@ def purchase(message):
             purchase_markup.add(extend_sub_button)
             purchase_markup.add(update_sub_button)
         
-        tokens_button = types.InlineKeyboardButton(
-            text=groups[message.chat.id].templates[language_code]["button_more_tokens.txt"],
-            callback_data="more_tokens",
+        messages_button = types.InlineKeyboardButton(
+            text=groups[message.chat.id].templates[language_code]["button_more_messages.txt"],
+            callback_data="more_messages",
         )
         promocode_button = types.InlineKeyboardButton(
             text=groups[message.chat.id].templates[language_code]["button_promocode.txt"],
@@ -55,13 +58,20 @@ def purchase(message):
 
         # Adding buttons to keyboard
         
-        purchase_markup.add(tokens_button)
+        purchase_markup.add(messages_button)
         purchase_markup.add(promocode_button)
 
+        back_button = types.InlineKeyboardButton(
+            text="<<<",
+            callback_data="back_to_account",
+        )
+        purchase_markup.add(back_button)
+
         # Seconding keyboard
-        bot.send_message(
-            message.chat.id,
+        bot.edit_message_text(
             groups[message.chat.id].templates[language_code]["purchase.txt"].format(plan=groups[message.chat.id].subscription),
+            message.chat.id, 
+            message.message_id,
             reply_markup=purchase_markup,
             parse_mode="HTML",
         )
@@ -69,3 +79,5 @@ def purchase(message):
 
     else:
         bot.reply_to(message, groups[message.chat.id].templates[language_code]["buy_unavaible_in_group.txt"].format(bot_username=bot_username))
+
+

@@ -2,9 +2,9 @@ from __main__ import *
 
 
 # --- Request feature ---
-@bot.message_handler(commands=["request_feature"], func=time_filter and member_filter)
+@bot.message_handler(commands=["request_feature"], func=time_filter)
 @error_handler
-def request_feature_command(message):
+def request_feature(message):
     language_code = groups[message.chat.id].lang_code
     bot_reply = bot.reply_to(message, groups[message.chat.id].templates[language_code]["request_feature.txt"])
     reply_blacklist[message.chat.id].append(bot_reply.message_id)

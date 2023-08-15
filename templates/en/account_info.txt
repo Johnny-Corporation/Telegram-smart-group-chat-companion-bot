@@ -1,23 +1,11 @@
 <i>Account: {first_name} </i>
 
-
 <b>Subscription: {subscription}</b>
 
-Tokens: Have {tokens} free tokens.
-<b>Left {left_tokens} tokens</b>
+<b>Left {left_messages} messages</b>
 
-Groups: Can have {groups} groups.
 <b>Left {left_groups} groups</b>
 
 Groups: {name_of_groups}
 
-Memory: Can have {temp_memory_limit} messages maximum.
-<b>Established: {temp_memory}</b>
-
-Dynamic generation {dyn_gen_per}
-
-Voice input {voice_in_per}
-
-Voice output {voice_out_per}
-
-Settings of Johnny's answers {set_up_per}
+Below you can see more:

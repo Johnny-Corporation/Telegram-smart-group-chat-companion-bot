@@ -86,5 +86,5 @@ def add_to_todo_reply_handler(inner_message):
 
 @error_handler
 def get_promocodes(inner_message):
-    bot.send_message(inner_message.chat.id, f"BIG BUSINESS: {big_business_promocode}\nSMALL BUSINESS: {small_business_promocode}\nUSER BUSINESS: {user_promocode}\nGet 100000 tokens: {promocode_100000}")
+    bot.send_message(inner_message.chat.id, f"BIG BUSINESS: {big_business_promocode}\nSMALL BUSINESS: {small_business_promocode}\nUSER BUSINESS: {user_promocode}\nGet 100000 messages: {promocode_100000}")
 

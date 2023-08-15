@@ -1,0 +1,7 @@
+¡Ey! Soy Johnny, ¡un robot inteligente con IA! ¡Puedo resolver problemas, sugerir soluciones, responder preguntas, expresar su opinión y más!
+
+Tiempo para mañana? ¿Qué regalar para un cumpleaños? Escriba un programa simple en python: ¡eso es todo para usted!
+
+Puede chatear como en mensajes privados, como en chats grupales, ¡simplemente agréguelo al grupo!
+
+Johnny lee mensajes y da su opinión, solución.

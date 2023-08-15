@@ -2,7 +2,7 @@ from __main__ import *
 
 
 # --- set_up functions ---
-@bot.message_handler(commands=["dev_tools"], func=time_filter and member_filter)
+@bot.message_handler(commands=["dev_tools"], func=time_filter)
 @error_handler
 def dev_tools(message):
     if str(message.chat.id) not in developer_chat_IDs and (

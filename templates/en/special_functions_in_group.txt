@@ -1,0 +1,8 @@
+<b>Customization</b>
+
+Dynamic generation is {dynamic_gen_en}.
+
+Voice output is {voice_out}
+
+In<i> Settings/special opportunities</i> you can change it
+

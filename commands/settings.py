@@ -2,24 +2,36 @@ from __main__ import *
 
 
 # --- set_up functions ---
-@bot.message_handler(commands=["settings"], func=time_filter and member_filter)
-def settings_command(message, back_from: bool=False):
+@bot.message_handler(commands=["settings"], func=time_filter)
+def settings(message, back_from: bool=False):
     language_code = groups[message.chat.id].lang_code
 
     markup = types.InlineKeyboardMarkup()
 
     button1 = types.InlineKeyboardButton(
         text=groups[message.chat.id].templates[language_code]["button_set_up.txt"],
-        callback_data="set_up",
+        callback_data="bot_answers",
     )
     button2 = types.InlineKeyboardButton(
+        text=groups[message.chat.id].templates[language_code]["button_change_lang.txt"],
+        callback_data="change_lang",
+    )
+    button3 = types.InlineKeyboardButton(
         text=groups[message.chat.id].templates[language_code]["button_customization.txt"],
-        callback_data="customization",
+        callback_data="special_features",
     )
 
     # Adding buttons to keyboard
     markup.add(button1)
     markup.add(button2)
+    markup.add(button3)
+
+    if message.chat.id < 0:
+        owner_button = types.InlineKeyboardButton(
+            text="Change owner of group",
+            callback_data="change_owner",
+        )
+        markup.add(owner_button)
 
     if back_from:
         bot.edit_message_text(
