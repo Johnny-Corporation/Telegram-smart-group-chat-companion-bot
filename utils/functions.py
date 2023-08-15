@@ -1,9 +1,9 @@
 from os import path, listdir, makedirs, remove
 import json
 import re
+import replicate
 from googletrans import Translator
 import soundfile as sf
-import tiktoken
 
 from gtts import gTTS
 from langdetect import detect
@@ -65,6 +65,11 @@ def send_file(path: str, id: int, bot) -> None:
         bot.send_document(id, file)
 
 
+def send_image_from_link(bot, url, chat_id):
+    "Takes straight url to image and sends it to chat with specified id"
+    bot.send_photo(chat_id, url)
+
+
 def send_to_developers(
     msg: str, bot, developer_chat_IDs: list, file: bool = False
 ) -> None:
@@ -85,26 +90,6 @@ def send_to_developers(
                     id,
                     msg,
                 )
-
-
-def messages_to_dollars(model: str, prompt_messages: int, completion_messages: int) -> float:
-    """Converts messages to dollars
-
-    Args:
-        model (str): model name (ex: gpt-3.5-turbo)
-        input_messages (int)
-        output_messages (int)
-
-    Returns:
-        float
-    """
-    coefficients = {
-        "gpt-3.5-turbo": {"input": 0.0015, "output": 0.002},
-        "gpt-3.5-turbo-16k": {"input": 0.003, "output": 0.004},
-    }
-    input_price = (prompt_messages / 1000) * coefficients[model]["input"]
-    output_price = (completion_messages / 1000) * coefficients[model]["output"]
-    return input_price + output_price
 
 
 def convert_to_json(s: str) -> str:
@@ -135,17 +120,6 @@ def send_sticker(chat_id: int, sticker_id: str, bot) -> None:
     bot.send_sticker(chat_id, sticker_id)
 
 
-def tokenize(text: str) -> int:
-    """Takes text and returns number of messages
-
-    Args:
-        text (str)
-    Returns:
-        messages (int)
-    """
-    raise NotImplementedError("Make this please")
-
-
 def remove_utf8_chars(string: str) -> str:
     """Removes all strange chars, if all symbols were removed, returns "empty" """
     # Use a regular expression to remove non-alphanumeric characters
@@ -166,6 +140,33 @@ def clean_string(string: str) -> str:
     return cleaned_string
 
 
+def get_file_content(bot, message):
+    """Returns file content"""
+    try:
+        # Download the file
+        file_info = bot.get_file(message.document.file_id)
+        downloaded_file = bot.download_file(file_info.file_path)
+
+        # Convert the file's binary content to string
+        file_content = downloaded_file.decode("utf-8")
+
+        # Send back the first 1000 characters of the file (to avoid message length limits)
+        return file_content[:1000]
+    except Exception as e:
+        return "file content cant be read"
+
+
+def describe_image(link: str, prompt: str = "Describe image") -> str:
+    # In our case 50 images approximately 1$
+    model = "daanelson/minigpt-4:b96a2f33cc8e4b0aa23eacfce731b9c41a7d9466d9ed4e167375587b54db9423"
+    output = replicate.run(
+        model,
+        input={
+            "image": link,
+            "prompt": prompt,
+        },
+    )
+    return output
 def num_messages_from_string(string: str, encoding_name: str = "cl100k_base") -> int:
     """Returns the number of messages in a text string."""
     encoding = tiktoken.get_encoding(encoding_name)

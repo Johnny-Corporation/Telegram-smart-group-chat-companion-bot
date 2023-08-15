@@ -88,7 +88,7 @@ class Controller:
                 sender_first_name,
                 sender_last_name,
                 sender_username,
-                messages_total
+                messages_total,
             ),
         )
 
@@ -102,29 +102,20 @@ class Controller:
         first_name: str,
         last_name: str,
         username: str,
-        messages_total: int
+        messages_total: int,
     ):
         self.cursor.execute(
             f"""
             INSERT INTO MessageEvents (ChatID, MessageText, Time, SenderFirstName, SenderLastName, SenderUsername, MessagesTotal)
             VALUES (?, ?, ?, ?, ?, ?, ?)
             """,
-            (
-                chat_id,
-                text,
-                time,
-                first_name,
-                last_name,
-                username,
-                messages_total
-            ),
+            (chat_id, text, time, first_name, last_name, username, messages_total),
         )
         self.conn.commit()
 
-
     def update_messages_of_user_with_sub(self, chat_id, data) -> None:
         """Update messages of user by chat_id"""
-        
+
         query = "UPDATE UserSubscriptions SET MessagesTotal = ? WHERE ChatID = ?"
         self.cursor.execute(query, (data, chat_id))
 
@@ -132,12 +123,11 @@ class Controller:
 
     def update_days_of_subscription_of_user_with_sub(self, chat_id, data) -> None:
         """Update days of subscription of user by chat_id"""
-        
+
         query = "UPDATE UserSubscriptions SET DaysOfSubscription = ? WHERE ChatID = ?"
         self.cursor.execute(query, (data, chat_id))
 
         self.conn.commit()
-
 
     def check_the_existing_of_user_with_sub(self, chat_id) -> bool:
         """Check the existing of user in db by chat_id"""
@@ -154,11 +144,10 @@ class Controller:
             return False
         else:
             return True
-        
 
     def delete_the_existing_of_user_with_sub(self, chat_id) -> None:
         """delete data of user by chat_id"""
-        
+
         query = "DELETE FROM UserSubscriptions WHERE ChatID = ?"
         self.cursor.execute(query, (chat_id,))
 
@@ -166,12 +155,11 @@ class Controller:
 
     def delete_the_existing_of_user_with_sub_by_date(self, date_of_start) -> None:
         """delete data of user by chat_id"""
-        
+
         query = "DELETE FROM UserSubscriptions WHERE DateOfStart = ?"
         self.cursor.execute(query, (date_of_start,))
 
         self.conn.commit()
-
 
     def get_users_with_sub_by_chat_id(self, user_chat_id: int):
         """aa"""
@@ -181,8 +169,6 @@ class Controller:
 
         return result
 
-
-
     def get_first_date_of_start_of_user(self, user_chat_id: int):
         """Get the days of subscription of user by id"""
         query = "SELECT DateOfStart FROM UserSubscriptions WHERE ChatID = ? ORDER BY DateOfStart ASC LIMIT 1"
@@ -190,7 +176,7 @@ class Controller:
         result = self.cursor.fetchone()
 
         return result[0]
-    
+
     def get_last_date_of_start_of_user(self, user_chat_id: int):
         """Get the days of subscription of user by id"""
         query = "SELECT DateOfStart FROM UserSubscriptions WHERE ChatID = ? ORDER BY DateOfStart DESC LIMIT 1"
@@ -198,7 +184,7 @@ class Controller:
         result = self.cursor.fetchone()
 
         return result[0]
-    
+
     def get_user_with_sub_by_username(self, user_username: int) -> dict:
         """Returns dict with data about user where each key is a column name"""
         query = "SELECT * FROM UserSubscriptions WHERE SenderUsername = ? ORDER BY DateOfStart ASC LIMIT 1"
@@ -212,7 +198,11 @@ class Controller:
         columns = [description[0] for description in self.cursor.description]
         users_dict = {}
         for i, column in enumerate(columns):
-            if (column != "MessagesTotal") and (column != "TypeOfSubscription") and (column != "DateOfStart"):
+            if (
+                (column != "MessagesTotal")
+                and (column != "TypeOfSubscription")
+                and (column != "DateOfStart")
+            ):
                 users_dict[column] = bool(result[i])
             else:
                 users_dict[column] = result[i]
@@ -232,7 +222,13 @@ class Controller:
         columns = [description[0] for description in self.cursor.description]
         users_dict = {}
         for i, column in enumerate(columns):
-            if (column != "MessagesTotal") and (column != "NumAllowedGroups") and (column != "TemporaryMemorySize") and (column != "TypeOfSubscription") and (column != "DateOfStart"):
+            if (
+                (column != "MessagesTotal")
+                and (column != "NumAllowedGroups")
+                and (column != "TemporaryMemorySize")
+                and (column != "TypeOfSubscription")
+                and (column != "DateOfStart")
+            ):
                 users_dict[column] = bool(result[i])
             else:
                 users_dict[column] = result[i]

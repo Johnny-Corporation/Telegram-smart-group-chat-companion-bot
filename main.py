@@ -1,12 +1,11 @@
 # ---------------  Imports ---------------
-from os import environ, path, mkdir, execl,  listdir, remove
-from sys import argv, executable
+from os import environ
 
-if not path.exists("output"):
-    mkdir("output")
+makedirs("output", exist_ok=True)
 
 # Bot API
 from telebot import TeleBot, types
+from telebot.apihelper import ApiException
 
 # Local modules
 from Johnny import Johnny
@@ -25,7 +24,6 @@ from typing import Dict
 
 
 # --------------- Initialization ---------------
-
 
 load_dotenv(".env")
 
@@ -55,11 +53,9 @@ blacklist = {}  # chat_id:[messages_ids] needed for filtering messages
 reply_blacklist = {}  # chat_id:[messages_ids] needed for filtering replies to messages
 groups: Dict[int, Johnny] = {}  # {group chat_id:Johnny object}
 
-if not path.exists("output\\groups_info"):
-    mkdir("output\\groups_info")
 
-if not path.exists("output\\clients_info"):
-    mkdir("output\\clients_info")
+makedirs("output\\groups_info", exist_ok=True)
+makedirs("output\\clients_info", exist_ok=True)
 
 
 bot = TeleBot(bot_token)
@@ -70,7 +66,7 @@ bot_username = bot.get_me().username
 # --------------- Error handling ---------------
 
 
-def error_handler(func):
+def error_handler(args):
     """Handles all occurred errors, logs them, sends error and logs.log to developers
 
     Args:
@@ -79,19 +75,12 @@ def error_handler(func):
 
     def wrapper(message: types.Message):
         try:
-            func(message)
-        # except KeyError:
-        #     chat_id = (
-        #         message.chat.id
-        #         if isinstance(message, types.Message)
-        #         else message.message.chat.id
-        #     )
-
-        #     bot.send_message(
-        #         chat_id,
-        #         "Sorry, bot was restarted. Your data saved!",
-        #     )
-        #     init_new_group(chat_id, message.from_user.id)
+            args(message)
+        except KeyError:
+            if (message.chat.id in groups) and (
+                groups[message.chat.id].lang_code is None
+            ):
+                bot.send_message(message.chat.id, "Bot is not initialized yet!")
         except Exception:
             chat_id = (
                 message.chat.id
@@ -101,10 +90,10 @@ def error_handler(func):
             logger.error(f"Unexpected error: {traceback.format_exc()}")
             bot.send_message(
                 chat_id,
-                "Sorry, unexpected error occurred, developers have been already notified!",
+                "Sorry, unexpected error occurred, developers have been already notified! Don't worry, you and other people can still use bot, error has been reported and will be fixed as soon as possible! Despite we can see where bug takes place, we can't see your last messages because of the privacy reasons, you can help us by using /report_bug command and providing some details.",
             )
             send_to_developers(
-                f"Error occurred!!!: \n -----------\n {traceback.format_exc()}\n ---------- ",
+                f"Error occurred: \n ❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️\n {traceback.format_exc()}\n ❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️",
                 bot,
                 developer_chat_IDs,
             )
@@ -118,13 +107,13 @@ def error_handler(func):
             if isinstance(message, types.CallbackQuery):
                 logger.info("Callback query processed without errors")
 
-            elif message.content_type == 'voice':
+            elif message.content_type == "voice":
                 logger.info(
-                    f'Voice message executed in chat with id {message.chat.id} by user with id {message.from_user.id}'
+                    f"Voice message executed in chat with id {message.chat.id} by user with id {message.from_user.id}"
                 )
-            elif message.content_type == 'video_note':
+            elif message.content_type == "video_note":
                 logger.info(
-                    f'Video note executed in chat with id {message.chat.id} by user with id {message.from_user.id}'
+                    f"Video note executed in chat with id {message.chat.id} by user with id {message.from_user.id}"
                 )
             elif message.text[0] == "/":  # command
                 logger.info(
@@ -135,31 +124,63 @@ def error_handler(func):
                     f'Message "{message.text}" sent in chat with id {message.chat.id} by user with id {message.from_user.id}'
                 )
 
-    return wrapper
+    if callable(args):
+        return wrapper
+    else:
+        chat_id = args.thread.chat_id
+        logger.error(f"Unexpected error: {traceback.format_exc()}")
+        bot.send_message(
+            chat_id,
+            "Sorry, unexpected error occurred, developers have been already notified! Don't worry, you and other people can still use bot, error has been reported and will be fixed as soon as possible! Despite we can see where bug takes place, we can't see your last messages because of the privacy reasons, you can help us by using /report_bug command and providing some details.",
+        )
+        try:
+            send_to_developers(
+                f"Error occurred!!!: \n ❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️\n {traceback.format_exc()}\n ❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️ ",
+                bot,
+                developer_chat_IDs,
+            )
+        except ApiException:  # Most probably too long message
+            send_to_developers(
+                "Error occurred, but output is too long, see logs!",
+                bot,
+                developer_chat_IDs,
+            )
+        send_to_developers("output\\debug_logs.log", bot, developer_chat_IDs, file=True)
+        send_to_developers("output\\info_logs.log", bot, developer_chat_IDs, file=True)
 
+
+threading.excepthook = error_handler
 
 # --------------- Filters ---------------
 
-def member_filter(message: types.Message):
 
+def member_filter(message: types.Message):
     global skip_old_messages
     print(skip_old_messages)
     if not skip_old_messages:
-
-        #Check, there is a owner of group
+        # Check, there is a owner of group
         try:
-
             if groups[message.chat.id].owner_id != None:
                 return True
-        
-        #Check a registration of user, if a group didn't initialize
-        except:
 
-            #Messages handlers
-            if message.content_type in ['audio', 'photo', 'voice', 'video', 'document', 'text', 'location', 'contact', 'sticker']:
+        # Check a registration of user, if a group didn't initialize
+        except:
+            # Messages handlers
+            if message.content_type in [
+                "audio",
+                "photo",
+                "voice",
+                "video",
+                "document",
+                "text",
+                "location",
+                "contact",
+                "sticker",
+            ]:
                 if message.chat.type != "private":
                     return False
             return True
+
 
 def time_filter(message: types.Message):
     """Filters message which were sent before bot start"""
@@ -206,7 +227,9 @@ def change_language(chat_id):
     bot.send_message(chat_id, "Choose language", reply_markup=keyboard)
 
 
-def send_welcome_text_and_load_data(chat_id: int, owner_id: int, language_code: str = "en") -> None:
+def send_welcome_text_and_load_data(
+    chat_id: int, owner_id: int, language_code: str = "en"
+) -> None:
     """Sends initialization messages to group and loads data in group's object
 
     Args:
@@ -218,114 +241,146 @@ def send_welcome_text_and_load_data(chat_id: int, owner_id: int, language_code: 
     except:
         bot.send_message(chat_id, f"Register in @{bot_username}")
         return
-    
 
     groups[chat_id].activated = True
 
-    #Check group
+    # Check group
     if chat_id < 0:
-        if len(groups[owner_id].id_groups)==groups[owner_id].permissions[groups[owner_id].subscription]["allowed_groups"]:
-            bot.send_message(chat_id, "Your limits on groups was exceeded. Pay the subscription to use Johnny in more groups.")
-            return 
-        
-    #Dynamic loading of group
+        if (
+            len(groups[owner_id].id_groups)
+            == groups[owner_id].permissions[groups[owner_id].subscription][
+                "allowed_groups"
+            ]
+        ):
+            bot.send_message(
+                chat_id,
+                "Your limits on groups was exceeded. Pay the subscription to use Johnny in more groups.",
+            )
+            return
+
+    # Dynamic loading of group
     loading = bot.send_message(chat_id, "Loading...10% ")
     bot.edit_message_text(f"Loading...11% ", chat_id, loading.message_id)
     bot.edit_message_text(f"Loading...16% ", chat_id, loading.message_id)
     bot.edit_message_text(f"Loading...24% ", chat_id, loading.message_id)
 
-
-    #Load messages
+    # Load messages
     groups[chat_id].load_data()
 
-
-    #Dynamic loading of group
+    # Dynamic loading of group
     bot.edit_message_text(f"Loading...30% ", chat_id, loading.message_id)
     bot.edit_message_text(f"Loading...51% ", chat_id, loading.message_id)
 
+    # Signing in (registration) of user
+    new_user = False  # It's using for detection of new user or not
 
-    #Signing in (registration) of user
-    new_user = False    #It's using for detection of new user or not
-
-    #User or group
-    if chat_id>0:
-
-        #Try to get info from database
+    # User or group
+    if chat_id > 0:
+        # Try to get info from database
         sub_exist = groups[chat_id].load_subscription(chat_id)
-
 
         bot.edit_message_text(f"Loading...60% ", chat_id, loading.message_id)
         bot.edit_message_text(f"Loading...71% ", chat_id, loading.message_id)
 
-
-        #If there isn't data, registrate new user
+        # If there isn't data, registrate new user
         if not sub_exist:
-            groups[chat_id].add_new_user(
-                chat_id,
-                " ",
-                " ",
-                " ",
-                "Free",
-                100000
-            )
+            groups[chat_id].add_new_user(chat_id, " ", " ", " ", "Free", 100000)
             groups[chat_id].load_subscription(chat_id)
 
-
             bot.edit_message_text(f"Loading...90% ", chat_id, loading.message_id)
-
 
             new_user = True
 
-
         else:
-            
-            #Turn on the time-tracker of subscription (if user bought ut before)
-            groups[chat_id].track_sub(chat_id, new=False)                          #If user have free plan - in track_sub it considering
-
+            # Turn on the time-tracker of subscription (if user bought ut before)
+            groups[chat_id].track_sub(
+                chat_id, new=False
+            )  # If user have free plan - in track_sub it considering
 
             bot.edit_message_text(f"Loading...90% ", chat_id, loading.message_id)
 
-    #For group/chat
+    # For group/chat
     else:
-
-        #Load info to group from loader of group (owner_id)
+        # Load info to group from loader of group (owner_id)
         groups[chat_id].subscription = groups[owner_id].subscription
-        groups[chat_id].permissions[groups[chat_id].subscription]["allowed_groups"] = groups[owner_id].permissions[groups[owner_id].subscription]["allowed_groups"]
-        groups[chat_id].permissions[groups[chat_id].subscription]['messages_limit'] = groups[owner_id].permissions[groups[owner_id].subscription]['messages_limit']
-        groups[chat_id].permissions[groups[chat_id].subscription]['dynamic_gen_permission'] = groups[owner_id].permissions[groups[owner_id].subscription]['dynamic_gen_permission']
-        groups[chat_id].permissions[groups[chat_id].subscription]['voice_output_permission'] = groups[owner_id].permissions[groups[owner_id].subscription]['voice_output_permission']
-        groups[chat_id].permissions[groups[chat_id].subscription]['sphere_permission'] = groups[owner_id].permissions[groups[owner_id].subscription]['sphere_permission']
-        groups[chat_id].permissions[groups[chat_id].subscription]['temperature_permission'] = groups[owner_id].permissions[groups[owner_id].subscription]['temperature_permission']
-        groups[chat_id].permissions[groups[chat_id].subscription]['frequency_penalty_permission'] = groups[owner_id].permissions[groups[owner_id].subscription]['frequency_penalty_permission']
-        groups[chat_id].permissions[groups[chat_id].subscription]['presense_penalty_permission'] = groups[owner_id].permissions[groups[owner_id].subscription]['presense_penalty_permission']
-        groups[chat_id].permissions[groups[chat_id].subscription]['temporary_memory_size_limit'] = groups[owner_id].permissions[groups[owner_id].subscription]['temporary_memory_size_limit']
+        groups[chat_id].permissions[groups[chat_id].subscription][
+            "allowed_groups"
+        ] = groups[owner_id].permissions[groups[owner_id].subscription][
+            "allowed_groups"
+        ]
+        groups[chat_id].permissions[groups[chat_id].subscription][
+            "messages_limit"
+        ] = groups[owner_id].permissions[groups[owner_id].subscription][
+            "messages_limit"
+        ]
+        groups[chat_id].permissions[groups[chat_id].subscription][
+            "dynamic_gen_permission"
+        ] = groups[owner_id].permissions[groups[owner_id].subscription][
+            "dynamic_gen_permission"
+        ]
+        groups[chat_id].permissions[groups[chat_id].subscription][
+            "voice_output_permission"
+        ] = groups[owner_id].permissions[groups[owner_id].subscription][
+            "voice_output_permission"
+        ]
+        groups[chat_id].permissions[groups[chat_id].subscription][
+            "sphere_permission"
+        ] = groups[owner_id].permissions[groups[owner_id].subscription][
+            "sphere_permission"
+        ]
+        groups[chat_id].permissions[groups[chat_id].subscription][
+            "temperature_permission"
+        ] = groups[owner_id].permissions[groups[owner_id].subscription][
+            "temperature_permission"
+        ]
+        groups[chat_id].permissions[groups[chat_id].subscription][
+            "frequency_penalty_permission"
+        ] = groups[owner_id].permissions[groups[owner_id].subscription][
+            "frequency_penalty_permission"
+        ]
+        groups[chat_id].permissions[groups[chat_id].subscription][
+            "presense_penalty_permission"
+        ] = groups[owner_id].permissions[groups[owner_id].subscription][
+            "presense_penalty_permission"
+        ]
+        groups[chat_id].permissions[groups[chat_id].subscription][
+            "temporary_memory_size_limit"
+        ] = groups[owner_id].permissions[groups[owner_id].subscription][
+            "temporary_memory_size_limit"
+        ]
         groups[chat_id].owner_id = owner_id
 
-        #Add to owner's data info about him group
+        # Add to owner's data info about him group
         groups[owner_id].id_groups.append(chat_id)
-
 
         bot.edit_message_text(f"Loading...70% ", chat_id, loading.message_id)
 
-
-    #End and Delete the 'loading message'
+    # End and Delete the 'loading message'
     bot.edit_message_text(f"Loading...100% ", chat_id, loading.message_id)
     time.sleep(0.1)
     bot.delete_message(chat_id, loading.message_id)
 
-
-    #Load buttons
+    # Load buttons
     markup = load_buttons(types, groups, chat_id, language_code, owner_id=owner_id)
 
-    #Welcome text for group and user
+    # Welcome text for group and user
     if chat_id > 0:
         groups[chat_id].trigger_probability = 1
-        bot.send_message(chat_id, groups[chat_id].templates[language_code]["new_user_welcome.txt"], reply_markup=markup, parse_mode="HTML")
+        bot.send_message(
+            chat_id,
+            groups[chat_id].templates[language_code]["new_user_welcome.txt"],
+            reply_markup=markup,
+            parse_mode="HTML",
+        )
     else:
-        bot.send_message(chat_id, groups[chat_id].templates[language_code]["new_group_welcome.txt"], reply_markup=markup, parse_mode="HTML")
+        bot.send_message(
+            chat_id,
+            groups[chat_id].templates[language_code]["new_group_welcome.txt"],
+            reply_markup=markup,
+            parse_mode="HTML",
+        )
 
-    
-    #Suggestion to user try trial subscription
+    # Suggestion to user try trial subscription
     if new_user:
         markup = types.InlineKeyboardMarkup()
 
@@ -335,7 +390,12 @@ def send_welcome_text_and_load_data(chat_id: int, owner_id: int, language_code: 
         )
         markup.add(button)
 
-        bot.send_message(chat_id, groups[chat_id].templates[language_code]["free_use_subscription.txt"],reply_markup=markup ,parse_mode="HTML")
+        bot.send_message(
+            chat_id,
+            groups[chat_id].templates[language_code]["free_use_subscription.txt"],
+            reply_markup=markup,
+            parse_mode="HTML",
+        )
 
 
 # ---------------  Handling and initialing new groups ---------------
@@ -347,11 +407,18 @@ def handle_new_chat_members(message):
         if new_chat_member.id == bot_id:
             clients = listdir("output\\clients_info")
 
-            if not check_file_existing(message.from_user.first_name,"output\\clients_info"):
-                bot.send_message(message.chat.id, f"Please, sign in in private messages in @{bot_username}. It will take less than a minute")
+            if not check_file_existing(
+                message.from_user.first_name, "output\\clients_info"
+            ):
+                bot.send_message(
+                    message.chat.id,
+                    f"Please, sign in in private messages in @{bot_username}. It will take less than a minute",
+                )
             if message.from_user.id not in groups.keys():
-                bot.send_message(message.chat.id, f"Please, sign in in private messages in @{bot_username}. It will take less than a minute")
-        
+                bot.send_message(
+                    message.chat.id,
+                    f"Please, sign in in private messages in @{bot_username}. It will take less than a minute",
+                )
 
     try:
         remove(f"output\\groups_info\\{clean_string(message.chat.title)}.json")
@@ -398,8 +465,6 @@ def init_new_group(chat_id):
         logger.info(f"Bot initialized in new group (id: {chat_id})")
 
         change_language(chat_id)
-
-        
 
 
 # --------------- Commands ---------------
@@ -457,12 +522,21 @@ from utils.yoomoney import *
 
 
 @bot.message_handler(
-    content_types=['text', 'audio', 'document', 'photo', 'sticker', 'video', 'video_note', 'voice'],
+    content_types=[
+        "text",
+        "audio",
+        "document",
+        "photo",
+        "sticker",
+        "video",
+        "video_note",
+        "voice",
+        "location",
+    ],
     func=lambda message: reply_blacklist_filter(message)
     and blacklist_filter(message)
     and time_filter(message),
 )
-@error_handler
 def main_messages_handler(message: types.Message):
     """Handles all messages"""
 
@@ -470,27 +544,27 @@ def main_messages_handler(message: types.Message):
         init_new_group(message.chat.id)
 
     else:
-
-
-        #Check for existing of buttons
+        # Check for existing of buttons
         try:
             groups[message.chat.id].button_commands[-1]
         except:
             return
-        #Checks the command of ReplyButtons
-        button_on = reply_keyboard_buttons_handler(message, groups[message.chat.id].button_commands)
+        # Checks the command of ReplyButtons
+        button_on = reply_keyboard_buttons_handler(
+            message, groups[message.chat.id].button_commands
+        )
         if button_on:
             return
-        
 
-        #Checks the regisration of user
+        # Checks the regisration of user
         if groups[message.chat.id].activated == False:
             return
-        
 
-        threading.Thread(
-            target=groups[message.chat.id].new_message, args=(message,groups)
-        ).start()
+        new_thread = threading.Thread(
+            target=groups[message.chat.id].new_message, args=(message, groups)
+        )
+        new_thread.chat_id = message.chat.id
+        new_thread.start()
         logger.info(
             f"Created new thread for handling message, now threads running: {threading.active_count()}, 4 of which are system"
         )
@@ -498,5 +572,5 @@ def main_messages_handler(message: types.Message):
 
 # --------------- Running ---------------
 
-logger.info("Bot started")
+logger.info(" ---->>>> BOT STARTED <<<<---- ")
 bot.polling()

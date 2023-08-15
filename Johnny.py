@@ -9,6 +9,8 @@ from dotenv import load_dotenv
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from random import random
+import json
+
 from utils.functions import num_messages_from_string, num_messages_from_messages
 from os import remove, makedirs
 
@@ -20,11 +22,15 @@ from utils.functions import load_templates, generate_voice_message, to_text, vid
 
 templates = load_templates("templates\\")
 
-
 load_dotenv(".env")
 
 
 db_controller = Controller()
+
+functions_waiting_messages = {
+    "google": "Googling question '{}'",
+    "read_from_link": "Reading content from link {}",
+}
 
 
 @dataclass
@@ -41,10 +47,12 @@ class Johnny:
     model = "gpt-3.5-turbo"
     temperature: float = 1
     frequency_penalty: float = 0.2
-    presense_penalty: float = 0.2
+    presence_penalty: float = 0.2
     answer_length: str = "as you need"
     sphere: str = ""
     system_content: str = ""
+    allow_functions: bool = True
+
     """
     Args:
         id_ (int): chat id
@@ -56,7 +64,10 @@ class Johnny:
         random_trigger (bool) If set to True, bot triggers randomly. When enabled, trigger_messages_count is ignored
         random_trigger_probability (float from 0 to 1) = Triggering probability on each message. Works only when random trigger is True 
         temperature (float) temperature value, used in requests to GPT
-        
+
+        system_content (str) it includes. "answer_length". "spheres of conservation". "user_requests".
+        allow_functions (bool): if set to True, bot will use functions to generate answers        
+
     """
 
     def __post_init__(self):
@@ -71,13 +82,16 @@ class Johnny:
 
         self.enabled = False
         self.dynamic_gen = False
+        # Needed to store requested links and restrict repeating useless requests
         self.dynamic_gen_chunks_frequency = 30  # when dynamic generation is enabled, this value controls how often to edit telegram message, for example when set to 3, message will be updated each 3 chunks from OpenAI API stream
         self.voice_out_enabled = False
 
         self.total_spent_messages = 0  # prompt and completion messages
-        
-        self.button_commands = []
 
+        self.last_function_request = None
+
+        self.button_commands = []
+        
         #Permissions
         self.subscription = "Free"
         self.permissions = {"Free":                               #{type_of_sub: {point: value_of_point}}
@@ -101,8 +115,23 @@ class Johnny:
 
         #Group
         self.owner_id = None
-
-
+    def get_completion(self, allow_function_call=None):
+        """Returns completion object and takes one time arguments."""
+        return gpt.create_chat_completion(
+            self.messages_history,
+            reply=bool(self.message.reply_to_message),
+            answer_length=self.answer_length,
+            model=self.model,
+            temperature=self.temperature,
+            stream=self.dynamic_gen,
+            frequency_penalty=self.frequency_penalty,
+            presence_penalty=self.presence_penalty,
+            use_functions=(
+                self.allow_functions
+                if allow_function_call is None
+                else allow_function_call
+            ),
+        )
     def one_answer(self, message: Message, groups: dict):
         response = gpt.create_chat_completion(
             [[message.from_user.first_name, message.text]], lang=self.lang_code, reply=None, model=self.model
@@ -115,7 +144,7 @@ class Johnny:
         return gpt.extract_text(response)
 
     def new_message(
-        self,
+        self,        
         message: Message,
         groups: dict
     ) -> str:
@@ -158,6 +187,7 @@ class Johnny:
             message.from_user.username,
             self.total_spent_messages
         )
+        self.message = message
         # --- Add message to temporary memory ---
         self.messages_history.append([message.from_user.first_name, text])
         if len(self.messages_history) == self.temporary_memory_size:
@@ -198,81 +228,16 @@ class Johnny:
             
             print(f"HISTORY OF MESSAGES IN JOHNNY:    {self.messages_history}")
 
-            response = gpt.create_chat_completion(
-                self.messages_history,
-                lang=self.lang_code,
-                reply=bool(message.reply_to_message),
-                answer_length=self.answer_length,
-                model=self.model,
-                temperature=self.temperature,
-                stream=self.dynamic_gen,
-                frequency_penalty=self.frequency_penalty,
-                presense_penalty=self.presense_penalty,
+            # --- GPT answer generation ---
+
+            self.response = self.get_completion()
+
+            text_answer = (
+                self.dynamic_generation(self.response)
+                if self.dynamic_gen
+                else self.static_generation(self.response)
             )
 
-            if self.dynamic_gen and self.dynamic_gen_permission:
-                text_answer = ""  # stores whole answer
-                bot_message = self.bot.send_message(
-                    message.chat.id, "Thinking...", parse_mode="Markdown"
-                )
-
-                update_count = 1
-                for i in response:
-                    if ("content" in i["choices"][0]["delta"]) and (
-                        text_chunk := i["choices"][0]["delta"]["content"]
-                    ):
-                        text_answer += text_chunk
-                        update_count += 1
-
-                        if update_count == self.dynamic_gen_chunks_frequency:
-                            update_count = 0
-                            self.bot.edit_message_text(
-                                chat_id=message.chat.id,
-                                message_id=bot_message.message_id,
-                                text=text_answer,
-                            )
-
-                self.bot.edit_message_text(
-                    chat_id=message.chat.id,
-                    message_id=bot_message.message_id,
-                    text=text_answer,
-                )
-
-            else:
-
-                text_answer = gpt.extract_text(response)
-
-                # Checking context understating
-                if (
-                    (self.trigger_probability != 1)
-                    and (self.trigger_probability != 0)
-                    and (not gpt.check_context_understanding(text_answer))
-                ):
-                    return
-                # Checking model answer is about selected sphere
-                if (
-                    (self.trigger_probability != 1)
-                    and (self.trigger_probability != 0)
-                    and (self.sphere)
-                    and (not gpt.check_theme_context(text_answer, self.sphere))
-                ):
-                    return
-
-                # If message was a reply to bot message, bot will reply to reply
-
-                if self.voice_out_enabled:
-                    with open(generate_voice_message(message,text_answer), 'rb') as audio:
-                        self.bot.send_voice(chat_id=message.chat.id, voice=audio)
-                        audio_path = audio
-                    remove(audio_path.name)
-                    return
-                
-                self.bot.send_message(
-                    message.chat.id, text_answer, parse_mode="Markdown"
-                )
-
-            # counting messages
-            self.total_spent_messages += 1
 
 
             if message.chat.id<0:
@@ -281,14 +246,172 @@ class Johnny:
             # Adding GPT answer to db and messages_history
             db_controller.add_message_event(
                 self.chat_id,
-                text_answer,
+                str(text_answer),
                 datetime.now(),
-                "JOHNNYBOT",
-                "JOHNNYBOT",
+                "$BOT$",
+                "$BOT$",
                 self.bot_username,
                 self.total_spent_messages,
             )
-            self.messages_history.append(["assistant", text_answer])
+
+            self.messages_history.append(["$BOT$", text_answer])
+
+    def static_generation(self, completion):
+        """Takes completion object and returns text answer. Handles message in telegram"""
+
+        # Check function call
+        response_message = completion["choices"][0]["message"]
+
+        if response_message.get("function_call"):
+            function_name = response_message["function_call"]["name"]
+            function_args = json.loads(response_message["function_call"]["arguments"])
+            argument = next(iter(function_args.values()))
+
+            self.bot.send_message(
+                self.message.chat.id,
+                functions_waiting_messages[function_name].format(argument),
+                disable_web_page_preview=True,
+            )
+
+            # If this response is same as previous, do not allow function call in next request and notify user
+            if self.last_function_request == (function_name, function_args):
+                self.bot.send_message(
+                    self.message.chat.id,
+                    "Can't find needed data. (Function call failed)",
+                )
+                self.last_function_request = None
+                return self.static_generation(
+                    self.get_completion(allow_function_call=False)
+                )
+
+            self.last_function_request = (function_name, function_args)
+
+            # Saving function result to history
+            self.messages_history.append(
+                [
+                    "$FUNCTION$",
+                    gpt.get_official_function_response(
+                        function_name,
+                        function_args,
+                    ),
+                ]
+            )
+
+            return self.static_generation(self.get_completion())
+
+        self.response = completion
+        text_answer = gpt.extract_text(self.response)
+        # Check context understanding
+        if not self.check_understanding(text_answer):
+            return None
+
+        self.bot.send_message(self.message.chat.id, text_answer, parse_mode="Markdown")
+        return text_answer
+
+    def dynamic_generation(self, completion):
+        """Takes completion object and returns text answer. Handles message in telegram"""
+
+        if self.last_function_request is None:
+            self.thinking_message = self.bot.send_message(
+                self.chat_id, "🤔", parse_mode="Markdown"
+            )
+
+        text_answer = ""  # stores whole answer
+
+        update_count = 1
+        func_call = {
+            "name": None,
+            "arguments": "",
+        }
+
+        for res in completion:
+            delta = res.choices[0].delta
+            if "function_call" in delta:
+                if "name" in delta.function_call:
+                    func_call["name"] = delta.function_call["name"]
+                if "arguments" in delta.function_call:
+                    func_call["arguments"] += delta.function_call["arguments"]
+            if res.choices[0].finish_reason == "function_call":
+                # Handling function call
+
+                function_name = func_call["name"]
+                function_args = json.loads(func_call["arguments"])
+                argument = next(iter(function_args.values()))
+
+                self.bot.send_message(
+                    self.message.chat.id,
+                    functions_waiting_messages[function_name].format(argument),
+                    disable_web_page_preview=True,
+                )
+
+                # If previous function call was the same as current
+                if self.last_function_request == (function_name, function_args):
+                    self.bot.send_message(
+                        self.message.chat.id,
+                        "Can't find needed data. (Function call failed)",
+                    )
+                    return self.dynamic_generation(
+                        self.get_completion(allow_function_call=False)
+                    )
+
+                self.last_function_request = (function_name, function_args)
+
+                self.messages_history.append(
+                    [
+                        "$FUNCTION$",
+                        gpt.get_official_function_response(
+                            function_name,
+                            function_args,
+                        ),
+                    ]
+                )
+
+                return self.dynamic_generation(self.get_completion())
+                # End of handling function call
+
+            if ("content" in res["choices"][0]["delta"]) and (
+                text_chunk := res["choices"][0]["delta"]["content"]
+            ):
+                text_answer += text_chunk
+                update_count += 1
+
+                if update_count == self.dynamic_gen_chunks_frequency:
+                    update_count = 0
+                    self.bot.edit_message_text(
+                        chat_id=self.message.chat.id,
+                        message_id=self.thinking_message.message_id,
+                        text=text_answer,
+                    )
+
+        if update_count != 0:
+            self.bot.edit_message_text(
+                chat_id=self.message.chat.id,
+                message_id=self.thinking_message.message_id,
+                text=text_answer,
+            )
+        return text_answer
+
+    def check_understanding(self, text_answer: str) -> bool:
+        """Checks if GPT understands context of the question"""
+
+        # Checking context understating
+        if (
+            (self.trigger_probability != 1)
+            and (self.trigger_probability != 0)
+            and (not gpt.check_context_understanding(text_answer))
+        ):
+            return False
+
+        # Checking model answer is about selected sphere
+        if (
+            (self.trigger_probability != 1)
+            and (self.trigger_probability != 0)
+            and (self.sphere)
+            and (not gpt.check_theme_context(text_answer, self.sphere))
+        ):
+            return False
+        # Count tokens !!!!
+        return True
 
 
     def add_new_user(
@@ -533,13 +656,13 @@ class Johnny:
 # [x] add all params like penalty max_messages etc
 
 # ------------ future features ---------
-# [ ] Internet access parameter
-# [ ] Audio messages support (maybe do one of element of customization)
+# [x] Internet access parameter
+# [x] Audio messages support (maybe do one of element of customization)
 # [ ] games with gpt (entertainment part)
 # [ ] gpt answers to message by sticker or emoji
-# [ ] activation keys for discount
+# [x] activation keys for discount
 # [x] conservations in private messages
-# [ ] automatic calling functions
+# [x] automatic calling functions
 # [ ] automatic commands detection
 # [ ] document read
 
@@ -553,7 +676,7 @@ class Johnny:
 # --- for matvey in train ---
 # [x] separate commands in files
 # [x] fix clients info saving
-# [ ] db for subs
+# [x] db for subs
 # [x] commands for developers
 
 
@@ -570,6 +693,11 @@ class Johnny:
 
 # [ ] Run on server
 
+# [ ] Check parse mode md after editing message
+
+# [ ] Check length and history len when it bigger
+
+
 # [ ] TypeError fix
 # [ ] QIWI payment
 # [ ] KickStarted
@@ -579,3 +707,4 @@ class Johnny:
 # [x] Command to change group's owner
 # [ ] Detect the developers in initializations
 # [ ] english templates to other languages
+

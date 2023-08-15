@@ -12,3 +12,4 @@ MessageEvents.sqlite
 MessageEvents.db
 logs/
 output/
+test.py

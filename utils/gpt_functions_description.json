@@ -1,0 +1,54 @@
+[
+    {
+        "name": "google",
+        "description": "Google question in google",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "question": {
+                    "type": "string",
+                    "description": "The question which will be googled"
+                }
+            },
+            "required": [
+                "question"
+            ]
+        }
+    },
+    {
+        "name": "read_from_link",
+        "description": "Get text and links from url",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "link": {
+                    "type": "string",
+                    "description": "url"
+                }
+            },
+            "required": [
+                "link"
+            ]
+        }
+    },
+    {
+        "name": "generate_image",
+        "description": "Uses DALLE to generate and send image(s)",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "prompt": {
+                    "type": "string",
+                    "description": "DALLE prompt"
+                },
+                "n": {
+                    "type": "integer",
+                    "description": "Number of images to generate, all generated messages will be sent one by one"
+                }
+            },
+            "required": [
+                "prompt"
+            ]
+        }
+    }
+]
