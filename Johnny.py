@@ -11,14 +11,19 @@ from dateutil.relativedelta import relativedelta
 from random import random
 import json
 
-from utils.functions import num_messages_from_string, num_messages_from_messages
-from os import remove, makedirs
+from utils.functions import describe_image
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from __main__ import *
-from utils.functions import load_templates, generate_voice_message, to_text, video_note_to_audio, take_info_about_sub
+from utils.functions import (
+    load_templates,
+    generate_voice_message,
+    to_text,
+    video_note_to_audio,
+    take_info_about_sub,
+)
 
 templates = load_templates("templates\\")
 
@@ -30,6 +35,7 @@ db_controller = Controller()
 functions_waiting_messages = {
     "google": "Googling question '{}'",
     "read_from_link": "Reading content from link {}",
+    "generate_image": "Generating image(s) with prompt {}",
 }
 
 
@@ -41,7 +47,7 @@ class Johnny:
     templates
     chat_id: int
     bot_username: str
-    temporary_memory_size: int = 20     
+    temporary_memory_size: int = 20
     language_code: str = "eng"
     trigger_probability: float = 0.8
     model = "gpt-3.5-turbo"
@@ -52,23 +58,6 @@ class Johnny:
     sphere: str = ""
     system_content: str = ""
     allow_functions: bool = True
-
-    """
-    Args:
-        id_ (int): chat id
-        trigger_messages_count (int): sets the numbers of messages needed to trigger the bot in cycle.
-        (eg: if set to 5, bot will read conversation each time after 5 new messages, only when there were no replies to bot's message)
-        temporary_memory_size (int): sets number of messages given to GPT (eg: if set to 5, gpt will read only 5 last messages;
-        This does not affect persistent memory! Persistent memory keeps whole conversation.)
-        language_code (str): Language
-        random_trigger (bool) If set to True, bot triggers randomly. When enabled, trigger_messages_count is ignored
-        random_trigger_probability (float from 0 to 1) = Triggering probability on each message. Works only when random trigger is True 
-        temperature (float) temperature value, used in requests to GPT
-
-        system_content (str) it includes. "answer_length". "spheres of conservation". "user_requests".
-        allow_functions (bool): if set to True, bot will use functions to generate answers        
-
-    """
 
     def __post_init__(self):
         # list of lists, where each list follows format: [senders_name, text]
@@ -91,30 +80,31 @@ class Johnny:
         self.last_function_request = None
 
         self.button_commands = []
-        
-        #Permissions
-        self.subscription = "Free"
-        self.permissions = {"Free":                               #{type_of_sub: {point: value_of_point}}
-                              {
-                                "allowed_groups": 1,
-                                "messages_limit": 100,
-                                "temporary_memory_size_limit": 20, 
-                                "dynamic_gen_permission": False,
-                                "sphere_permission": False,
-                                "temperature_permission": False,
-                                "frequency_penalty_permission": False,
-                                "presense_penalty_permission": False,
-                                "voice_output_permission": False,
-                                "generate_picture_permission": False
-                               }
-                            }
 
-        #User
+        # Permissions
+        self.subscription = "Free"
+        self.permissions = {
+            "Free": {  # {type_of_sub: {point: value_of_point}}
+                "allowed_groups": 1,
+                "messages_limit": 100,
+                "temporary_memory_size_limit": 20,
+                "dynamic_gen_permission": False,
+                "sphere_permission": False,
+                "temperature_permission": False,
+                "frequency_penalty_permission": False,
+                "presense_penalty_permission": False,
+                "voice_output_permission": False,
+                "generate_picture_permission": False,
+            }
+        }
+
+        # User
         self.id_groups = []
         self.commercial_trigger = 0
 
-        #Group
+        # Group
         self.owner_id = None
+
     def get_completion(self, allow_function_call=None):
         """Returns completion object and takes one time arguments."""
         return gpt.create_chat_completion(
@@ -132,33 +122,37 @@ class Johnny:
                 else allow_function_call
             ),
         )
+
     def one_answer(self, message: Message, groups: dict):
         response = gpt.create_chat_completion(
-            [[message.from_user.first_name, message.text]], lang=self.lang_code, reply=None, model=self.model
+            [[message.from_user.first_name, message.text]],
+            lang=self.lang_code,
+            reply=None,
+            model=self.model,
         )
         messages_used = gpt.extract_messages(response)
         self.total_spent_messages += messages_used
 
-        if message.chat.id<0:
+        if message.chat.id < 0:
             groups[self.owner_id].total_spent_messages = self.total_spent_messages
         return gpt.extract_text(response)
 
-    def new_message(
-        self,        
-        message: Message,
-        groups: dict
-    ) -> str:
-
+    def new_message(self, message: Message, groups: dict) -> str:
         # --- Check on limit on groups of one men ---
-        if len(groups[self.owner_id].id_groups) > groups[self.owner_id].permissions[self.subscription]["allowed_groups"]:
-            self.bot.send_message(message.chat.id, self.templates[self.lang_code]["exceed_limit_on_groups.txt"])
+        if (
+            len(groups[self.owner_id].id_groups)
+            > groups[self.owner_id].permissions[self.subscription]["allowed_groups"]
+        ):
+            self.bot.send_message(
+                message.chat.id,
+                self.templates[self.lang_code]["exceed_limit_on_groups.txt"],
+            )
 
             groups[self.owner_id].id_groups.remove(message.chat.id)
 
             self.bot.leave_chat(message.chat.id)
             return
 
-        
         # --- Converts other types files to text ---
         match message.content_type:
             case "document":
@@ -176,7 +170,6 @@ class Johnny:
             case _:
                 return  # unsupported event type
 
-
         # --- Add message to database ---
         db_controller.add_message_event(
             self.chat_id,
@@ -185,7 +178,7 @@ class Johnny:
             message.from_user.first_name,
             message.from_user.last_name,
             message.from_user.username,
-            self.total_spent_messages
+            self.total_spent_messages,
         )
         self.message = message
         # --- Add message to temporary memory ---
@@ -193,29 +186,48 @@ class Johnny:
         if len(self.messages_history) == self.temporary_memory_size:
             self.messages_history.pop(0)
 
-
         # --- checks on enabling of Bot ---
         if not self.enabled:
             return
-        
 
         # --- If user reach some value to messages, suggest buy a subscription ----
-        if self.commercial_trigger < 1 and self.total_spent_messages > 10000 and self.subscription == "Free":
-            self.bot.send_message(message.chat.id, self.templates[self.lang_code]["suggest_to_buy.txt"], parse_mode='HTML')
-            self.commercial_trigger += 1 
-
+        if (
+            self.commercial_trigger < 1
+            and self.total_spent_messages > 10000
+            and self.subscription == "Free"
+        ):
+            self.bot.send_message(
+                message.chat.id,
+                self.templates[self.lang_code]["suggest_to_buy.txt"],
+                parse_mode="HTML",
+            )
+            self.commercial_trigger += 1
 
         # --- Checks on messages ---
-        if self.total_spent_messages>=self.permissions[self.subscription]["messages_limit"]:
-            self.bot.send_message(message.chat.id, self.templates[self.lang_code]["exceed_limit_on_messages.txt"])
-            self.total_spent_messages = self.permissions[self.subscription]["messages_limit"]
+        if (
+            self.total_spent_messages
+            >= self.permissions[self.subscription]["messages_limit"]
+        ):
+            self.bot.send_message(
+                message.chat.id,
+                self.templates[self.lang_code]["exceed_limit_on_messages.txt"],
+            )
+            self.total_spent_messages = self.permissions[self.subscription][
+                "messages_limit"
+            ]
             return
-        elif groups[self.owner_id].total_spent_messages >=self.permissions[self.subscription]["messages_limit"]:
-            self.bot.send_message(message.chat.id, self.templates[self.lang_code]["exceed_limit_on_messages.txt"])
-            groups[self.owner_id].total_spent_messages = self.permissions[self.subscription]["messages_limit"]
+        elif (
+            groups[self.owner_id].total_spent_messages
+            >= self.permissions[self.subscription]["messages_limit"]
+        ):
+            self.bot.send_message(
+                message.chat.id,
+                self.templates[self.lang_code]["exceed_limit_on_messages.txt"],
+            )
+            groups[self.owner_id].total_spent_messages = self.permissions[
+                self.subscription
+            ]["messages_limit"]
             return
-
-
 
         if (
             ("@" + self.bot_username in text)
@@ -225,7 +237,6 @@ class Johnny:
             )
             or (random() < self.trigger_probability)
         ):
-            
             print(f"HISTORY OF MESSAGES IN JOHNNY:    {self.messages_history}")
 
             # --- GPT answer generation ---
@@ -238,9 +249,7 @@ class Johnny:
                 else self.static_generation(self.response)
             )
 
-
-
-            if message.chat.id<0:
+            if message.chat.id < 0:
                 groups[self.owner_id].total_spent_messages = self.total_spent_messages
 
             # Adding GPT answer to db and messages_history
@@ -413,7 +422,6 @@ class Johnny:
         # Count tokens !!!!
         return True
 
-
     def add_new_user(
         self,
         chat_id,
@@ -423,41 +431,45 @@ class Johnny:
         type_of_subscription: str,
         messages_total: int,
     ):
-
         # get current date
         current_date = datetime.now().isoformat()
 
-
-        #If the user already written in db, delete old vers
+        # If the user already written in db, delete old vers
         if db_controller.check_the_existing_of_user_with_sub(int(chat_id)):
             db_controller.delete_the_existing_of_user_with_sub(int(chat_id))
 
-        #Add to db
+        # Add to db
         db_controller.add_user_with_sub(
-            chat_id, 
+            chat_id,
             type_of_subscription,
             current_date,
             first_name,
             str(last_name),
             username,
-            messages_total
+            messages_total,
         )
 
-        #If we wrote new user with new sub, give him 'congrats message'
-        if type_of_subscription != 'Free':
-            self.bot.send_message(chat_id, self.templates[self.lang_code]["new_subscriber.txt"].format(sub=type_of_subscription), parse_mode="HTML")
+        # If we wrote new user with new sub, give him 'congrats message'
+        if type_of_subscription != "Free":
+            self.bot.send_message(
+                chat_id,
+                self.templates[self.lang_code]["new_subscriber.txt"].format(
+                    sub=type_of_subscription
+                ),
+                parse_mode="HTML",
+            )
 
-        
     def extend_sub(self, chat_id, first_name, last_name, username):
-
-        #Get start date of current sub and add a month for extendtion
+        # Get start date of current sub and add a month for extendtion
         date_of_start_txt = db_controller.get_last_date_of_start_of_user(chat_id)
-        prev_date_of_start = datetime.fromisoformat(date_of_start_txt) + relativedelta(months=1)
+        prev_date_of_start = datetime.fromisoformat(date_of_start_txt) + relativedelta(
+            months=1
+        )
         date_of_start = prev_date_of_start.isoformat()
 
-        #Add copy of user but with extended date of user (The deleting of user with sub realized in sub_tracking)
+        # Add copy of user but with extended date of user (The deleting of user with sub realized in sub_tracking)
         db_controller.add_user_with_sub(
-            chat_id, 
+            chat_id,
             self.subscription,
             self.allowed_groups,
             self.temporary_memory_size_limit,
@@ -465,41 +477,41 @@ class Johnny:
             first_name,
             str(last_name),
             username,
-            self.permissions[self.subscription]["messages_limit"]
+            self.permissions[self.subscription]["messages_limit"],
         )
 
-        self.bot.send_message(chat_id, self.templates[self.lang_code]["sub_extend.txt"].format(sub=self.subscription), parse_mode="HTML")
-        
+        self.bot.send_message(
+            chat_id,
+            self.templates[self.lang_code]["sub_extend.txt"].format(
+                sub=self.subscription
+            ),
+            parse_mode="HTML",
+        )
 
     def track_sub(self, chat_id: int, new: bool):
-        
         def sub_tracking(chat_id: int, date_of_start):
             """This fucntion calls when subscription was ended (after month)"""
 
-            #Add reminders!!!
+            # Add reminders!!!
 
-            #Add current user from db with subscription
+            # Add current user from db with subscription
             db_controller.delete_the_existing_of_user_with_sub_by_date(date_of_start)
 
-
-            #check the extendtion of 
+            # check the extendtion of
             check = db_controller.check_the_existing_of_user_with_sub(chat_id)
 
-            #if there aren't more subscriptions, put free sub
+            # if there aren't more subscriptions, put free sub
             if not check:
-
-                self.bot.send_message(chat_id, self.templates[self.lang_code]["sub_was_end.txt"], parse_mode="HTML")
+                self.bot.send_message(
+                    chat_id,
+                    self.templates[self.lang_code]["sub_was_end.txt"],
+                    parse_mode="HTML",
+                )
 
                 current_date = datetime.now().isoformat()
 
                 db_controller.add_user_with_sub(
-                    chat_id, 
-                    "Free",
-                    current_date,
-                    " ",
-                    " ",
-                    " ",
-                    100
+                    chat_id, "Free", current_date, " ", " ", " ", 100
                 )
 
                 self.subscription = "Free"
@@ -508,7 +520,6 @@ class Johnny:
 
                 permissions = take_info_about_sub(self.subscription)
                 self.permissions[self.subscription] = permissions
-                
 
                 self.temperature = 1
                 self.frequency_penalty = 0.2
@@ -520,10 +531,15 @@ class Johnny:
 
                 return
 
-            self.bot.send_message(chat_id, self.templates[self.lang_code]["sub_was_end_with_extend.txt"].format(sub=self.subscription), parse_mode="HTML")
+            self.bot.send_message(
+                chat_id,
+                self.templates[self.lang_code]["sub_was_end_with_extend.txt"].format(
+                    sub=self.subscription
+                ),
+                parse_mode="HTML",
+            )
 
         if self.subscription == "SMALL BUSINESS (trial)":
-
             start_date_txt = db_controller.get_last_date_of_start_of_user(chat_id)
             start_date = datetime.fromisoformat(start_date_txt)
 
@@ -531,13 +547,18 @@ class Johnny:
             sub_scheduler = BackgroundScheduler()
 
             # schedule a task to print a number after 2 seconds
-            sub_scheduler.add_job(sub_tracking, 'date', run_date=start_date + relativedelta(days=3), args=[chat_id, start_date_txt], misfire_grace_time=86400)
+            sub_scheduler.add_job(
+                sub_tracking,
+                "date",
+                run_date=start_date + relativedelta(days=3),
+                args=[chat_id, start_date_txt],
+                misfire_grace_time=86400,
+            )
 
             # start the scheduler
             sub_scheduler.start()
-        
-        elif self.subscription != "Free":
 
+        elif self.subscription != "Free":
             if new:
                 start_date_txt = db_controller.get_last_date_of_start_of_user(chat_id)
                 start_date = datetime.fromisoformat(start_date_txt)
@@ -546,7 +567,13 @@ class Johnny:
                 sub_scheduler = BackgroundScheduler()
 
                 # schedule a task to print a number after 2 seconds
-                sub_scheduler.add_job(sub_tracking, 'date', run_date=start_date + relativedelta(months=1), args=[chat_id, start_date_txt], misfire_grace_time=86400)
+                sub_scheduler.add_job(
+                    sub_tracking,
+                    "date",
+                    run_date=start_date + relativedelta(months=1),
+                    args=[chat_id, start_date_txt],
+                    misfire_grace_time=86400,
+                )
 
                 # start the scheduler
                 sub_scheduler.start()
@@ -556,32 +583,34 @@ class Johnny:
                 for date in all_dates:
                     start_date_txt = date[0]
                     start_date = datetime.fromisoformat(start_date_txt)
-                    
+
                     # create a scheduler
                     sub_scheduler = BackgroundScheduler()
 
                     # schedule a task to print a number after 2 seconds
-                    sub_scheduler.add_job(sub_tracking, 'date', run_date=start_date + relativedelta(months=1), args=[chat_id, start_date_txt], misfire_grace_time=86400)
+                    sub_scheduler.add_job(
+                        sub_tracking,
+                        "date",
+                        run_date=start_date + relativedelta(months=1),
+                        args=[chat_id, start_date_txt],
+                        misfire_grace_time=86400,
+                    )
 
                     # start the scheduler
                     sub_scheduler.start()
 
-
     def change_owner_of_group(self, username):
-        new_user = db_controller.get_user_with_sub_by_username(username) 
+        new_user = db_controller.get_user_with_sub_by_username(username)
         return new_user
-    
 
     def add_purchase_of_messages(self, chat_id, num_of_new_messages):
         new_total_messages = self.messages_limit + num_of_new_messages
         db_controller.update_messages_of_user_with_sub(chat_id, new_total_messages)
 
-
     def change_memory_size(self, size):
         self.temporary_memory_size = size
         self.messages_history = []
         self.load_data()
-
 
     def load_subscription(self, chat_id):
         data = db_controller.get_user_with_sub_by_chat_id(chat_id)
@@ -594,12 +623,13 @@ class Johnny:
             permissions = take_info_about_sub(self.subscription)
             self.permissions[self.subscription] = permissions
 
-            self.permissions[self.subscription]["messages_limit"] = data["MessagesTotal"]
+            self.permissions[self.subscription]["messages_limit"] = data[
+                "MessagesTotal"
+            ]
 
             self.owner_id = chat_id
             return True
         return False
-
 
     def load_data(self) -> None:
         """Loads data from to object from db"""
@@ -615,96 +645,3 @@ class Johnny:
             if i[5] == "JOHNNYBOT":
                 self.total_spent_messages = i
                 break
-
-
-# TODO
-# [x] log events
-# [x] always reply when tagging or replying
-# [x] language change
-# [x] Add gpt
-# [x] Count messages
-# [x] Ask question to bot (via reply)
-# [x] test adding to group
-# [x] dynamic generation
-# [x] write input output messages to db
-# [x] refactoring
-# [x] help command, all commands with descriptions <<---------Misha
-# [x] Convert templates with parse_html<<---------- Misha
-# [x] Make support for german and spanish
-# [x] Make sticker support only for ru
-# [x] Configure gpt for correct answers
-# [x] manual mode <<--------------- Misha
-# [x] Assistant; User in messages history (refactor temporary memory)
-# [x] Dialog mode <<------ Misha
-# [ ] translate all templates <<------ Misha
-# [x] interface of changing all parameters + customization
-# [x] account info command\
-# [x] conservations in private messages
-# [x] /start fix
-# [x] functions set presense + frequency penalties
-
-# ------------ for today (11 july 23) -------------
-# [x] fix dynamic generation
-# [x] assign name to messages
-# [x] Make GPT answer no, when it doesnt understand context
-# [x] Generate system_content (maybe add some system contents) <<--------- Misha
-# [x] run on sfedu
-# [x] add to our group
-
-#  ----------- later -----------
-# [x] Count messages for dynamic generation via tokenizer <<-----------Misha
-# [x] add all params like penalty max_messages etc
-
-# ------------ future features ---------
-# [x] Internet access parameter
-# [x] Audio messages support (maybe do one of element of customization)
-# [ ] games with gpt (entertainment part)
-# [ ] gpt answers to message by sticker or emoji
-# [x] activation keys for discount
-# [x] conservations in private messages
-# [x] automatic calling functions
-# [ ] automatic commands detection
-# [ ] document read
-
-# for today (11 july 23)
-# [x] add commands for developers
-# [x] db operations
-# [x] Maybe add to TODO
-# [x] get logs
-# [x] separate logs
-
-# --- for matvey in train ---
-# [x] separate commands in files
-# [x] fix clients info saving
-# [x] db for subs
-# [x] commands for developers
-
-
-# [x] tests
-# [x] new private init file
-# [x]
-
-# [x]  fix dynamic generation
-# [x] internet access
-# [x] speech to text
-
-# [ ] Fix templates, rephrase strange texts
-
-
-# [ ] Run on server
-
-# [ ] Check parse mode md after editing message
-
-# [ ] Check length and history len when it bigger
-
-
-# [ ] TypeError fix
-# [ ] QIWI payment
-# [ ] KickStarted
-# [ ] BoomStarted
-
-
-# [x] Command to change group's owner
-# [ ] Detect the developers in initializations
-# [ ] english templates to other languages
-

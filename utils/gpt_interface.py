@@ -67,7 +67,7 @@ def generate_image_and_send(bot, chat_id, prompt, n=1, size="1024x1024"):
 
 def create_chat_completion(
     messages: list,
-    lang: str = 'en',
+    lang: str = "en",
     system_content: str = None,
     answer_length: int = "as you need",
     use_functions: bool = False,
@@ -97,7 +97,7 @@ def create_chat_completion(
     previous_messages = [
         {
             "role": "system",
-            "content": functions.translate_text(lang,system_content),
+            "content": functions.translate_text(lang, system_content),
         }
     ]
 
@@ -123,20 +123,20 @@ def create_chat_completion(
         chat_completion_arguments["function_call"] = "auto"
 
     # Context length exceeded
-    n = 2
-    while 1:
-        try:
-            completion = openai.ChatCompletion.create(**chat_completion_arguments)
-        except openai.error.InvalidRequestError:
-            logger.warning(
-                f"OpenAI API request failed, InvalidRequestError. Retrying... \n"
-            )
-            chat_completion_arguments["messages"] = previous_messages[
-                len(previous_messages) // n :
-            ]
-        else:
-            break
-        n += 1
+    # n = 2
+    # while 1:
+    #     try:
+    completion = openai.ChatCompletion.create(**chat_completion_arguments)
+    # except openai.error.InvalidRequestError:
+    #     logger.warning(
+    #         f"OpenAI API request failed, InvalidRequestError. Retrying... \n"
+    #     )
+    #     chat_completion_arguments["messages"] = previous_messages[
+    #         len(previous_messages) // n :
+    #     ]
+    # else:
+    #     break
+    # n += 1
 
     logger.info(f"API completion object: {completion}")
 
@@ -218,6 +218,6 @@ def get_messages_in_official_format(messages):
 
 
 def speech_to_text(path):
-    audio_file= open(path, "rb")
+    audio_file = open(path, "rb")
     transcript = openai.Audio.transcribe("whisper-1", audio_file)
     return transcript.text
