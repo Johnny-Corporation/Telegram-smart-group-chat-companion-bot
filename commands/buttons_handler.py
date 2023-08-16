@@ -7,7 +7,12 @@ from utils.functions_for_developers import *
 @error_handler
 def keyboard_buttons_handler(call):
     previous_language_code = groups[call.message.chat.id].lang_code
-    match call.data:
+
+    call_data = call.data
+    if "apply_lang" in call.data:
+        call_data = "apply_lang"
+
+    match call_data:
 
 
         #Choosing mode
@@ -166,35 +171,16 @@ def keyboard_buttons_handler(call):
 
         # Language
 
-        case "en":
-            groups[call.message.chat.id].lang_code = "en"
-            bot.send_message(call.message.chat.id, "Language changed to english ")
-            language_code = "en"
-        case "ru":
-            groups[call.message.chat.id].lang_code = "ru"
+        case "apply_lang":
 
-            sent_message = bot.send_message(call.message.chat.id, "Загружаем язык... Подождите минутку")
+            print(call)
 
-            translate_templates("ru")
+            button_text, button_id = call.data.split('-')
+            lang = check_language(button_text)
 
-            groups[call.message.chat.id].templates = load_templates("templates\\")
-
-            bot.delete_message(call.message.chat.id, sent_message.message_id)
-            bot.send_message(call.message.chat.id, "Язык изменен на русский")
-        case "other":
-
-            try:
-                language_code = groups[call.message.chat.id].lang_code
-                reply_to = bot.send_message(call.message.chat.id, groups[call.message.chat.id].templates[language_code]["enter_language.txt"])
-            except:
-                reply_to = bot.send_message(call.message.chat.id, "Enter the language either as a code (ex. 'es') as a name (ex. 'spanish')")
-
-            
-                reply_blacklist[call.message.chat.id].append(reply_to.message_id)
-                bot.register_for_reply(reply_to, change_language_reply_handler)
-            while True:
-                if groups[call.message.chat.id].lang_code != None:
-                    break
+            groups[call.message.chat.id].lang_code = lang[0]
+            bot.send_message(call.message.chat.id, translate_text(lang[1],f"Language changed to {lang[1]} "))
+            language_code = lang[0]
 
 
         # DEV TOOLS
@@ -221,6 +207,19 @@ def keyboard_buttons_handler(call):
             add_to_todo(call.message)
         case "get_promocodes":
             get_promocodes(call.message)
+        case "add_lang":
+            try:
+                language_code = groups[call.message.chat.id].lang_code
+                reply_to = bot.send_message(call.message.chat.id, groups[call.message.chat.id].templates[language_code]["enter_language.txt"])
+            except:
+                reply_to = bot.send_message(call.message.chat.id, "Enter the language either as a code (ex. 'es') as a name (ex. 'spanish')")
+
+            
+                reply_blacklist[call.message.chat.id].append(reply_to.message_id)
+                bot.register_for_reply(reply_to, change_language_reply_handler)
+            while True:
+                if groups[call.message.chat.id].lang_code != None:
+                    break
 
 
         # Purchase the subscription

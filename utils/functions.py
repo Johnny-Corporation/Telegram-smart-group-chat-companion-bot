@@ -692,3 +692,14 @@ def take_info_about_sub(subscription):
     permissions = subscriptions[subscription]
 
     return permissions
+
+
+def get_avaible_langs():
+
+    folder_path = ".\\templates"
+
+    return [d for d in listdir(folder_path) if path.isdir(path.join(folder_path, d))]
+
+    # folder_path = '/path/to/your/folder'
+    # directories = list_directories(folder_path)
+    # print(directories)

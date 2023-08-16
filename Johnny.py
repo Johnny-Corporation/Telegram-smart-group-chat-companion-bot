@@ -249,8 +249,7 @@ class Johnny:
                 else self.static_generation(self.response)
             )
 
-            if message.chat.id < 0:
-                groups[self.owner_id].total_spent_messages = self.total_spent_messages
+            groups[self.owner_id].total_spent_messages = self.total_spent_messages
 
             # Adding GPT answer to db and messages_history
             db_controller.add_message_event(

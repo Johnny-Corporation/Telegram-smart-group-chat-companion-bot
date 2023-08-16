@@ -276,59 +276,15 @@ def send_welcome_text_and_load_data(
 
     # For group/chat
     else:
-        print(f"SUBSCRIPTION:   {groups[chat_id].permissions}")
-        print(f"SUBSCRIPTION OF OWNER ID: {groups[chat_id].permissions[groups[chat_id].subscription]}")
 
         # Load info to group from loader of group (owner_id)
         groups[chat_id].permissions = {}
-        
+
         groups[chat_id].subscription = groups[owner_id].subscription
 
-        groups[chat_id].permissions[groups[chat_id].subscription][
-            "allowed_groups"
-        ] = groups[owner_id].permissions[groups[owner_id].subscription][
-            "allowed_groups"
-        ]
-        groups[chat_id].permissions[groups[chat_id].subscription][
-            "messages_limit"
-        ] = groups[owner_id].permissions[groups[owner_id].subscription][
-            "messages_limit"
-        ]
-        groups[chat_id].permissions[groups[chat_id].subscription][
-            "dynamic_gen_permission"
-        ] = groups[owner_id].permissions[groups[owner_id].subscription][
-            "dynamic_gen_permission"
-        ]
-        groups[chat_id].permissions[groups[chat_id].subscription][
-            "voice_output_permission"
-        ] = groups[owner_id].permissions[groups[owner_id].subscription][
-            "voice_output_permission"
-        ]
-        groups[chat_id].permissions[groups[chat_id].subscription][
-            "sphere_permission"
-        ] = groups[owner_id].permissions[groups[owner_id].subscription][
-            "sphere_permission"
-        ]
-        groups[chat_id].permissions[groups[chat_id].subscription][
-            "temperature_permission"
-        ] = groups[owner_id].permissions[groups[owner_id].subscription][
-            "temperature_permission"
-        ]
-        groups[chat_id].permissions[groups[chat_id].subscription][
-            "frequency_penalty_permission"
-        ] = groups[owner_id].permissions[groups[owner_id].subscription][
-            "frequency_penalty_permission"
-        ]
-        groups[chat_id].permissions[groups[chat_id].subscription][
-            "presense_penalty_permission"
-        ] = groups[owner_id].permissions[groups[owner_id].subscription][
-            "presense_penalty_permission"
-        ]
-        groups[chat_id].permissions[groups[chat_id].subscription][
-            "temporary_memory_size_limit"
-        ] = groups[owner_id].permissions[groups[owner_id].subscription][
-            "temporary_memory_size_limit"
-        ]
+        permissions = take_info_about_sub(groups[chat_id].subscription)
+        groups[chat_id].permissions[groups[chat_id].subscription] = permissions
+        
         groups[chat_id].owner_id = owner_id
 
         # Add to owner's data info about him group

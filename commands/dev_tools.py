@@ -60,6 +60,12 @@ def dev_tools(message):
         callback_data="get_promocodes",
     )
     dev_tools_markup.add(button)
+    button = types.InlineKeyboardButton(
+        text="Add new language",
+        callback_data="add_lang",
+    )
+    dev_tools_markup.add(button)
+    
 
     # Seconding keyboard
     bot.send_message(
