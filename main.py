@@ -33,7 +33,7 @@ skip_old_messages = True  # True until message older than bot start time receive
 ignored_messages = 0  # count number of ignored messages when bot was offline for logs
 
 
-bot_token = environ.get("BOT_API_TOKEN_OFFICIAL")
+bot_token = environ.get("BOT_API_TOKEN")
 
 yoomoney_token = environ.get("PAYMENT_RUS_TOKEN")
 
@@ -153,35 +153,6 @@ threading.excepthook = error_handler
 
 # --------------- Filters ---------------
 
-
-def member_filter(message: types.Message):
-    global skip_old_messages
-    print(skip_old_messages)
-    if not skip_old_messages:
-        # Check, there is a owner of group
-        try:
-            if groups[message.chat.id].owner_id != None:
-                return True
-
-        # Check a registration of user, if a group didn't initialize
-        except:
-            # Messages handlers
-            if message.content_type in [
-                "audio",
-                "photo",
-                "voice",
-                "video",
-                "document",
-                "text",
-                "location",
-                "contact",
-                "sticker",
-            ]:
-                if message.chat.type != "private":
-                    return False
-            return True
-
-
 def time_filter(message: types.Message):
     """Filters message which were sent before bot start"""
     global skip_old_messages, ignored_messages
@@ -219,10 +190,14 @@ def reply_blacklist_filter(message: types.Message):
 
 
 def change_language(chat_id):
+
+    avaible_languages = get_avaible_langs()
+
     keyboard = types.InlineKeyboardMarkup()
-    keyboard.add(types.InlineKeyboardButton(text="Русский", callback_data="ru"))
-    keyboard.add(types.InlineKeyboardButton(text="English", callback_data="en"))
-    keyboard.add(types.InlineKeyboardButton(text="Other", callback_data="other"))
+    #Got avaible languages
+    for lang_code in avaible_languages:
+        lang = check_language(lang_code)
+        keyboard.add(types.InlineKeyboardButton(text=translate_text(lang[0],lang[1].capitalize()), callback_data=f"{lang[1]}-apply_lang"))   #lang[0] = language_code, lang[1] = full name of lang
 
     bot.send_message(chat_id, "Choose language", reply_markup=keyboard)
 
@@ -301,8 +276,14 @@ def send_welcome_text_and_load_data(
 
     # For group/chat
     else:
+        print(f"SUBSCRIPTION:   {groups[chat_id].permissions}")
+        print(f"SUBSCRIPTION OF OWNER ID: {groups[chat_id].permissions[groups[chat_id].subscription]}")
+
         # Load info to group from loader of group (owner_id)
+        groups[chat_id].permissions = {}
+        
         groups[chat_id].subscription = groups[owner_id].subscription
+
         groups[chat_id].permissions[groups[chat_id].subscription][
             "allowed_groups"
         ] = groups[owner_id].permissions[groups[owner_id].subscription][
@@ -535,7 +516,7 @@ from utils.yoomoney import *
     ],
     func=lambda message: reply_blacklist_filter(message)
     and blacklist_filter(message)
-    and time_filter(message),
+    and time_filter(message)
 )
 def main_messages_handler(message: types.Message):
     """Handles all messages"""
