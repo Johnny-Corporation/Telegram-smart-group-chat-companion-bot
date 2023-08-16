@@ -230,15 +230,7 @@ def change_language(chat_id):
 def send_welcome_text_and_load_data(
     chat_id: int, owner_id: int, language_code: str = "en"
 ) -> None:
-    """Sends initialization messages to group and loads data in group's object
-
-    Args:
-        chat_id (int)
-    """
-
-    try:
-        groups[owner_id]
-    except:
+    if owner_id not in groups:
         bot.send_message(chat_id, f"Register in @{bot_username}")
         return
 
@@ -248,117 +240,46 @@ def send_welcome_text_and_load_data(
     if chat_id < 0:
         if (
             len(groups[owner_id].id_groups)
-            == groups[owner_id].permissions[groups[owner_id].subscription][
+            >= groups[owner_id].permissions[groups[owner_id].subscription][
                 "allowed_groups"
             ]
         ):
             bot.send_message(
                 chat_id,
-                "Your limits on groups was exceeded. Pay the subscription to use Johnny in more groups.",
+                "Your limit on groups was exceeded. Buy the subscription to use Johnny in more groups.",
             )
             return
-
-    # Dynamic loading of group
-    loading = bot.send_message(chat_id, "Loading...10% ")
-    bot.edit_message_text(f"Loading...11% ", chat_id, loading.message_id)
-    bot.edit_message_text(f"Loading...16% ", chat_id, loading.message_id)
-    bot.edit_message_text(f"Loading...24% ", chat_id, loading.message_id)
 
     # Load messages
     groups[chat_id].load_data()
 
-    # Dynamic loading of group
-    bot.edit_message_text(f"Loading...30% ", chat_id, loading.message_id)
-    bot.edit_message_text(f"Loading...51% ", chat_id, loading.message_id)
-
-    # Signing in (registration) of user
-    new_user = False  # It's using for detection of new user or not
-
-    # User or group
+    # User
     if chat_id > 0:
         # Try to get info from database
         sub_exist = groups[chat_id].load_subscription(chat_id)
 
-        bot.edit_message_text(f"Loading...60% ", chat_id, loading.message_id)
-        bot.edit_message_text(f"Loading...71% ", chat_id, loading.message_id)
-
-        # If there isn't data, registrate new user
+        # If there isn't data, registries new user
         if not sub_exist:
-            groups[chat_id].add_new_user(chat_id, " ", " ", " ", "Free", 100000)
-            groups[chat_id].load_subscription(chat_id)
-
-            bot.edit_message_text(f"Loading...90% ", chat_id, loading.message_id)
-
             new_user = True
+            groups[chat_id].add_new_user(chat_id, " ", " ", " ", "Free", 100)
+            groups[chat_id].load_subscription(chat_id)
 
         else:
             # Turn on the time-tracker of subscription (if user bought ut before)
             groups[chat_id].track_sub(
                 chat_id, new=False
             )  # If user have free plan - in track_sub it considering
-
-            bot.edit_message_text(f"Loading...90% ", chat_id, loading.message_id)
+            new_user = False
 
     # For group/chat
     else:
         # Load info to group from loader of group (owner_id)
         groups[chat_id].subscription = groups[owner_id].subscription
-        groups[chat_id].permissions[groups[chat_id].subscription][
-            "allowed_groups"
-        ] = groups[owner_id].permissions[groups[owner_id].subscription][
-            "allowed_groups"
-        ]
-        groups[chat_id].permissions[groups[chat_id].subscription][
-            "messages_limit"
-        ] = groups[owner_id].permissions[groups[owner_id].subscription][
-            "messages_limit"
-        ]
-        groups[chat_id].permissions[groups[chat_id].subscription][
-            "dynamic_gen_permission"
-        ] = groups[owner_id].permissions[groups[owner_id].subscription][
-            "dynamic_gen_permission"
-        ]
-        groups[chat_id].permissions[groups[chat_id].subscription][
-            "voice_output_permission"
-        ] = groups[owner_id].permissions[groups[owner_id].subscription][
-            "voice_output_permission"
-        ]
-        groups[chat_id].permissions[groups[chat_id].subscription][
-            "sphere_permission"
-        ] = groups[owner_id].permissions[groups[owner_id].subscription][
-            "sphere_permission"
-        ]
-        groups[chat_id].permissions[groups[chat_id].subscription][
-            "temperature_permission"
-        ] = groups[owner_id].permissions[groups[owner_id].subscription][
-            "temperature_permission"
-        ]
-        groups[chat_id].permissions[groups[chat_id].subscription][
-            "frequency_penalty_permission"
-        ] = groups[owner_id].permissions[groups[owner_id].subscription][
-            "frequency_penalty_permission"
-        ]
-        groups[chat_id].permissions[groups[chat_id].subscription][
-            "presense_penalty_permission"
-        ] = groups[owner_id].permissions[groups[owner_id].subscription][
-            "presense_penalty_permission"
-        ]
-        groups[chat_id].permissions[groups[chat_id].subscription][
-            "temporary_memory_size_limit"
-        ] = groups[owner_id].permissions[groups[owner_id].subscription][
-            "temporary_memory_size_limit"
-        ]
+        groups[chat_id].permissions = groups[owner_id].permissions
         groups[chat_id].owner_id = owner_id
 
         # Add to owner's data info about him group
         groups[owner_id].id_groups.append(chat_id)
-
-        bot.edit_message_text(f"Loading...70% ", chat_id, loading.message_id)
-
-    # End and Delete the 'loading message'
-    bot.edit_message_text(f"Loading...100% ", chat_id, loading.message_id)
-    time.sleep(0.1)
-    bot.delete_message(chat_id, loading.message_id)
 
     # Load buttons
     markup = load_buttons(types, groups, chat_id, language_code, owner_id=owner_id)
@@ -420,12 +341,7 @@ def handle_new_chat_members(message):
 
 def init_new_group(chat_id):
     if chat_id in groups:
-        groups[chat_id].lang_code = "en"
-        bot.send_message(
-            chat_id,
-            "You haven't set the language. English sets by default.\nUse /change_language for changing language",
-        )
-
+        return  # Lang code not set
     else:
         chat = bot.get_chat(chat_id)
         if chat_id > 0:  # private
