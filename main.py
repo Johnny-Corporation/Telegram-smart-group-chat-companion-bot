@@ -33,7 +33,7 @@ skip_old_messages = True  # True until message older than bot start time receive
 ignored_messages = 0  # count number of ignored messages when bot was offline for logs
 
 
-bot_token = environ.get("BOT_API_TOKEN")
+bot_token = environ.get("BOT_API_TOKEN_OFFICIAL")
 
 yoomoney_token = environ.get("PAYMENT_RUS_TOKEN")
 
@@ -153,6 +153,7 @@ threading.excepthook = error_handler
 
 # --------------- Filters ---------------
 
+
 def time_filter(message: types.Message):
     """Filters message which were sent before bot start"""
     global skip_old_messages, ignored_messages
@@ -190,14 +191,18 @@ def reply_blacklist_filter(message: types.Message):
 
 
 def change_language(chat_id):
-
     avaible_languages = get_avaible_langs()
 
     keyboard = types.InlineKeyboardMarkup()
-    #Got avaible languages
+    # Got avaible languages
     for lang_code in avaible_languages:
         lang = check_language(lang_code)
-        keyboard.add(types.InlineKeyboardButton(text=translate_text(lang[0],lang[1].capitalize()), callback_data=f"{lang[1]}-apply_lang"))   #lang[0] = language_code, lang[1] = full name of lang
+        keyboard.add(
+            types.InlineKeyboardButton(
+                text=translate_text(lang[0], lang[1].capitalize()),
+                callback_data=f"{lang[1]}-apply_lang",
+            )
+        )  # lang[0] = language_code, lang[1] = full name of lang
 
     bot.send_message(chat_id, "Choose language", reply_markup=keyboard)
 
@@ -248,7 +253,6 @@ def send_welcome_text_and_load_data(
 
     # For group/chat
     else:
-
         # Load info to group from loader of group (owner_id)
         groups[chat_id].permissions = {}
 
@@ -256,7 +260,7 @@ def send_welcome_text_and_load_data(
 
         permissions = take_info_about_sub(groups[chat_id].subscription)
         groups[chat_id].permissions[groups[chat_id].subscription] = permissions
-        
+
         groups[chat_id].owner_id = owner_id
 
         # Add to owner's data info about him group
@@ -422,7 +426,7 @@ from utils.yoomoney import *
     ],
     func=lambda message: reply_blacklist_filter(message)
     and blacklist_filter(message)
-    and time_filter(message)
+    and time_filter(message),
 )
 def main_messages_handler(message: types.Message):
     """Handles all messages"""
