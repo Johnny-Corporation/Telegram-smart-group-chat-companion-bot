@@ -205,15 +205,7 @@ def change_language(chat_id):
 def send_welcome_text_and_load_data(
     chat_id: int, owner_id: int, language_code: str = "en"
 ) -> None:
-    """Sends initialization messages to group and loads data in group's object
-
-    Args:
-        chat_id (int)
-    """
-
-    try:
-        groups[owner_id]
-    except:
+    if owner_id not in groups:
         bot.send_message(chat_id, f"Register in @{bot_username}")
         return
 
@@ -223,56 +215,36 @@ def send_welcome_text_and_load_data(
     if chat_id < 0:
         if (
             len(groups[owner_id].id_groups)
-            == groups[owner_id].permissions[groups[owner_id].subscription][
+            >= groups[owner_id].permissions[groups[owner_id].subscription][
                 "allowed_groups"
             ]
         ):
             bot.send_message(
                 chat_id,
-                "Your limits on groups was exceeded. Pay the subscription to use Johnny in more groups.",
+                "Your limit on groups was exceeded. Buy the subscription to use Johnny in more groups.",
             )
             return
-
-    # Dynamic loading of group
-    loading = bot.send_message(chat_id, "Loading...10% ")
-    bot.edit_message_text(f"Loading...11% ", chat_id, loading.message_id)
-    bot.edit_message_text(f"Loading...16% ", chat_id, loading.message_id)
-    bot.edit_message_text(f"Loading...24% ", chat_id, loading.message_id)
 
     # Load messages
     groups[chat_id].load_data()
 
-    # Dynamic loading of group
-    bot.edit_message_text(f"Loading...30% ", chat_id, loading.message_id)
-    bot.edit_message_text(f"Loading...51% ", chat_id, loading.message_id)
-
-    # Signing in (registration) of user
-    new_user = False  # It's using for detection of new user or not
-
-    # User or group
+    # User
     if chat_id > 0:
         # Try to get info from database
         sub_exist = groups[chat_id].load_subscription(chat_id)
 
-        bot.edit_message_text(f"Loading...60% ", chat_id, loading.message_id)
-        bot.edit_message_text(f"Loading...71% ", chat_id, loading.message_id)
-
-        # If there isn't data, registrate new user
+        # If there isn't data, registries new user
         if not sub_exist:
-            groups[chat_id].add_new_user(chat_id, " ", " ", " ", "Free", 100000)
-            groups[chat_id].load_subscription(chat_id)
-
-            bot.edit_message_text(f"Loading...90% ", chat_id, loading.message_id)
-
             new_user = True
+            groups[chat_id].add_new_user(chat_id, " ", " ", " ", "Free", 100)
+            groups[chat_id].load_subscription(chat_id)
 
         else:
             # Turn on the time-tracker of subscription (if user bought ut before)
             groups[chat_id].track_sub(
                 chat_id, new=False
             )  # If user have free plan - in track_sub it considering
-
-            bot.edit_message_text(f"Loading...90% ", chat_id, loading.message_id)
+            new_user = False
 
     # For group/chat
     else:
@@ -289,13 +261,6 @@ def send_welcome_text_and_load_data(
 
         # Add to owner's data info about him group
         groups[owner_id].id_groups.append(chat_id)
-
-        bot.edit_message_text(f"Loading...70% ", chat_id, loading.message_id)
-
-    # End and Delete the 'loading message'
-    bot.edit_message_text(f"Loading...100% ", chat_id, loading.message_id)
-    time.sleep(0.1)
-    bot.delete_message(chat_id, loading.message_id)
 
     # Load buttons
     markup = load_buttons(types, groups, chat_id, language_code, owner_id=owner_id)
@@ -342,20 +307,10 @@ def send_welcome_text_and_load_data(
 def handle_new_chat_members(message):
     for new_chat_member in message.new_chat_members:
         if new_chat_member.id == bot_id:
-            clients = listdir("output\\clients_info")
-
-            if not check_file_existing(
-                message.from_user.first_name, "output\\clients_info"
-            ):
-                bot.send_message(
-                    message.chat.id,
-                    f"Please, sign in in private messages in @{bot_username}. It will take less than a minute",
-                )
-            if message.from_user.id not in groups.keys():
-                bot.send_message(
-                    message.chat.id,
-                    f"Please, sign in in private messages in @{bot_username}. It will take less than a minute",
-                )
+            bot.send_message(
+                message.chat.id,
+                f"Please, sign in in private messages in @{bot_username}. It will take less than a minute",
+            )
 
     try:
         remove(f"output\\groups_info\\{clean_string(message.chat.title)}.json")
@@ -367,12 +322,7 @@ def handle_new_chat_members(message):
 
 def init_new_group(chat_id):
     if chat_id in groups:
-        groups[chat_id].lang_code = "en"
-        bot.send_message(
-            chat_id,
-            "You haven't set the language. English sets by default.\nUse /change_language for changing language",
-        )
-
+        return  # Lang code not set
     else:
         chat = bot.get_chat(chat_id)
         if chat_id > 0:  # private

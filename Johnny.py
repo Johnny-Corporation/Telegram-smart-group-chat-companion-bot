@@ -11,7 +11,7 @@ from dateutil.relativedelta import relativedelta
 from random import random
 import json
 
-from utils.functions import describe_image
+from utils.functions import describe_image, get_file_content
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
@@ -74,13 +74,10 @@ class Johnny:
         # Needed to store requested links and restrict repeating useless requests
         self.dynamic_gen_chunks_frequency = 30  # when dynamic generation is enabled, this value controls how often to edit telegram message, for example when set to 3, message will be updated each 3 chunks from OpenAI API stream
         self.voice_out_enabled = False
-
         self.total_spent_messages = 0  # prompt and completion messages
-
         self.last_function_request = None
-
         self.button_commands = []
-
+        self.messages_to_be_deleted = []
         # Permissions
         self.subscription = "Free"
         self.permissions = {
@@ -275,10 +272,12 @@ class Johnny:
             function_args = json.loads(response_message["function_call"]["arguments"])
             argument = next(iter(function_args.values()))
 
-            self.bot.send_message(
-                self.message.chat.id,
-                functions_waiting_messages[function_name].format(argument),
-                disable_web_page_preview=True,
+            self.messages_to_be_deleted.append(
+                self.bot.send_message(
+                    self.message.chat.id,
+                    functions_waiting_messages[function_name].format(argument),
+                    disable_web_page_preview=True,
+                )
             )
 
             # If this response is same as previous, do not allow function call in next request and notify user
@@ -307,6 +306,7 @@ class Johnny:
 
             return self.static_generation(self.get_completion())
 
+        self.delete_pending_messages()
         self.response = completion
         text_answer = gpt.extract_text(self.response)
         # Check context understanding
@@ -346,10 +346,12 @@ class Johnny:
                 function_args = json.loads(func_call["arguments"])
                 argument = next(iter(function_args.values()))
 
-                self.bot.send_message(
-                    self.message.chat.id,
-                    functions_waiting_messages[function_name].format(argument),
-                    disable_web_page_preview=True,
+                self.messages_to_be_deleted.append(
+                    self.bot.send_message(
+                        self.message.chat.id,
+                        functions_waiting_messages[function_name].format(argument),
+                        disable_web_page_preview=True,
+                    )
                 )
 
                 # If previous function call was the same as current
@@ -397,6 +399,7 @@ class Johnny:
                 message_id=self.thinking_message.message_id,
                 text=text_answer,
             )
+        self.delete_pending_messages()
         return text_answer
 
     def check_understanding(self, text_answer: str) -> bool:
@@ -486,6 +489,14 @@ class Johnny:
             ),
             parse_mode="HTML",
         )
+
+    def delete_pending_messages(self):
+        for m in self.messages_to_be_deleted:
+            try:
+                self.bot.delete_message(self.chat_id, m.message_id)
+            except:
+                pass
+        self.messages_to_be_deleted.clear()
 
     def track_sub(self, chat_id: int, new: bool):
         def sub_tracking(chat_id: int, date_of_start):
