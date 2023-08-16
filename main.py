@@ -405,20 +405,10 @@ def send_welcome_text_and_load_data(
 def handle_new_chat_members(message):
     for new_chat_member in message.new_chat_members:
         if new_chat_member.id == bot_id:
-            clients = listdir("output\\clients_info")
-
-            if not check_file_existing(
-                message.from_user.first_name, "output\\clients_info"
-            ):
-                bot.send_message(
-                    message.chat.id,
-                    f"Please, sign in in private messages in @{bot_username}. It will take less than a minute",
-                )
-            if message.from_user.id not in groups.keys():
-                bot.send_message(
-                    message.chat.id,
-                    f"Please, sign in in private messages in @{bot_username}. It will take less than a minute",
-                )
+            bot.send_message(
+                message.chat.id,
+                f"Please, sign in in private messages in @{bot_username}. It will take less than a minute",
+            )
 
     try:
         remove(f"output\\groups_info\\{clean_string(message.chat.title)}.json")
