@@ -1,1 +1,1 @@
-The language was changed on {language}
+The language was loaded

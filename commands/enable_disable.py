@@ -20,39 +20,34 @@ def enable(message):
 
     groups[message.chat.id].enabled = True
 
-    print(f"OWNER_ID IN ENABLED COMMAND:  {groups[message.chat.id].owner_id}")
-
     markup_commands = load_buttons(types, groups, message.chat.id, language_code, owner_id=groups[message.chat.id].owner_id)
 
     if message.chat.type == "private":
         groups[message.chat.id].trigger_probability = 1
         bot.reply_to(
-            message, groups[message.chat.id].templates[language_code]["enabled_user.txt"], reply_markup=markup_commands, parse_mode="HTML"
+            message, templates[language_code]["enabled_user.txt"], reply_markup=markup_commands, parse_mode="HTML"
         )
     else:
         markup = types.InlineKeyboardMarkup()
         button = types.InlineKeyboardButton(
-            text=groups[message.chat.id].templates[language_code]["button_enable_auto.txt"],
+            text=templates[language_code]["button_enable_auto.txt"],
             callback_data="auto_mode",
         )
         markup.add(button)
         button = types.InlineKeyboardButton(
-            text=groups[message.chat.id].templates[language_code]["button_enable_dialog.txt"],
+            text=templates[language_code]["button_enable_dialog.txt"],
             callback_data="dialog_mode",
         )
         markup.add(button)
         button = types.InlineKeyboardButton(
-            text=groups[message.chat.id].templates[language_code]["button_enable_manual.txt"],
+            text=templates[language_code]["button_enable_manual.txt"],
             callback_data="manual_mode",
         )
         markup.add(button)
 
-        print("I AM IN ENABLED COMMAND")
-        print(f"MARKUP OF BUTTONS: {markup}")
-
         bot.send_message(
             message.chat.id,
-            groups[message.chat.id].templates[language_code]["enabled.txt"],
+            templates[language_code]["enabled.txt"],
             reply_markup=markup,
             parse_mode="HTML",
         )
@@ -68,7 +63,7 @@ def auto_enable(message):
 
     bot.send_message(
         message.chat.id,
-        groups[message.chat.id].templates[language_code]["enabled_auto.txt"].format(
+        templates[language_code]["enabled_auto.txt"].format(
             probability=groups[message.chat.id].trigger_probability
         ),
         reply_markup=markup_commands,
@@ -86,7 +81,7 @@ def dialog_enable(message):
 
     groups[message.chat.id].trigger_probability = 1
 
-    bot.send_message(message.chat.id, groups[message.chat.id].templates[language_code]["enabled_dialog.txt"],reply_markup=markup_commands)
+    bot.send_message(message.chat.id, templates[language_code]["enabled_dialog.txt"],reply_markup=markup_commands)
 
 # --- Manual mode enable ---
 @error_handler
@@ -98,7 +93,7 @@ def manual_enable(message):
         
     groups[message.chat.id].trigger_probability = 0
     bot.reply_to(
-        message, groups[message.chat.id].templates[language_code]["enabled_manual.txt"], reply_markup=markup_commands, parse_mode="HTML"
+        message, templates[language_code]["enabled_manual.txt"], reply_markup=markup_commands, parse_mode="HTML"
     )
 
 
@@ -113,4 +108,4 @@ def disable(message):
 
     markup = load_buttons(types, groups, message.chat.id, language_code, owner_id=groups[message.chat.id].owner_id)
 
-    bot.send_message(message.chat.id, groups[message.chat.id].templates[language_code]["disabled.txt"], reply_markup=markup)
+    bot.send_message(message.chat.id, templates[language_code]["disabled.txt"], reply_markup=markup)

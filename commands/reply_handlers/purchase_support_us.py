@@ -13,7 +13,7 @@ def support_us_reply_handler(inner_message):
     #         val = float(inner_message.text)
     #     except ValueError:
     #         bot.send_message(
-    #             inner_message.chat.id, groups[inner_message.chat.id].templates[language_code]["support_declined.txt"]
+    #             inner_message.chat.id, templates[language_code]["support_declined.txt"]
     #         )
     #         return
 
@@ -22,12 +22,12 @@ def support_us_reply_handler(inner_message):
     #     if pay:
     #         bot.reply_to(
     #             inner_message,
-    #             groups[inner_message.chat.id].templates[language_code]["thanks_for_supporting.txt"]
+    #             templates[language_code]["thanks_for_supporting.txt"]
     #         )
     #         return
         
     #     bot.send_message(
-    #         inner_message.chat.id, groups[inner_message.chat.id].templates[language_code]["support_declined.txt"]
+    #         inner_message.chat.id, templates[language_code]["support_declined.txt"]
     #     )
 
     # # create a scheduler

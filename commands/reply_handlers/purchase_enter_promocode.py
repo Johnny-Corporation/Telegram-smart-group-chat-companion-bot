@@ -11,7 +11,7 @@ def enter_promocode_reply_handler(inner_message):
     except ValueError:
         bot.reply_to(inner_message, "❌")
         bot.send_message(
-            inner_message.chat.id, groups[inner_message.chat.id].templates[language_code]["enter_promocode_canceled.txt"]
+            inner_message.chat.id, templates[language_code]["enter_promocode_canceled.txt"]
         )
         return
     
@@ -24,7 +24,7 @@ def enter_promocode_reply_handler(inner_message):
     if len(code_back) == 1:
         groups[inner_message.chat.id].add_purchase_of_messages(inner_message.chat.id, code_back[0])
 
-        bot.send_message(inner_message.chat.id, groups[inner_message.chat.id].templates[language_code]["more_100000_messages.txt"].format(messages=groups[inner_message.chat.id].messages_limit))
+        bot.send_message(inner_message.chat.id, templates[language_code]["more_100000_messages.txt"].format(messages=groups[inner_message.chat.id].messages_limit))
 
     elif len(code_back) == 2:
         groups[inner_message.chat.id].add_new_user(inner_message.chat.id, inner_message.from_user.first_name, inner_message.from_user.last_name, inner_message.from_user.username, code_back[0], code_back[1])
@@ -40,7 +40,7 @@ def enter_promocode_reply_handler(inner_message):
 
     else:
         bot.send_message(
-            inner_message.chat.id, groups[inner_message.chat.id].templates[language_code]["promocode_incorrect.txt"]
+            inner_message.chat.id, templates[language_code]["promocode_incorrect.txt"]
         )
         return
 

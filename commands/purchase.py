@@ -17,15 +17,15 @@ def purchase(message, back_from=False):
         if groups[message.chat.id].subscription == "Free":
                 # --- Buttons ---
             user_button = types.InlineKeyboardButton(
-                text=groups[message.chat.id].templates[language_code]["button_user.txt"],
+                text=templates[language_code]["button_user.txt"],
                 callback_data="easy",
             )
             small_business_button = types.InlineKeyboardButton(
-                text=groups[message.chat.id].templates[language_code]["button_small_business.txt"],
+                text=templates[language_code]["button_small_business.txt"],
                 callback_data="middle",
             )
             big_business_button = types.InlineKeyboardButton(
-                text=groups[message.chat.id].templates[language_code]["button_big_business.txt"],
+                text=templates[language_code]["button_big_business.txt"],
                 callback_data="pro",
             )
 
@@ -36,11 +36,11 @@ def purchase(message, back_from=False):
 
         else:
             extend_sub_button = types.InlineKeyboardButton(
-                text=groups[message.chat.id].templates[language_code]["button_extend_sub.txt"],
+                text=templates[language_code]["button_extend_sub.txt"],
                 callback_data="extend_sub",
             )
             update_sub_button = types.InlineKeyboardButton(
-                text=groups[message.chat.id].templates[language_code]["button_update_sub.txt"],
+                text=templates[language_code]["button_update_sub.txt"],
                 callback_data="update_sub",
             )
 
@@ -48,11 +48,11 @@ def purchase(message, back_from=False):
             purchase_markup.add(update_sub_button)
         
         messages_button = types.InlineKeyboardButton(
-            text=groups[message.chat.id].templates[language_code]["button_more_messages.txt"],
+            text=templates[language_code]["button_more_messages.txt"],
             callback_data="more_messages",
         )
         promocode_button = types.InlineKeyboardButton(
-            text=groups[message.chat.id].templates[language_code]["button_promocode.txt"],
+            text=templates[language_code]["button_promocode.txt"],
             callback_data="promocode",
         )
 
@@ -69,7 +69,7 @@ def purchase(message, back_from=False):
 
         # Seconding keyboard
         bot.edit_message_text(
-            groups[message.chat.id].templates[language_code]["purchase.txt"].format(plan=groups[message.chat.id].subscription),
+            templates[language_code]["purchase.txt"].format(plan=groups[message.chat.id].subscription),
             message.chat.id, 
             message.message_id,
             reply_markup=purchase_markup,
@@ -78,6 +78,6 @@ def purchase(message, back_from=False):
 
 
     else:
-        bot.reply_to(message, groups[message.chat.id].templates[language_code]["buy_unavaible_in_group.txt"].format(bot_username=bot_username))
+        bot.reply_to(message, templates[language_code]["buy_unavaible_in_group.txt"].format(bot_username=bot_username))
 
 

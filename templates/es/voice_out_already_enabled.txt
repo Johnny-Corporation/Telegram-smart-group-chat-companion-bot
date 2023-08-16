@@ -1,1 +1,0 @@
-Envío de mensajes de voz por parte de Johnny ya habilitado. Se deshabilitará.

@@ -7,6 +7,6 @@ from __main__ import *
 def question_to_bot(message):
     language_code = groups[message.chat.id].lang_code
 
-    bot_reply = bot.reply_to(message, groups[message.chat.id].templates[language_code]["question_to_bot.txt"])
+    bot_reply = bot.reply_to(message, templates[language_code]["question_to_bot.txt"])
     reply_blacklist[message.chat.id].append(bot_reply.message_id)
     bot.register_for_reply(bot_reply, question_to_bot_reply_handler)

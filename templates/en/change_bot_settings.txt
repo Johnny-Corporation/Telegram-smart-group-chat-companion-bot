@@ -1,4 +1,3 @@
-We provide two options how you can change the bot:
+Welcome to settings! 
 
-<b>• SET UP</b> - Set up the answers of gpt
-<b>• CUSTOMization</b> - Set up the format of answers
+Choose what are you want to change:

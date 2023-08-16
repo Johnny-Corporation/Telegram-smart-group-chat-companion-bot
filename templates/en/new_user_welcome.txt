@@ -7,5 +7,3 @@ Ask a question, suggest a problem or an idea. Johnny is ready to help you!
 <i>Below you can see additional tools</i>
 
 <i>*Use  /about to know more!*</i>
-
-<b>Bot is on! Write him now!</b>

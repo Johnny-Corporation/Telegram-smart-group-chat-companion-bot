@@ -1,3 +1,0 @@
-El envío de respuestas de voz estaba deshabilitado. En cualquier momento, puede habilitarlo en la configuración.
-
-<b>En cualquier momento, puede enviar /tovoice en respuesta a un mensaje de texto y bot reenviarlo en formato de texto.</b>

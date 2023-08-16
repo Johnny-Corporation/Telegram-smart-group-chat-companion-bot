@@ -45,7 +45,6 @@ class Johnny:
     """Group handler, assumes to be created as separate instance for each chat"""
 
     bot: TeleBot
-    templates
     chat_id: int
     bot_username: str
     temporary_memory_size: int = 20
@@ -84,7 +83,7 @@ class Johnny:
         self.permissions = {
             "Free": {  # {type_of_sub: {point: value_of_point}}
                 "allowed_groups": 1,
-                "messages_limit": 100,
+                "messages_limit": 30,
                 "temporary_memory_size_limit": 20,
                 "dynamic_gen_permission": False,
                 "sphere_permission": False,
@@ -143,7 +142,7 @@ class Johnny:
         ):
             self.bot.send_message(
                 message.chat.id,
-                self.templates[self.lang_code]["exceed_limit_on_groups.txt"],
+                templates[self.lang_code]["exceed_limit_on_groups.txt"],
             )
 
             groups[self.owner_id].id_groups.remove(message.chat.id)
@@ -196,7 +195,7 @@ class Johnny:
         ):
             self.bot.send_message(
                 message.chat.id,
-                self.templates[self.lang_code]["suggest_to_buy.txt"],
+                templates[self.lang_code]["suggest_to_buy.txt"],
                 parse_mode="HTML",
             )
             self.commercial_trigger += 1
@@ -208,7 +207,7 @@ class Johnny:
         ):
             self.bot.send_message(
                 message.chat.id,
-                self.templates[self.lang_code]["exceed_limit_on_messages.txt"],
+                templates[self.lang_code]["exceed_limit_on_messages.txt"],
             )
             self.total_spent_messages = self.permissions[self.subscription][
                 "messages_limit"
@@ -220,7 +219,7 @@ class Johnny:
         ):
             self.bot.send_message(
                 message.chat.id,
-                self.templates[self.lang_code]["exceed_limit_on_messages.txt"],
+                templates[self.lang_code]["exceed_limit_on_messages.txt"],
             )
             groups[self.owner_id].total_spent_messages = self.permissions[
                 self.subscription
@@ -477,7 +476,7 @@ class Johnny:
         if type_of_subscription != "Free":
             self.bot.send_message(
                 chat_id,
-                self.templates[self.lang_code]["new_subscriber.txt"].format(
+                templates[self.lang_code]["new_subscriber.txt"].format(
                     sub=type_of_subscription
                 ),
                 parse_mode="HTML",
@@ -506,7 +505,7 @@ class Johnny:
 
         self.bot.send_message(
             chat_id,
-            self.templates[self.lang_code]["sub_extend.txt"].format(
+            templates[self.lang_code]["sub_extend.txt"].format(
                 sub=self.subscription
             ),
             parse_mode="HTML",
@@ -536,14 +535,14 @@ class Johnny:
             if not check:
                 self.bot.send_message(
                     chat_id,
-                    self.templates[self.lang_code]["sub_was_end.txt"],
+                    templates[self.lang_code]["sub_was_end.txt"],
                     parse_mode="HTML",
                 )
 
                 current_date = datetime.now().isoformat()
 
                 db_controller.add_user_with_sub(
-                    chat_id, "Free", current_date, " ", " ", " ", 100
+                    chat_id, "Free", current_date, " ", " ", " ", 50
                 )
 
                 self.subscription = "Free"
@@ -565,7 +564,7 @@ class Johnny:
 
             self.bot.send_message(
                 chat_id,
-                self.templates[self.lang_code]["sub_was_end_with_extend.txt"].format(
+                templates[self.lang_code]["sub_was_end_with_extend.txt"].format(
                     sub=self.subscription
                 ),
                 parse_mode="HTML",

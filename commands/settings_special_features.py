@@ -13,10 +13,10 @@ def special_features_settings(message):
 
     # --- Buttons ---
     dyn_gen_button = types.InlineKeyboardButton(
-        text=groups[message.chat.id].templates[language_code]["button_dyn_gen.txt"], callback_data="dyn_gen"
+        text=templates[language_code]["button_dyn_gen.txt"], callback_data="dyn_gen"
     )
     voice_out_button = types.InlineKeyboardButton(
-        text=groups[message.chat.id].templates[language_code]["button_voice_out.txt"], callback_data="voice_out"
+        text=templates[language_code]["button_voice_out.txt"], callback_data="voice_out"
     )
     back_button = types.InlineKeyboardButton(
         text="<<<",
@@ -30,7 +30,7 @@ def special_features_settings(message):
 
     # Sending message with keyboard
     bot.edit_message_text(
-        groups[message.chat.id].templates[language_code]["customization.txt"], 
+        templates[language_code]["customization.txt"], 
         message.chat.id, 
         message.message_id, 
         reply_markup=customization_markup,
@@ -47,7 +47,7 @@ def enable_disable_dynamic_generation(message):
     groups[message.chat.id].dynamic_gen = not groups[message.chat.id].dynamic_gen
     bot.reply_to(
         message,
-        groups[message.chat.id].templates[language_code]["dynamic_generation.txt"].format(
+        templates[language_code]["dynamic_generation.txt"].format(
             groups[message.chat.id].dynamic_gen
         ),
     )
@@ -59,6 +59,6 @@ def enable_disable_voice_out(message):
     groups[call.message.chat.id].voice_out_enabled = not groups[call.message.chat.id].voice_out_enabled
 
     if groups[call.message.chat.id].voice_out_enabled == True:
-        bot.send_message(call.message.chat.id, groups[call.message.chat.id].templates[previous_language_code]["voice_out_enabled.txt"])
+        bot.send_message(call.message.chat.id, templates[language_code]["voice_out_enabled.txt"])
     elif groups[call.message.chat.id].voice_out_enabled == False:
-        bot.send_message(call.message.chat.id, groups[call.message.chat.id].templates[previous_language_code]["voice_out_disabled.txt"])
+        bot.send_message(call.message.chat.id, templates[language_code]["voice_out_disabled.txt"])

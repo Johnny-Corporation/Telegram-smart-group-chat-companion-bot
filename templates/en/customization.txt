@@ -1,6 +1,1 @@
-Here are commands to set up your bot:
-
- /dynamic_generation - for enable/disable it
- /change_language - for change the language
-
-<i>To know current values  /group_info </i>
+Here are the options to do your bot more convinient:

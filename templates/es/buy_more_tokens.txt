@@ -1,4 +1,0 @@
-Tienes un plan <i>{plan}</i>.
-Así que ese es el precio para ti: <i>{price}</i>
-
-<i>Para conocer los planes:  /subs_list </i>

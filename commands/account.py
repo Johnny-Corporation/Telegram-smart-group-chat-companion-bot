@@ -9,7 +9,7 @@ def account(message, back_from: bool=False):
     # if message.from_user.id not in groups:
     #     bot.reply_to(
     #         message,
-    #         groups[message.chat.id].templates[language_code]["user_doesnt_registrate.txt"].format(first_name=message.from_user.first_name),
+    #         templates[language_code]["user_doesnt_registrate.txt"].format(first_name=message.from_user.first_name),
     #         parse_mode="HTML",
     #         disable_web_page_preview=True,
     #     )
@@ -33,19 +33,19 @@ def account(message, back_from: bool=False):
     #Buttons
     markup = types.InlineKeyboardMarkup()
     button1 = types.InlineKeyboardButton(
-        text=groups[message.chat.id].templates[language_code]["button_purchase.txt"],
+        text=templates[language_code]["button_purchase.txt"],
         callback_data="purchase",
     )
     markup.add(button1)
     button2 = types.InlineKeyboardButton(
-        text=groups[message.chat.id].templates[language_code]["button_about_sub.txt"],
+        text=templates[language_code]["button_about_sub.txt"],
         callback_data="about_sub",
     )
     markup.add(button2)
     
     if back_from:
         bot.edit_message_text(
-            groups[message.chat.id].templates[language_code]["account_info.txt"].format(
+            templates[language_code]["account_info.txt"].format(
             first_name=message.from_user.first_name,
             subscription=groups[message.chat.id].subscription,
             left_messages=left_messages,
@@ -61,7 +61,7 @@ def account(message, back_from: bool=False):
 
     bot.send_message(
         message.chat.id,
-        groups[message.chat.id].templates[language_code]["account_info.txt"].format(
+        templates[language_code]["account_info.txt"].format(
         first_name=message.chat.first_name,
         subscription=groups[message.chat.id].subscription,
         left_messages=left_messages,

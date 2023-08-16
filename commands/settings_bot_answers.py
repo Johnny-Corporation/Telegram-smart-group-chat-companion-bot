@@ -17,44 +17,44 @@ def bot_answers_settings(message):
     #probability
     if message.chat.id<0:
         answer_probability_button = types.InlineKeyboardButton(
-            text=groups[message.chat.id].templates[language_code]["button_set_ans.txt"],
+            text=templates[language_code]["button_set_ans.txt"],
             callback_data="answer_probability",
         )
         set_up_markup.add(answer_probability_button)
 
     #temperature
     temp_button = types.InlineKeyboardButton(
-        text=groups[message.chat.id].templates[language_code]["button_set_temp.txt"],
+        text=templates[language_code]["button_set_temp.txt"],
         callback_data="temperature",
     )
 
     #length of bot memory
     memory_button = types.InlineKeyboardButton(
-        text=groups[message.chat.id].templates[language_code]["button_set_memory.txt"],
+        text=templates[language_code]["button_set_memory.txt"],
         callback_data="memory_length",
     )
 
     #frequency_penalty
     freq_penalty_button = types.InlineKeyboardButton(
-        text=groups[message.chat.id].templates[language_code]["button_set_variety.txt"],
+        text=templates[language_code]["button_set_variety.txt"],
         callback_data="variety",
     )
 
     #presence penalty
     pres_penalty_button = types.InlineKeyboardButton(
-        text=groups[message.chat.id].templates[language_code]["button_set_creativity.txt"],
+        text=templates[language_code]["button_set_creativity.txt"],
         callback_data="creativity",
     )
 
     #length of bot's answers
     len_button = types.InlineKeyboardButton(
-        text=groups[message.chat.id].templates[language_code]["button_set_length_answer.txt"],
+        text=templates[language_code]["button_set_length_answer.txt"],
         callback_data="answer_length",
     )
 
     #sphere of conservation
     sphere_button = types.InlineKeyboardButton(
-        text=groups[message.chat.id].templates[language_code]["button_set_sphere.txt"],
+        text=templates[language_code]["button_set_sphere.txt"],
         callback_data="sphere",
     )
 
@@ -75,7 +75,7 @@ def bot_answers_settings(message):
 
     # --- Edit 'Settings' message ---
     bot.edit_message_text(
-        groups[message.chat.id].templates[language_code]["set_up_functions.txt"], 
+        templates[language_code]["set_up_functions.txt"], 
         message.chat.id, 
         message.message_id, 
         reply_markup=set_up_markup,
@@ -92,7 +92,7 @@ def set_probability(message):
     language_code = groups[message.chat.id].lang_code
     bot_reply = bot.reply_to(
         message,
-        groups[message.chat.id].templates[language_code]["change_probability.txt"].format(
+        templates[language_code]["change_probability.txt"].format(
             probability=groups[message.chat.id].trigger_probability
         ),
         parse_mode="HTML",
@@ -107,7 +107,7 @@ def set_temperature(message):
     language_code = groups[message.chat.id].lang_code
     bot_reply = bot.reply_to(
         message,
-        groups[message.chat.id].templates[language_code]["change_temp.txt"].format(
+        templates[language_code]["change_temp.txt"].format(
             temperature=groups[message.chat.id].temperature
         ),
         parse_mode="HTML",
@@ -121,7 +121,7 @@ def set_temp_memory_size(message):
     language_code = groups[message.chat.id].lang_code
     bot_reply = bot.reply_to(
         message,
-        groups[message.chat.id].templates[language_code]["change_temp_memory_size.txt"].format(
+        templates[language_code]["change_temp_memory_size.txt"].format(
             memory=groups[message.chat.id].temporary_memory_size
         ),
         parse_mode="HTML",
@@ -136,7 +136,7 @@ def set_frequency_penalty(message):
     language_code = groups[message.chat.id].lang_code
     bot_reply = bot.reply_to(
         message,
-        groups[message.chat.id].templates[language_code]["set_frequency_penalty.txt"].format(
+        templates[language_code]["set_frequency_penalty.txt"].format(
             frequency_penalty=groups[message.chat.id].frequency_penalty
         ),
         parse_mode="HTML",
@@ -151,7 +151,7 @@ def set_presence_penalty(message):
     language_code = groups[message.chat.id].lang_code
     bot_reply = bot.reply_to(
         message,
-        groups[message.chat.id].templates[language_code]["set_presence_penalty.txt"].format(
+        templates[language_code]["set_presence_penalty.txt"].format(
             frequency_penalty=groups[message.chat.id].frequency_penalty
         ),
         parse_mode="HTML",
@@ -168,16 +168,16 @@ def set_length_answer_command(message):
     length_markup = types.InlineKeyboardMarkup()
 
     long_button = types.InlineKeyboardButton(
-        text=groups[message.chat.id].templates[language_code]["button_long.txt"], callback_data="long"
+        text=templates[language_code]["button_long.txt"], callback_data="long"
     )
     medium_button = types.InlineKeyboardButton(
-        text=groups[message.chat.id].templates[language_code]["button_medium.txt"], callback_data="medium"
+        text=templates[language_code]["button_medium.txt"], callback_data="medium"
     )
     short_button = types.InlineKeyboardButton(
-        text=groups[message.chat.id].templates[language_code]["button_short.txt"], callback_data="short"
+        text=templates[language_code]["button_short.txt"], callback_data="short"
     )
     any_button = types.InlineKeyboardButton(
-        text=groups[message.chat.id].templates[language_code]["button_any_length.txt"], callback_data="any"
+        text=templates[language_code]["button_any_length.txt"], callback_data="any"
     )
 
     length_markup.add(long_button)
@@ -187,7 +187,7 @@ def set_length_answer_command(message):
 
     bot.reply_to(
         message,
-        groups[message.chat.id].templates[language_code]["set_length_answer.txt"],
+        templates[language_code]["set_length_answer.txt"],
         reply_markup=length_markup,
         parse_mode="HTML",
     )
@@ -203,7 +203,7 @@ def set_sphere_command(message):
         sphere_in = groups[message.chat.id].sphere
     bot_reply = bot.reply_to(
         message,
-        groups[message.chat.id].templates[language_code]["set_sphere.txt"].format(sphere=sphere_in),
+        templates[language_code]["set_sphere.txt"].format(sphere=sphere_in),
         parse_mode="HTML",
     )
     reply_blacklist[message.chat.id].append(bot_reply.message_id)

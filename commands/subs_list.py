@@ -16,7 +16,7 @@ def sub_info(message):
     if message.chat.id not in groups:
         bot.reply_to(
             message,
-            groups[message.chat.id].templates[language_code]["user_doesnt_registrate.txt"].format(first_name=message.chat.first_name),
+            templates[language_code]["user_doesnt_registrate.txt"].format(first_name=message.chat.first_name),
             parse_mode="HTML",
             disable_web_page_preview=True,
         )
@@ -47,7 +47,7 @@ def sub_info(message):
         name_of_groups = 'None'
 
     bot.edit_message_text(
-        groups[message.chat.id].templates[language_code]["info_about_user_sub.txt"].format(
+        templates[language_code]["info_about_user_sub.txt"].format(
         first_name=message.chat.first_name,
         subscription=groups[message.chat.id].subscription,
         messages=groups[message.chat.id].permissions[groups[message.chat.id].subscription]["messages_limit"],
@@ -75,7 +75,7 @@ def subs_list(message):
 
     language_code = groups[message.chat.id].lang_code 
 
-    bot.send_message(message.chat.id, groups[message.chat.id].templates[language_code]["sub_free_description.txt"], parse_mode = "HTML")
-    bot.send_message(message.chat.id, groups[message.chat.id].templates[language_code]["sub_user_description.txt"], parse_mode = "HTML")
-    bot.send_message(message.chat.id, groups[message.chat.id].templates[language_code]["sub_small_business_description.txt"], parse_mode = "HTML")
-    bot.send_message(message.chat.id, groups[message.chat.id].templates[language_code]["sub_big_business_description.txt"], parse_mode = "HTML")
+    bot.send_message(message.chat.id, templates[language_code]["sub_free_description.txt"], parse_mode = "HTML")
+    bot.send_message(message.chat.id, templates[language_code]["sub_user_description.txt"], parse_mode = "HTML")
+    bot.send_message(message.chat.id, templates[language_code]["sub_small_business_description.txt"], parse_mode = "HTML")
+    bot.send_message(message.chat.id, templates[language_code]["sub_big_business_description.txt"], parse_mode = "HTML")

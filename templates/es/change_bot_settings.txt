@@ -1,4 +1,0 @@
-Ofrecemos dos opciones para cambiar el bot:
-
-<b>• CONFIGURAR</b>: configurar las respuestas de gpt
-<b>• PERSONALIZACIÓN</b>: configure el formato de las respuestas
