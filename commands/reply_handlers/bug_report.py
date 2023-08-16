@@ -16,5 +16,5 @@ def bug_report_reply_handler(inner_message):
     )
     bot.reply_to(
         inner_message,
-        groups[inner_message.chat.id].templates[language_code]["bug_report_thanks.txt"],
+        templates[language_code]["bug_report_thanks.txt"],
     )

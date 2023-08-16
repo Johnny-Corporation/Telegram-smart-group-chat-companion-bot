@@ -63,7 +63,7 @@ def keyboard_buttons_handler(call):
             else:
                 bot.send_message(
                     call.message.chat.id, 
-                    groups[call.message.chat.id].templates[previous_language_code]["no_rights.txt"],
+                    templates[previous_language_code]["no_rights.txt"],
                     parse_mode = "HTML"
                 )
         case "answer_probability":
@@ -76,7 +76,7 @@ def keyboard_buttons_handler(call):
             else:
                 bot.send_message(
                     call.message.chat.id, 
-                    groups[call.message.chat.id].templates[previous_language_code]["no_rights.txt"],
+                    templates[previous_language_code]["no_rights.txt"],
                     parse_mode = "HTML"
                 )
         case "creativity":
@@ -85,7 +85,7 @@ def keyboard_buttons_handler(call):
             else:
                 bot.send_message(
                     call.message.chat.id, 
-                    groups[call.message.chat.id].templates[previous_language_code]["no_rights.txt"],
+                    templates[previous_language_code]["no_rights.txt"],
                     parse_mode = "HTML"
                 )
         case "answer_length":
@@ -96,7 +96,7 @@ def keyboard_buttons_handler(call):
             else:
                 bot.send_message(
                     call.message.chat.id, 
-                    groups[call.message.chat.id].templates[previous_language_code]["no_rights.txt"],
+                    templates[previous_language_code]["no_rights.txt"],
                     parse_mode = "HTML"
                 )
         case "change_lang":
@@ -112,26 +112,26 @@ def keyboard_buttons_handler(call):
             if groups[call.message.chat.id].permissions[groups[call.message.chat.id].subscription]["dynamic_gen_permission"] == True:
 
                 if groups[call.message.chat.id].voice_out_enabled == True:
-                    bot.send_message(call.message.chat.id, groups[call.message.chat.id].templates[previous_language_code]["voice_out_already_enabled.txt"])
+                    bot.send_message(call.message.chat.id, templates[previous_language_code]["voice_out_already_enabled.txt"])
                     groups[call.message.chat.id].voice_out_enabled = False
 
                 enable_disable_dynamic_generation(call.message)
             else:
                 bot.send_message(
                     call.message.chat.id, 
-                    groups[call.message.chat.id].templates[previous_language_code]["no_rights.txt"],
+                    templates[previous_language_code]["no_rights.txt"],
                     parse_mode = "HTML"
                 )
             
 
         case "voice_out":
             if groups[call.message.chat.id].voice_output_permission == False:
-                bot.send_message(call.message.chat.id, groups[call.message.chat.id].templates[previous_language_code]["no_rights.txt"], parse_mode="HTML")
+                bot.send_message(call.message.chat.id, templates[previous_language_code]["no_rights.txt"], parse_mode="HTML")
                 return 
             
 
             if groups[call.message.chat.id].dynamic_gen == True:
-                bot.send_message(call.message.chat.id, groups[call.message.chat.id].templates[previous_language_code]["dyn_gen_already_enabled.txt"])
+                bot.send_message(call.message.chat.id, templates[previous_language_code]["dyn_gen_already_enabled.txt"])
                 groups[call.message.chat.id].dynamic_gen_permission = False
 
             
@@ -146,7 +146,7 @@ def keyboard_buttons_handler(call):
             groups[call.message.chat.id].answer_length = "in detail"
             bot.send_message(
                 call.message.chat.id,
-                groups[call.message.chat.id].templates[previous_language_code]["length_chosen.txt"],
+                templates[previous_language_code]["length_chosen.txt"],
             )
         case "medium":
             groups[
@@ -154,19 +154,19 @@ def keyboard_buttons_handler(call):
             ].answer_length = "not in detail, but not briefly"
             bot.send_message(
                 call.message.chat.id,
-                groups[call.message.chat.id].templates[previous_language_code]["length_chosen.txt"],
+                templates[previous_language_code]["length_chosen.txt"],
             )
         case "short":
             groups[call.message.chat.id].answer_length = "brief"
             bot.send_message(
                 call.message.chat.id,
-                groups[call.message.chat.id].templates[previous_language_code]["length_chosen.txt"],
+                templates[previous_language_code]["length_chosen.txt"],
             )
         case "any":
             groups[call.message.chat.id].answer_length = "as you need"
             bot.send_message(
                 call.message.chat.id,
-                groups[call.message.chat.id].templates[previous_language_code]["length_chosen.txt"],
+                templates[previous_language_code]["length_chosen.txt"],
             )
 
         # Language
@@ -179,8 +179,17 @@ def keyboard_buttons_handler(call):
             lang = check_language(button_text)
 
             groups[call.message.chat.id].lang_code = lang[0]
-            bot.send_message(call.message.chat.id, translate_text(lang[1],f"Language changed to {lang[1]} "))
+
             language_code = lang[0]
+
+
+            try:
+                markup = load_buttons(types, groups, call.message.chat.id, language_code, owner_id=groups[call.message.chat.id].owner_id)
+                print("THE CONDITION IS SUCCESS")
+                bot.send_message(call.message.chat.id, translate_text(lang[1],f"Language changed to {lang[1]} "), reply_markup=markup)
+            except:
+                print("THE CONDIOTION WAAS FAILED")
+                bot.send_message(call.message.chat.id, translate_text(lang[1],f"Language changed to {lang[1]} "))
 
 
         # DEV TOOLS
@@ -208,18 +217,11 @@ def keyboard_buttons_handler(call):
         case "get_promocodes":
             get_promocodes(call.message)
         case "add_lang":
-            try:
-                language_code = groups[call.message.chat.id].lang_code
-                reply_to = bot.send_message(call.message.chat.id, groups[call.message.chat.id].templates[language_code]["enter_language.txt"])
-            except:
-                reply_to = bot.send_message(call.message.chat.id, "Enter the language either as a code (ex. 'es') as a name (ex. 'spanish')")
-
+            language_code = groups[call.message.chat.id].lang_code
+            reply_to = bot.send_message(call.message.chat.id, groups[call.message.chat.id].templates[language_code]["enter_language.txt"])
             
-                reply_blacklist[call.message.chat.id].append(reply_to.message_id)
-                bot.register_for_reply(reply_to, change_language_reply_handler)
-            while True:
-                if groups[call.message.chat.id].lang_code != None:
-                    break
+            reply_blacklist[call.message.chat.id].append(reply_to.message_id)
+            bot.register_for_reply(reply_to, change_language_reply_handler)
 
 
         # Purchase the subscription

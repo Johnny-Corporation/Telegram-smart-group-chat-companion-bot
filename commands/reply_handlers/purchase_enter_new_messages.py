@@ -10,7 +10,7 @@ def enter_new_messages_reply_handler(inner_message):
     except ValueError:
         bot.reply_to(inner_message, "❌")
         bot.send_message(
-            inner_message.chat.id, groups[inner_message.chat.id].templates[language_code]["new_messages_calnceled.txt"]
+            inner_message.chat.id, templates[language_code]["new_messages_calnceled.txt"]
         )
         return
     
@@ -19,19 +19,19 @@ def enter_new_messages_reply_handler(inner_message):
 
     if groups[inner_message.chat.id].subscription == "Free":
 
-        pay = accept_payment(inner_message, groups[inner_message.chat.id].templates[language_code]["messages_buy_text.txt"].format(val=val,sub="Free"), val*0.0004) 
+        pay = accept_payment(inner_message, templates[language_code]["messages_buy_text.txt"].format(val=val,sub="Free"), val*1) 
 
     elif groups[inner_message.chat.id].subscription == "USER":
 
-        pay = accept_payment(inner_message, groups[inner_message.chat.id].templates[language_code]["messages_buy_text.txt"].format(val=val,sub="USER"), val*0.0003)
+        pay = accept_payment(inner_message, templates[language_code]["messages_buy_text.txt"].format(val=val,sub="USER"), val*0.8)
 
     elif groups[inner_message.chat.id].subscription == "SMALL BUSINESS":
 
-        pay = accept_payment(inner_message, groups[inner_message.chat.id].templates[language_code]["messages_buy_text.txt"].format(val=val,sub="SMALL BUSINESS"), val*0.00025)
+        pay = accept_payment(inner_message, templates[language_code]["messages_buy_text.txt"].format(val=val,sub="SMALL BUSINESS"), val*0.5)
 
     elif groups[inner_message.chat.id].subscription == "BIG BUSINESS":
 
-        pay = accept_payment(inner_message, groups[inner_message.chat.id].templates[language_code]["messages_buy_text.txt"].format(val=val,sub="BIG BUSINESS"), val*0.00023)
+        pay = accept_payment(inner_message, templates[language_code]["messages_buy_text.txt"].format(val=val,sub="BIG BUSINESS"), val*0.4)
     else:
         bot.send_message(inner_message.chat.id, "Problem")
 
@@ -47,8 +47,8 @@ def enter_new_messages_reply_handler(inner_message):
 
         bot.send_message(
             inner_message.chat.id,
-            groups[message.chat.id].templates[language_code]["new_messages.txt"],
+            templates[language_code]["new_messages.txt"],
             parse_mode="HTML",
         )
     else:
-        bot.send_message(inner_message.chat.id, groups[inner_message.chat.id].templates[language_code]["buy_was_canceled.txt"])
+        bot.send_message(inner_message.chat.id, templates[language_code]["buy_was_canceled.txt"])

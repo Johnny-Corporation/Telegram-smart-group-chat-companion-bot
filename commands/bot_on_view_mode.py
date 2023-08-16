@@ -17,11 +17,11 @@ def view_mode(message):
         language_code = groups[message.chat.id].lang_code
         bot.send_message(
             message.chat.id,
-            groups[message.chat.id].templates[language_code]["view_mode.txt"].format(on_off=on_off, mode=mode),
+            templates[language_code]["view_mode.txt"].format(on_off=on_off, mode=mode),
         )
 
     else:
         language_code = groups[message.chat.id].lang_code
         bot.send_message(
-            message.chat.id, groups[message.chat.id].templates[language_code]["view_mode_disabled.txt"]
+            message.chat.id, templates[language_code]["view_mode_disabled.txt"]
         )

@@ -8,7 +8,7 @@ def change_owner_of_group(message):
     language_code = groups[message.chat.id].lang_code
     bot_reply = bot.reply_to(
         message,
-        groups[message.chat.id].templates[language_code]["change_owner_of_group.txt"],
+        templates[language_code]["change_owner_of_group.txt"],
         parse_mode="HTML",
     )
 

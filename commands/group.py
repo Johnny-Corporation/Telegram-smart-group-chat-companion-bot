@@ -9,7 +9,7 @@ def group(message, back_from=False):
     # --- Detect Permissions
 
     if message.chat.id>0:
-        bot.send_message(message.chat.id, groups[message.chat.id].templates[language_code]["group_info_in_private.txt"])
+        bot.send_message(message.chat.id, templates[language_code]["group_info_in_private.txt"])
         return 
 
     if groups[message.chat.id].lang_code == "en":
@@ -25,12 +25,12 @@ def group(message, back_from=False):
     # --- Buttons ---
     markup = types.InlineKeyboardMarkup()
     button1 = types.InlineKeyboardButton(
-        text=groups[message.chat.id].templates[language_code]["button_see_settings_of_bot_answers.txt"],
+        text=templates[language_code]["button_see_settings_of_bot_answers.txt"],
         callback_data="see_settings_of_bot_answers",
     )
     markup.add(button1)
     button2 = types.InlineKeyboardButton(
-        text=groups[message.chat.id].templates[language_code]["button_see_settings_of_special_functions.txt"],
+        text=templates[language_code]["button_see_settings_of_special_functions.txt"],
         callback_data="see_settings_of_special_functions",
     )
     markup.add(button2)
@@ -39,7 +39,7 @@ def group(message, back_from=False):
     # --- If we went back from ahead settings ---
     if back_from:
         bot.edit_message_text(
-            groups[message.chat.id].templates[language_code]["group_info.txt"].format(
+            templates[language_code]["group_info.txt"].format(
                 group_name=message.chat.title,
                 username=str(bot.get_chat(groups[message.chat.id].owner_id).username),
                 subscription=groups[message.chat.id].subscription,
@@ -56,7 +56,7 @@ def group(message, back_from=False):
 
     bot.send_message(
         message.chat.id,
-        groups[message.chat.id].templates[language_code]["group_info.txt"].format(
+        templates[language_code]["group_info.txt"].format(
             group_name=message.chat.title,
             username=str(bot.get_chat(groups[message.chat.id].owner_id).username),
             subscription=groups[message.chat.id].subscription,
@@ -100,7 +100,7 @@ def see_settings_of_special_functions(message):
 
     # --- Edit 'Group' message ---
     bot.edit_message_text(
-        groups[message.chat.id].templates[language_code]["special_functions_in_group.txt"].format(
+        templates[language_code]["special_functions_in_group.txt"].format(
             dynamic_gen_en=dynamic_gen_en,
             voice_out=voice_out
         ),
@@ -135,11 +135,11 @@ def see_settings_of_bot_answers(message):
 
     # --- Edit 'Group' message ---
     bot.edit_message_text(
-        groups[message.chat.id].templates[language_code]["bot_answers_in_group.txt"].format(
+        templates[language_code]["bot_answers_in_group.txt"].format(
             temperature=groups[message.chat.id].temperature,
             answers_frequency=groups[message.chat.id].trigger_probability,
             temporary_memory_size=groups[message.chat.id].temporary_memory_size,
-            presense_penalty=groups[message.chat.id].presense_penalty,
+            presense_penalty=groups[message.chat.id].presence_penalty,
             frequency_penalty=groups[message.chat.id].frequency_penalty,
             length=answer_length,
             sphere=groups[message.chat.id].sphere,

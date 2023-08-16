@@ -9,15 +9,15 @@ def settings(message, back_from: bool=False):
     markup = types.InlineKeyboardMarkup()
 
     button1 = types.InlineKeyboardButton(
-        text=groups[message.chat.id].templates[language_code]["button_set_up.txt"],
+        text=templates[language_code]["button_set_up.txt"],
         callback_data="bot_answers",
     )
     button2 = types.InlineKeyboardButton(
-        text=groups[message.chat.id].templates[language_code]["button_change_lang.txt"],
+        text=templates[language_code]["button_change_lang.txt"],
         callback_data="change_lang",
     )
     button3 = types.InlineKeyboardButton(
-        text=groups[message.chat.id].templates[language_code]["button_customization.txt"],
+        text=templates[language_code]["button_customization.txt"],
         callback_data="special_features",
     )
 
@@ -35,7 +35,7 @@ def settings(message, back_from: bool=False):
 
     if back_from:
         bot.edit_message_text(
-            groups[message.chat.id].templates[language_code]["change_bot_settings.txt"], 
+            templates[language_code]["change_bot_settings.txt"], 
             message.chat.id, 
             message.message_id, 
             reply_markup=markup,
@@ -46,7 +46,7 @@ def settings(message, back_from: bool=False):
     # Seconding keyboard
     bot.send_message(
             message.chat.id,
-            groups[message.chat.id].templates[language_code]["change_bot_settings.txt"],
+            templates[language_code]["change_bot_settings.txt"],
             reply_markup=markup,
             parse_mode="HTML",
         )

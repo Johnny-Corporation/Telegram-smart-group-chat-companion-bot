@@ -8,4 +8,4 @@
 <b>• Voice messages output from Johnny</b>
 <b>• All settings the answers of bot</b>
 <b>• Infinity Memory Size</b>
-<b>• Price to buy more messages: 0.0023$ on 1 token (0.00023 Руб) </b>
+<b>• Price to buy more messages: 0.004$ on 1 message (0.4 Руб) </b>

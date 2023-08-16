@@ -8,7 +8,7 @@ def help(message):
     language_code = groups[message.chat.id].lang_code
     bot.send_message(
         message.chat.id,
-        groups[message.chat.id].templates[language_code]["help.txt"],
+        templates[language_code]["help.txt"],
         parse_mode="Markdown",
         disable_web_page_preview=True,
     )

@@ -7,23 +7,23 @@ def change_mode(message):
 
     markup = types.InlineKeyboardMarkup()
     button = types.InlineKeyboardButton(
-        text=groups[message.chat.id].templates[language_code]["button_enable_auto.txt"],
+        text=templates[language_code]["button_enable_auto.txt"],
         callback_data="auto_mode",
     )
     markup.add(button)
     button = types.InlineKeyboardButton(
-        text=groups[message.chat.id].templates[language_code]["button_enable_dialog.txt"],
+        text=templates[language_code]["button_enable_dialog.txt"],
         callback_data="dialog_mode",
     )
     markup.add(button)
     button = types.InlineKeyboardButton(
-        text=groups[message.chat.id].templates[language_code]["button_enable_manual.txt"],
+        text=templates[language_code]["button_enable_manual.txt"],
         callback_data="manual_mode",
     )
     markup.add(button)
     bot.send_message(
         message.chat.id,
-        groups[message.chat.id].templates[language_code]["enabled.txt"],        #It'ds just Choose chat mode
+        templates[language_code]["enabled.txt"],        #It'ds just Choose chat mode
         reply_markup=markup,
         parse_mode="HTML",
     )

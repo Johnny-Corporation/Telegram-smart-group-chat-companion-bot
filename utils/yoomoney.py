@@ -26,13 +26,13 @@ def accept_payment(message, type_of_buy, cost):
 
         markup = types.InlineKeyboardMarkup()
         temp_button = types.InlineKeyboardButton(
-            text=groups[message.chat.id].templates[language_code]["pay.txt"],
+            text=templates[language_code]["pay.txt"],
             url=url,
         )
         markup.add(temp_button)
         bot.send_message(
             message.chat.id,
-            groups[message.chat.id].templates[language_code]["info_about_buy.txt"].format(type_of_buy=type_of_buy, cost=cost),
+            templates[language_code]["info_about_buy.txt"].format(type_of_buy=type_of_buy, cost=cost),
             reply_markup = markup,
             parse_mode = "HTML"
         )
@@ -89,13 +89,13 @@ def support(message, cost):
 
         markup = types.InlineKeyboardMarkup()
         temp_button = types.InlineKeyboardButton(
-            text=groups[message.chat.id].templates[language_code]["pay.txt"],
+            text=templates[language_code]["pay.txt"],
             url=url,
         )
         markup.add(temp_button)
         bot.send_message(
             message.chat.id,
-            groups[message.chat.id].templates[language_code]["info_about_support.txt"].format(cost=cost),
+            templates[language_code]["info_about_support.txt"].format(cost=cost),
             reply_markup = markup,
             parse_mode = "HTML"
         )

@@ -7,4 +7,4 @@ from __main__ import *
 def clean_memory(message):
     language_code = groups[message.chat.id].lang_code
     groups[message.chat.id].messages_history = []
-    bot.reply_to(message, groups[message.chat.id].templates[language_code]["memory_reset.txt"])
+    bot.reply_to(message, templates[language_code]["memory_reset.txt"])

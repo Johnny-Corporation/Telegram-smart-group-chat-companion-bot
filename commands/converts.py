@@ -8,7 +8,7 @@ def totext_command(message):
     language_code = groups[message.chat.id].lang_code
 
     if message.reply_to_message.content_type != "voice":
-        bot.send_message(message.chat.id, groups[message.chat.id].templates[language_code]["uncorrect_type.txt"])
+        bot.send_message(message.chat.id, templates[language_code]["uncorrect_type.txt"])
         return
 
     if message.reply_to_message:

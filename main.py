@@ -33,7 +33,7 @@ skip_old_messages = True  # True until message older than bot start time receive
 ignored_messages = 0  # count number of ignored messages when bot was offline for logs
 
 
-bot_token = environ.get("BOT_API_TOKEN")
+bot_token = environ.get("BOT_API_TOKEN_OFFICIAL")
 
 yoomoney_token = environ.get("PAYMENT_RUS_TOKEN")
 
@@ -236,7 +236,7 @@ def send_welcome_text_and_load_data(
         # If there isn't data, registries new user
         if not sub_exist:
             new_user = True
-            groups[chat_id].add_new_user(chat_id, " ", " ", " ", "Free", 100)
+            groups[chat_id].add_new_user(chat_id, " ", " ", " ", "Free", 50)
             groups[chat_id].load_subscription(chat_id)
 
         else:
@@ -283,21 +283,22 @@ def send_welcome_text_and_load_data(
         )
 
     # Suggestion to user try trial subscription
-    if new_user:
-        markup = types.InlineKeyboardMarkup()
+    if chat_id>0:
+        if new_user:
+            markup = types.InlineKeyboardMarkup()
 
-        button = types.InlineKeyboardButton(
-            text=groups[chat_id].templates[language_code]["button_activate.txt"],
-            callback_data="free_sub",
-        )
-        markup.add(button)
+            button = types.InlineKeyboardButton(
+                text=groups[chat_id].templates[language_code]["button_activate.txt"],
+                callback_data="free_sub",
+            )
+            markup.add(button)
 
-        bot.send_message(
-            chat_id,
-            groups[chat_id].templates[language_code]["free_use_subscription.txt"],
-            reply_markup=markup,
-            parse_mode="HTML",
-        )
+            bot.send_message(
+                chat_id,
+                groups[chat_id].templates[language_code]["free_use_subscription.txt"],
+                reply_markup=markup,
+                parse_mode="HTML",
+            )
 
 
 # ---------------  Handling and initialing new groups ---------------
@@ -309,7 +310,7 @@ def handle_new_chat_members(message):
         if new_chat_member.id == bot_id:
             bot.send_message(
                 message.chat.id,
-                f"Please, sign in in private messages in @{bot_username}. It will take less than a minute",
+                f"Write a message to start",
             )
 
     try:
