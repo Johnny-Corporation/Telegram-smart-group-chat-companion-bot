@@ -35,7 +35,7 @@ db_controller = Controller()
 functions_waiting_messages = {
     "google": "Googling question '{}'",
     "read_from_link": "Reading content from link {}",
-    "generate_image": "Generating image(s) with prompt {}",
+    "generate_image": "Generating image(s) with prompt '{}'",
 }
 
 
@@ -282,9 +282,11 @@ class Johnny:
 
             # If this response is same as previous, do not allow function call in next request and notify user
             if self.last_function_request == (function_name, function_args):
-                self.bot.send_message(
-                    self.message.chat.id,
-                    "Can't find needed data. (Function call failed)",
+                self.messages_to_be_deleted.append(
+                    self.bot.send_message(
+                        self.message.chat.id,
+                        "(Function call failed)",
+                    )
                 )
                 self.last_function_request = None
                 return self.static_generation(
@@ -293,16 +295,24 @@ class Johnny:
 
             self.last_function_request = (function_name, function_args)
 
+            # Additional arguments
+            additional_args = {}
+            if function_name == "generate_image":
+                additional_args = {"bot": self.bot, "chat_id": self.chat_id}
+
             # Saving function result to history
             self.messages_history.append(
                 [
                     "$FUNCTION$",
                     gpt.get_official_function_response(
                         function_name,
-                        function_args,
+                        function_args=function_args,
+                        additional_args=additional_args,
                     ),
                 ]
             )
+            if function_name == "generate_image":
+                return "[IMAGES]"  # this will be saved as bot message in history
 
             return self.static_generation(self.get_completion())
 
@@ -356,9 +366,11 @@ class Johnny:
 
                 # If previous function call was the same as current
                 if self.last_function_request == (function_name, function_args):
-                    self.bot.send_message(
-                        self.message.chat.id,
-                        "Can't find needed data. (Function call failed)",
+                    self.messages_to_be_deleted.append(
+                        self.bot.send_message(
+                            self.message.chat.id,
+                            "(Function call failed)",
+                        )
                     )
                     return self.dynamic_generation(
                         self.get_completion(allow_function_call=False)
@@ -366,15 +378,24 @@ class Johnny:
 
                 self.last_function_request = (function_name, function_args)
 
+                # Additional arguments
+                additional_args = {}
+                if function_name == "generate_image":
+                    additional_args = {"bot": self.bot, "chat_id": self.chat_id}
+
                 self.messages_history.append(
                     [
                         "$FUNCTION$",
                         gpt.get_official_function_response(
                             function_name,
-                            function_args,
+                            function_args=function_args,
+                            additional_args=additional_args,
                         ),
                     ]
                 )
+
+                if function_name == "generate_image":
+                    return "[IMAGES]"  # this will be saved as bot message in history
 
                 return self.dynamic_generation(self.get_completion())
                 # End of handling function call

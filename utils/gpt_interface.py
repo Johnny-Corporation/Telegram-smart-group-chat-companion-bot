@@ -161,8 +161,7 @@ def get_official_function_response(
     return {
         "role": "function",
         "name": function_name,
-        "content": f"This function was called with such parameters: {function_args}, do not call it again with the same parameters. Returned value: "
-        + function_response,
+        "content": str(function_response),
     }
 
 
@@ -207,9 +206,12 @@ def get_messages_in_official_format(messages):
     """Converts messages kept in Johnny to official format"""
     previous_messages = []
     for m in messages:
+        if m[0] == "$FUNCTION$":
+            previous_messages.append(m[1])
+            continue
         previous_messages.append(
             {
-                "role": ("assistant" if m[0] == "assistant" else "user"),
+                "role": ("assistant" if m[0] == "$BOT$" else "user"),
                 "content": m[1],
                 "name": functions.remove_utf8_chars(m[0]),
             }

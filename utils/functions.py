@@ -10,8 +10,6 @@ from langdetect import detect
 
 import utils.gpt_interface as gpt
 
-# from moviepy.editor import VideoFileClip  #It's for video content
-
 
 def load_templates(dir: str) -> dict:
     """Get templates dict {language_code: {file_name: content}}
@@ -695,7 +693,6 @@ def take_info_about_sub(subscription):
 
 
 def get_avaible_langs():
-
     folder_path = ".\\templates"
 
     return [d for d in listdir(folder_path) if path.isdir(path.join(folder_path, d))]
