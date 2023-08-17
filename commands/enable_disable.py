@@ -7,17 +7,6 @@ from __main__ import *
 def enable(message):
     language_code = groups[message.chat.id].lang_code
 
-
-    if message.chat.type != "private":
-
-        if not check_file_existing(message.from_user.first_name,"output\\clients_info"):
-            return
-        if message.from_user.id not in groups.keys():
-            bot.send_message(message.chat.id, f"Please, sign in in private messages in @{bot_username}. It will take less than a minute")
-            return
-                    
-
-
     groups[message.chat.id].enabled = True
 
     markup_commands = load_buttons(types, groups, message.chat.id, language_code, owner_id=groups[message.chat.id].owner_id)

@@ -33,7 +33,7 @@ skip_old_messages = True  # True until message older than bot start time receive
 ignored_messages = 0  # count number of ignored messages when bot was offline for logs
 
 
-bot_token = environ.get("BOT_API_TOKEN_OFFICIAL")
+bot_token = environ.get("BOT_API_TOKEN")
 
 yoomoney_token = environ.get("PAYMENT_RUS_TOKEN")
 
@@ -216,6 +216,9 @@ def send_welcome_text_and_load_data(
     
     # Check group
     if chat_id < 0:
+        print(groups[owner_id].permissions[groups[owner_id].subscription][
+                "allowed_groups"
+            ])
         if (
             len(groups[owner_id].id_groups)
             >= groups[owner_id].permissions[groups[owner_id].subscription][
