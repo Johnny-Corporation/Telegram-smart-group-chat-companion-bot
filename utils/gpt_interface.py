@@ -139,7 +139,7 @@ def create_chat_completion(
             ]
         else:
             break
-        n += 1
+        n += 3
         attempts += 1
 
     logger.info(f"API completion object: {completion}")
