@@ -1,8 +1,5 @@
 Bot is turned on now and reading new messsage to debate!
 
-Other modes:
- /enable_manual - here you manually call a bot
-
 Below you can start conservation again, apply additional tools
 
 <i>*Use  /about to know more!*</i>
