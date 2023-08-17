@@ -127,7 +127,7 @@ class Johnny:
             reply=None,
             model=self.model,
         )
-        messages_used = gpt.extract_messages(response)
+        messages_used = 1
         self.total_spent_messages += messages_used
 
         if message.chat.id < 0:
@@ -505,9 +505,7 @@ class Johnny:
 
         self.bot.send_message(
             chat_id,
-            templates[self.lang_code]["sub_extend.txt"].format(
-                sub=self.subscription
-            ),
+            templates[self.lang_code]["sub_extend.txt"].format(sub=self.subscription),
             parse_mode="HTML",
         )
 

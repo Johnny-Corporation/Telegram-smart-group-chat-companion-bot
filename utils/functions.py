@@ -167,60 +167,6 @@ def describe_image(link: str, prompt: str = "Describe image") -> str:
     return output
 
 
-def num_messages_from_string(string: str, encoding_name: str = "cl100k_base") -> int:
-    """Returns the number of messages in a text string."""
-    encoding = tiktoken.get_encoding(encoding_name)
-    num_messages = len(encoding.encode(string))
-    return num_messages
-
-
-def num_messages_from_messages(messages, model="gpt-3.5-turbo-0613"):
-    """Return the number of messages used by a list of messages."""
-    try:
-        encoding = tiktoken.encoding_for_model(model)
-    except KeyError:
-        print("Warning: model not found. Using cl100k_base encoding.")
-        encoding = tiktoken.get_encoding("cl100k_base")
-    if model in {
-        "gpt-3.5-turbo-0613",
-        "gpt-3.5-turbo-16k-0613",
-        "gpt-4-0314",
-        "gpt-4-32k-0314",
-        "gpt-4-0613",
-        "gpt-4-32k-0613",
-    }:
-        messages_per_message = 3
-        messages_per_name = 1
-    elif model == "gpt-3.5-turbo-0301":
-        messages_per_message = (
-            4  # every message follows <|start|>{role/name}\n{content}<|end|>\n
-        )
-        messages_per_name = -1  # if there's a name, the role is omitted
-    elif "gpt-3.5-turbo" in model:
-        print(
-            "Warning: gpt-3.5-turbo may update over time. Returning num messages assuming gpt-3.5-turbo-0613."
-        )
-        return num_messages_from_messages(messages, model="gpt-3.5-turbo-0613")
-    elif "gpt-4" in model:
-        print(
-            "Warning: gpt-4 may update over time. Returning num messages assuming gpt-4-0613."
-        )
-        return num_messages_from_messages(messages, model="gpt-4-0613")
-    else:
-        raise NotImplementedError(
-            f"""num_messages_from_messages() is not implemented for model {model}. See https://github.com/openai/openai-python/blob/main/chatml.md for information on how messages are converted to messages."""
-        )
-    num_messages = 0
-    for message in messages:
-        num_messages += messages_per_message
-        for key, value in message.items():
-            num_messages += len(encoding.encode(value))
-            if key == "name":
-                num_messages += messages_per_name
-    num_messages += 3  # every reply is primed with <|start|>assistant<|message|>
-    return num_messages
-
-
 def check_file_existing(client_first_name, file_path):
     clients = listdir(file_path)
 
