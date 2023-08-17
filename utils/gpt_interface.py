@@ -185,7 +185,7 @@ def check_context_understanding(answer):
             }
         ],
         temperature=0,
-        max_messages=1,
+        max_tokens=1,
     )
     return extract_text(completion) == "No"
 
@@ -201,7 +201,7 @@ def check_theme_context(answer, theme):
             }
         ],
         temperature=0,
-        max_messages=1,
+        max_tokens=1,
     )
     return extract_text(completion) == "Yes"
 
