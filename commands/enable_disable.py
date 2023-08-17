@@ -8,6 +8,7 @@ def enable(message):
     language_code = groups[message.chat.id].lang_code
 
     groups[message.chat.id].enabled = True
+    groups[message.chat.id].trigger_probability = 0.8
 
     markup_commands = load_buttons(types, groups, message.chat.id, language_code, owner_id=groups[message.chat.id].owner_id)
 
