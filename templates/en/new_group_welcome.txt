@@ -2,4 +2,4 @@ Thank you for adding me to this group! I am a Johnny - smart companion bot.
 
 <i>*Use  /about to know more!*</i>
 
-Bot is off now, use buttons below <i>(or command /enable ) </i>
+Bot is off now, use buttons below!
