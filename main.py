@@ -213,9 +213,7 @@ def send_welcome_text_and_load_data(
     if owner_id not in groups:
         bot.send_message(chat_id, f"Register in @{bot_username}")
         return
-
-    groups[chat_id].activated = True
-
+    
     # Check group
     if chat_id < 0:
         if (
@@ -229,6 +227,11 @@ def send_welcome_text_and_load_data(
                 "Your limit on groups was exceeded. Buy the subscription to use Johnny in more groups.",
             )
             return
+
+    groups[chat_id].activated = True
+
+    
+    print("REGISTRATION IS GOING")
 
     # Load messages
     groups[chat_id].load_data()
@@ -267,7 +270,7 @@ def send_welcome_text_and_load_data(
         groups[owner_id].id_groups.append(chat_id)
 
     # Load buttons
-    markup = load_buttons(types, groups, chat_id, language_code, owner_id=owner_id)
+    markup = load_buttons(types, groups, chat_id, language_code, owner_id=groups[chat_id].owner_id)
 
     # Welcome text for group and user
     if chat_id > 0:

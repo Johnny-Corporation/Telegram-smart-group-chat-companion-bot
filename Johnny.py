@@ -136,19 +136,19 @@ class Johnny:
 
     def new_message(self, message: Message, groups: dict) -> str:
         # --- Check on limit on groups of one men ---
-        if (
-            len(groups[self.owner_id].id_groups)
-            > groups[self.owner_id].permissions[self.subscription]["allowed_groups"]
-        ):
-            self.bot.send_message(
-                message.chat.id,
-                templates[self.lang_code]["exceed_limit_on_groups.txt"],
-            )
+        # if (
+        #     len(groups[self.owner_id].id_groups)
+        #     > groups[self.owner_id].permissions[self.subscription]["allowed_groups"]
+        # ):
+        #     self.bot.send_message(
+        #         message.chat.id,
+        #         templates[self.lang_code]["exceed_limit_on_groups.txt"],
+        #     )
 
-            groups[self.owner_id].id_groups.remove(message.chat.id)
+        #     groups[self.owner_id].id_groups.remove(message.chat.id)
 
-            self.bot.leave_chat(message.chat.id)
-            return
+        #     self.bot.leave_chat(message.chat.id)
+        #     return
 
         # --- Converts other types files to text ---
         match message.content_type:

@@ -28,7 +28,7 @@ def reply_keyboard_buttons_handler(message, commands):
             if groups[message.chat.id].enabled==False:
                 enable(message)
             else:
-                clean_memory_command(message)
+                clean_memory(message)
                 disable(message)
             return True
 
