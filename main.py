@@ -90,7 +90,7 @@ def error_handler(args):
             logger.error(f"Unexpected error: {traceback.format_exc()}")
             bot.send_message(
                 chat_id,
-                "Sorry, unexpected error occurred, try resetting memory, developers have been already notified! Don't worry, you and other people can still use bot, error has been reported and will be fixed as soon as possible! Despite we can see where bug takes place, we can't see your last messages because of the privacy reasons, you can help us by using /report_bug command and providing some details.",
+                templates[groups[message.chat.id].language_code]["error_occured.txt"],
             )
             send_to_developers(
                 f"Error occurred: \n ❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️\n {traceback.format_exc()}\n ❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️",
