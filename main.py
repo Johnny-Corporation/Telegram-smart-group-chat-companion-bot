@@ -90,7 +90,7 @@ def error_handler(args):
             logger.error(f"Unexpected error: {traceback.format_exc()}")
             bot.send_message(
                 chat_id,
-                templates[groups[message.chat.id].language_code]["error_occured.txt"],
+                templates[groups[message.chat.id].lang_code]["error_occured.txt"],
             )
             send_to_developers(
                 f"Error occurred: \n ❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️\n {traceback.format_exc()}\n ❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️",
