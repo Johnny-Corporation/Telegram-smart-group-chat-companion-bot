@@ -1,0 +1,5 @@
+Sorry, unexpected error occurred.
+
+Bot is still running!
+
+You can help us by using <i> report_bug </i> command below and providing some details.
