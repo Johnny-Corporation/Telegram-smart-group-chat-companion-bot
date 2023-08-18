@@ -276,6 +276,7 @@ class Johnny:
                 self.bot.send_message(
                     self.message.chat.id,
                     templates[self.lang_code][functions_waiting_messages[function_name]].format(argument),
+                    parse_mode="html",
                     disable_web_page_preview=True,
                 )
             )
@@ -286,6 +287,7 @@ class Johnny:
                     self.bot.send_message(
                         self.message.chat.id,
                         templates[self.lang_code]["Function call failed"].format(function_name),
+                        parse_mode="html"
                     )
                 )
                 self.last_function_request = None
