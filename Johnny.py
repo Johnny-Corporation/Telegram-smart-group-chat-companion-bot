@@ -12,7 +12,7 @@ from random import random
 import json
 from os import environ
 
-from utils.functions import describe_image, get_file_content
+from utils.functions import describe_image, get_file_content, read_text_from_image
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
@@ -153,11 +153,25 @@ class Johnny:
         # --- Converts other types files to text ---
         match message.content_type:
             case "document":
-                text = "[FILE] Content:" + get_file_content(self.bot, message)
+                text = "[USER SENT A FILE] Content:" + get_file_content(
+                    self.bot, message
+                )
             case "photo":
+                self.messages_to_be_deleted.append(
+                    self.bot.send_message(
+                        self.chat_id,
+                        "Viewing on image... (trying to describe and read text)",
+                    )
+                )
                 image_info = self.bot.get_file(message.photo[-1].file_id)
-                image_url = f"https://api.telegram.org/file/bot{environ['BOT_API_TOKEN']}/{image_info.file_path}"
-                text = "[IMAGE] Description:" + describe_image(image_url)
+                image_url = f"https://api.telegram.org/file/bot{environ['BOT_API_TOKEN_OFFICIAL']}/{image_info.file_path}"
+                text = (
+                    "[USER SENT AN IMAGE] Description:"
+                    + describe_image(image_url)
+                    + "| Detected text on image: "
+                    + read_text_from_image(image_url)
+                )
+                self.delete_pending_messages()
             case "text":
                 text = message.text
             case "voice":

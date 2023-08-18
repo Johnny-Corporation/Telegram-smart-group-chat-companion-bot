@@ -39,7 +39,7 @@
             "properties": {
                 "prompt": {
                     "type": "string",
-                    "description": "DALLE prompt"
+                    "description": "DALLE prompt. Only in english!"
                 },
                 "n": {
                     "type": "integer",
