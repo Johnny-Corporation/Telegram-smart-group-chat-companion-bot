@@ -123,24 +123,7 @@ def create_chat_completion(
         chat_completion_arguments["function_call"] = "auto"
 
     # Context length exceeded
-    n = 2
-    attempts = 0
-    while 1:
-        if attempts > 3:
-            logger.warning("Attempted 3 times but failed!!!!!!")
-        try:
-            completion = openai.ChatCompletion.create(**chat_completion_arguments)
-        except openai.error.InvalidRequestError:
-            logger.warning(
-                f"OpenAI API request failed, InvalidRequestError. Retrying... \n"
-            )
-            chat_completion_arguments["messages"] = previous_messages[
-                len(previous_messages) // n :
-            ]
-        else:
-            break
-        n += 3
-        attempts += 1
+    completion = openai.ChatCompletion.create(**chat_completion_arguments)
 
     logger.info(f"API completion object: {completion}")
 

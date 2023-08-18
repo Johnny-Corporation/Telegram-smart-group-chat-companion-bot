@@ -1,9 +1,10 @@
-from os import path, listdir, makedirs, remove
+from os import path, listdir, makedirs, remove, environ
 import json
 import re
 import replicate
 from googletrans import Translator
 import soundfile as sf
+import requests
 
 from gtts import gTTS
 from langdetect import detect
@@ -636,6 +637,22 @@ def take_info_about_sub(subscription):
     permissions = subscriptions[subscription]
 
     return permissions
+
+
+def read_text_from_image(url):
+    headers = {"apikey": environ["API_LAYER_TOKEN"]}
+
+    response = requests.get(
+        "https://api.apilayer.com/image_to_text/url?url=" + url, headers=headers
+    )
+
+    status_code = response.status_code
+    result = response.text
+
+    print(status_code)
+    print(result)
+
+    return response.json()["all_text"]
 
 
 def get_avaible_langs():
