@@ -131,7 +131,7 @@ def error_handler(args):
         logger.error(f"Unexpected error: {traceback.format_exc()}")
         bot.send_message(
             chat_id,
-            "Sorry, unexpected error occurred, developers have been already notified! Don't worry, you and other people can still use bot, error has been reported and will be fixed as soon as possible! Despite we can see where bug takes place, we can't see your last messages because of the privacy reasons, you can help us by using /report_bug command and providing some details.",
+            "Sorry, unexpected error occurred, try resetting memory, developers have been already notified! Don't worry, you and other people can still use bot, error has been reported and will be fixed as soon as possible! Despite we can see where bug takes place, we can't see your last messages because of the privacy reasons, you can help us by using /report_bug command and providing some details.",
         )
         try:
             send_to_developers(
@@ -213,12 +213,14 @@ def send_welcome_text_and_load_data(
     if owner_id not in groups:
         bot.send_message(chat_id, f"Register in @{bot_username}")
         return
-    
+
     # Check group
     if chat_id < 0:
-        print(groups[owner_id].permissions[groups[owner_id].subscription][
+        print(
+            groups[owner_id].permissions[groups[owner_id].subscription][
                 "allowed_groups"
-            ])
+            ]
+        )
         if (
             len(groups[owner_id].id_groups)
             >= groups[owner_id].permissions[groups[owner_id].subscription][
@@ -233,7 +235,6 @@ def send_welcome_text_and_load_data(
 
     groups[chat_id].activated = True
 
-    
     print("REGISTRATION IS GOING")
 
     # Load messages
@@ -273,7 +274,9 @@ def send_welcome_text_and_load_data(
         groups[owner_id].id_groups.append(chat_id)
 
     # Load buttons
-    markup = load_buttons(types, groups, chat_id, language_code, owner_id=groups[chat_id].owner_id)
+    markup = load_buttons(
+        types, groups, chat_id, language_code, owner_id=groups[chat_id].owner_id
+    )
 
     # Welcome text for group and user
     if chat_id > 0:
@@ -293,7 +296,7 @@ def send_welcome_text_and_load_data(
         )
 
     # Suggestion to user try trial subscription
-    if chat_id>0:
+    if chat_id > 0:
         if new_user:
             markup = types.InlineKeyboardMarkup()
 
