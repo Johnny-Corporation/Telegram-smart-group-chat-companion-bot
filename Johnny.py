@@ -34,9 +34,9 @@ load_dotenv(".env")
 db_controller = Controller()
 
 functions_waiting_messages = {
-    "google": "Googling question '{}'",
-    "read_from_link": "Reading content from link {}",
-    "generate_image": "Generating image(s) with prompt '{}'",
+    "google": "googling_question.txt",
+    "read_from_link": "reading_from_link.txt",
+    "generate_image": "generating_image.txt",
 }
 
 
@@ -275,7 +275,7 @@ class Johnny:
             self.messages_to_be_deleted.append(
                 self.bot.send_message(
                     self.message.chat.id,
-                    functions_waiting_messages[function_name].format(argument),
+                    templates[self.lang_code][functions_waiting_messages[function_name]].format(argument),
                     disable_web_page_preview=True,
                 )
             )
@@ -285,7 +285,7 @@ class Johnny:
                 self.messages_to_be_deleted.append(
                     self.bot.send_message(
                         self.message.chat.id,
-                        "(Function call failed)",
+                        templates[self.lang_code]["Function call failed"].format(function_name),
                     )
                 )
                 self.last_function_request = None
