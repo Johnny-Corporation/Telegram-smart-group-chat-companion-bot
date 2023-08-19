@@ -91,6 +91,7 @@ def error_handler(args):
             bot.send_message(
                 chat_id,
                 templates[groups[message.chat.id].lang_code]["error_occured.txt"],
+                parse_mode="html",
             )
             send_to_developers(
                 f"Error occurred: \n ❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️\n {traceback.format_exc()}\n ❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️",
@@ -132,6 +133,7 @@ def error_handler(args):
         bot.send_message(
             chat_id,
             templates[groups[chat_id].lang_code]["error_occured.txt"],
+            parse_mode="html",
         )
         try:
             send_to_developers(
