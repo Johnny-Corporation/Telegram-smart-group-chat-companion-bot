@@ -260,7 +260,8 @@ class Johnny:
                 else self.static_generation(self.response)
             )
 
-            groups[self.owner_id].total_spent_messages = self.total_spent_messages
+            self.total_spent_messages += 1 
+            groups[self.owner_id].total_spent_messages += 1
 
             # Adding GPT answer to db and messages_history
             db_controller.add_message_event(
