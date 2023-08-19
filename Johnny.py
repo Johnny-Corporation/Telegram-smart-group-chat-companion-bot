@@ -36,7 +36,7 @@ db_controller = Controller()
 functions_waiting_messages = {
     "google": "googling_question.txt",
     "read_from_link": "reading_from_link.txt",
-    "generate_image": "generating_image.txt",
+    "generate_image": "generate_image.txt",
 }
 
 

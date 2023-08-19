@@ -33,7 +33,7 @@ skip_old_messages = True  # True until message older than bot start time receive
 ignored_messages = 0  # count number of ignored messages when bot was offline for logs
 
 
-bot_token = environ.get("BOT_API_TOKEN_OFFICIAL")
+bot_token = environ.get("BOT_API_TOKEN")
 
 yoomoney_token = environ.get("PAYMENT_RUS_TOKEN")
 
@@ -131,7 +131,7 @@ def error_handler(args):
         logger.error(f"Unexpected error: {traceback.format_exc()}")
         bot.send_message(
             chat_id,
-            templates[groups[chat_id].language_code]["error_occured.txt"],
+            templates[groups[chat_id].lang_code]["error_occured.txt"],
         )
         try:
             send_to_developers(
