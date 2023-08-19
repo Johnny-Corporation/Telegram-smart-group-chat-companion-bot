@@ -620,6 +620,18 @@ def take_info_about_sub(subscription):
             "voice_output_permission": True,
             "generate_picture_permission": True,
         },
+        "SMALL BUSINESS (trial)": {
+            "allowed_groups": 5,
+            "messages_limit": 100,
+            "temporary_memory_size_limit": 100,
+            "dynamic_gen_permission": True,
+            "sphere_permission": True,
+            "temperature_permission": True,
+            "frequency_penalty_permission": True,
+            "presense_penalty_permission": True,
+            "voice_output_permission": True,
+            "generate_picture_permission": True,
+        },
         "BIG BUSINESS": {
             "allowed_groups": 10,
             "messages_limit": 50000,
