@@ -90,7 +90,7 @@ def error_handler(args):
             logger.error(f"Unexpected error: {traceback.format_exc()}")
             bot.send_message(
                 chat_id,
-                templates[groups[message.chat.id].language_code]["error_occured.txt"],
+                templates[groups[message.chat.id].lang_code]["error_occured.txt"],
                 parse_mode="html",
             )
             send_to_developers(
@@ -132,7 +132,7 @@ def error_handler(args):
         logger.error(f"Unexpected error: {traceback.format_exc()}")
         bot.send_message(
             chat_id,
-            templates[groups[chat_id].language_code]["error_occured.txt"],
+            templates[groups[chat_id].lang_code]["error_occured.txt"],
             parse_mode="html",
         )
         try:
