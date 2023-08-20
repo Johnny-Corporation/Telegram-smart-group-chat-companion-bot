@@ -1,0 +1,6 @@
+{type_of_buy}.
+Costo: {cost} rubli.
+
+<i> /subs_list per saperne di più</i>
+
+Premi il pulsante per acquistare:

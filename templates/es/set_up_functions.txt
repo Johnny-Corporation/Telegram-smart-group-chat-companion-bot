@@ -1,0 +1,3 @@
+Aquí hay comandos para configurar su bot:
+
+<i>Para conocer los valores actuales  /group_info </i>

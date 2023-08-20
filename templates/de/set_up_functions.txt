@@ -1,0 +1,3 @@
+Hier sind Befehle zum Einrichten Ihres Bots:
+
+<i>Um aktuelle Werte zu erfahren  /group_info </i>

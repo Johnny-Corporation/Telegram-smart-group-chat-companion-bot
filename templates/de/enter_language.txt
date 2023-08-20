@@ -1,0 +1,1 @@
+Geben Sie die Sprache entweder als Code (z. B. „en“) oder als Namen (z. B. „spanisch“) ein.

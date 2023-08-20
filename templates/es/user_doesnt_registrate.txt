@@ -1,0 +1,1 @@
+El usuario {first_name} no está registrado.

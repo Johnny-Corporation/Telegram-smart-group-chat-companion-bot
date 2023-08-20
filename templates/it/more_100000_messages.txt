@@ -1,0 +1,3 @@
+Congratulazioni! Hai più di 100000 messaggi!
+
+Ora hai {messages} messaggi.

@@ -1,0 +1,5 @@
+Der manuelle Modus ist aktiviert.
+
+Jetzt antwortet Bot, wenn Sie ihn <b>markieren</b> oder <b>auf seine Nachricht antworten</b>.
+
+ /disable_manual, um diesen Modus zu verlassen.

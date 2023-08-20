@@ -1,0 +1,4 @@
+Inserisci un valore <b>da 0</b> (il più deterministico) <b>a 2</b> (il più casuale) <b>in risposta a questo messaggio</b>.
+Questo parametro definisce quanto sono casuali le risposte GPT.
+
+<i>Configura {temperature} ora</i>

@@ -1,0 +1,5 @@
+Leider ist ein unerwarteter Fehler aufgetreten.
+
+Bot läuft noch!
+
+Sie können uns helfen, indem Sie unten den Befehl <i> report_bug </i> verwenden und einige Details angeben.

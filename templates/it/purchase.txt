@@ -1,0 +1,3 @@
+Al momento hai un piano:<b> {plan} </b>. Ecco le tariffe che forniamo:
+
+<i>Per informazioni sulle tariffe:  /subs_list </i>

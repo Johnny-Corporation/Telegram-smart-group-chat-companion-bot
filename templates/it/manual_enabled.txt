@@ -1,0 +1,5 @@
+La modalità manuale è abilitata.
+
+Adesso Bot risponde, quando <b>lo tagghi</b> o <b>rispondi al suo messaggio</b>.
+
+ /disable_manual per uscire da questa modalità.

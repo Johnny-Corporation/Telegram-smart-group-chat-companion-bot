@@ -1,0 +1,3 @@
+Congratulazioni! I tuoi messaggi sono aumentati!
+
+<i> /account_info per visualizzare le modifiche</i>

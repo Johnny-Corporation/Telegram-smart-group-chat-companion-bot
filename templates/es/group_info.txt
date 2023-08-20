@@ -1,0 +1,17 @@
+<i>Grupo: {group_name}</i>
+<b>Propietario: {username}</b>
+
+El bot funciona en el idioma {language}.
+
+<b>INFORMACIÓN sobre el propietario</b>
+
+<b>Suscripción</b>
+Suscripción: {subscription}
+
+<b>mensajes</b>
+El grupo ha gastado <b>{spent_messages} mensajes</b>.
+mensajes dejados: {messages_left}
+
+A continuación puede ver la configuración en este grupo:
+
+<i>/change_owner_of_group para cambiar el propietario del grupo</i>
