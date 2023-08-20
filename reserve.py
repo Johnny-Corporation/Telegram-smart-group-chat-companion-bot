@@ -50,7 +50,7 @@ def main_messages_handler(message: types.Message):
     if "@SmartGroupParticipant_bot" in message.text:
         bot.reply_to(
             message,
-            "....",
+            "Bot is temporarily unavailable",
             reply_markup=markup,
         )
 
