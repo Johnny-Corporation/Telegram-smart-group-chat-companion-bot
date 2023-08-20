@@ -73,7 +73,7 @@ def create_chat_completion(
     use_functions: bool = False,
     reply: bool = False,  # SYS
     model: str = "gpt-3.5-turbo",
-    temperature: int = 1,
+    temperature: int = 0.5,
     top_p: float = 0.5,
     n: int = 1,
     stream: bool = False,

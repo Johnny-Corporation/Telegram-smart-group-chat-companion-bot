@@ -50,8 +50,8 @@ class Johnny:
     temporary_memory_size: int = 20
     language_code: str = "eng"
     trigger_probability: float = 0.8
-    model = "gpt-3.5-turbo"
-    temperature: float = 1
+    model = "gpt-4"
+    temperature: float = 0.5
     frequency_penalty: float = 0.2
     presence_penalty: float = 0.2
     answer_length: str = "as you need"
@@ -260,7 +260,7 @@ class Johnny:
                 else self.static_generation(self.response)
             )
 
-            self.total_spent_messages += 1 
+            self.total_spent_messages += 1
             groups[self.owner_id].total_spent_messages += 1
 
             # Adding GPT answer to db and messages_history
@@ -290,7 +290,9 @@ class Johnny:
             self.messages_to_be_deleted.append(
                 self.bot.send_message(
                     self.message.chat.id,
-                    templates[self.lang_code][functions_waiting_messages[function_name]].format(argument),
+                    templates[self.lang_code][
+                        functions_waiting_messages[function_name]
+                    ].format(argument),
                     parse_mode="html",
                     disable_web_page_preview=True,
                 )
@@ -301,8 +303,10 @@ class Johnny:
                 self.messages_to_be_deleted.append(
                     self.bot.send_message(
                         self.message.chat.id,
-                        templates[self.lang_code]["Function call failed"].format(function_name),
-                        parse_mode="html"
+                        templates[self.lang_code]["Function call failed"].format(
+                            function_name
+                        ),
+                        parse_mode="html",
                     )
                 )
                 self.last_function_request = None
