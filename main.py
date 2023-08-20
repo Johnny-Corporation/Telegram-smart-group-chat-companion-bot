@@ -33,7 +33,7 @@ skip_old_messages = True  # True until message older than bot start time receive
 ignored_messages = 0  # count number of ignored messages when bot was offline for logs
 
 
-bot_token = environ.get("BOT_API_TOKEN")
+bot_token = environ.get("BOT_API_TOKEN_OFFICIAL")
 
 yoomoney_token = environ.get("PAYMENT_RUS_TOKEN")
 
@@ -61,6 +61,32 @@ makedirs("output\\clients_info", exist_ok=True)
 bot = TeleBot(bot_token)
 bot_id = bot.get_me().id
 bot_username = bot.get_me().username
+
+
+# Sending message bot is online again after restart!
+
+markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+run_button = types.KeyboardButton("Start")
+markup.add(run_button)
+
+
+file_list = listdir("output/clients_info")
+for filename in file_list:
+    file_path = path.join("output/clients_info", filename)
+    with open(file_path, "r", encoding="utf-8") as file:
+        bot.send_message(json.load(file)["id"], "Bot is working!", reply_markup=markup)
+
+file_list = listdir("output/groups_info")
+for filename in file_list:
+    file_path = path.join("output/groups_info", filename)
+    with open(file_path, "r", encoding="utf-8") as file:
+        content = file.read()
+        chat_id = int(content[6 : content.index(",")])
+        bot.send_message(
+            chat_id,
+            "Bot is working!",
+            reply_markup=markup,
+        )
 
 
 # --------------- Error handling ---------------
