@@ -673,7 +673,10 @@ def read_text_from_image(url):
     print(status_code)
     print(result)
 
-    return response.json()["all_text"]
+    if "all_text" in response.json():
+        return response.json()["all_text"]
+    else:
+        return "No text detected!"
 
 
 def get_avaible_langs():
