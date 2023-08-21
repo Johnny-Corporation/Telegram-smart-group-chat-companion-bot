@@ -53,6 +53,14 @@ def main_messages_handler(message: types.Message):
             "Bot is temporarily unavailable",
             reply_markup=markup,
         )
+        return 
+    if message.chat.type == 'private':
+        bot.reply_to(
+            message,
+            "Bot is temporarily unavailable",
+            reply_markup=markup,
+        )
+        return 
 
 
 bot.polling()
