@@ -1,0 +1,1 @@
+Habilitar/deshabilitar la generación dinámica

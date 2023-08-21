@@ -1,0 +1,1 @@
+Geben Sie den Benutzernamen des neuen Eigentümers im Format <b>@Benutzername</b> ein.

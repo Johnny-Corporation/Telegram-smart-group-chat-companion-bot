@@ -1,0 +1,3 @@
+Im Moment haben Sie einen Plan:<b> {plan} </b>. Hier sind die von uns angebotenen Tarife:
+
+<i>Informationen zu den Tarifen:  /subs_list </i>

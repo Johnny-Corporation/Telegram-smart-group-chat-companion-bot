@@ -1,0 +1,5 @@
+Lo sentimos, ocurrió un error inesperado.
+
+¡El bot todavía se está ejecutando!
+
+Puede ayudarnos utilizando el comando <i> report_bug </i> a continuación y proporcionando algunos detalles.

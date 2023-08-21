@@ -1,0 +1,21 @@
+<i>Аккаунт: {first_name} </i>
+
+
+<b>Подписка: {subscription}</b>
+
+сообщения: Получите {messages} бесплатных сообщений.
+<b>Осталось {left_messages} сообщений</b>
+
+Группы: Может иметь {groups} групп.
+<b>Левые {left_groups} группы</b>
+
+Группы: {name_of_groups}
+
+Память: Максимум {temp_memory_limit} сообщений.
+<b>Установлено: {temp_memory}</b>
+
+Динамическая генерация {dyn_gen_per}
+
+Голосовой вывод {voice_out_per}
+
+Настройки ответов Джонни {set_up_per}

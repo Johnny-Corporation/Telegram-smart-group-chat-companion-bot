@@ -1,0 +1,11 @@
+<i>Account: {first_name} </i>
+
+<b>Abbonamento: {subscription}</b>
+
+<b>Ha lasciato {left_messages} messaggi</b>
+
+<b>Ha lasciato {left_groups} gruppi</b>
+
+Gruppi: {name_of_groups}
+
+Di seguito puoi vedere di più:

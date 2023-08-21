@@ -1,0 +1,4 @@
+Inserisci <b>l'ambito della tua conservazione (ad esempio, business etp) in risposta al messaggio</b>.
+Il bot ora risponderà solo quando parlerai di questo tema.
+
+<i>Configura ora: {sphere}</i>

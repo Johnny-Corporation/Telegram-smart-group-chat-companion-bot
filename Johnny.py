@@ -10,9 +10,15 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from random import random
 import json
-from os import environ
+from os import environ, makedirs
+import threading
 
-from utils.functions import describe_image, get_file_content, read_text_from_image
+from utils.functions import (
+    describe_image,
+    get_file_content,
+    read_text_from_image,
+    describe_image2,
+)
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
@@ -50,8 +56,8 @@ class Johnny:
     temporary_memory_size: int = 20
     language_code: str = "eng"
     trigger_probability: float = 0.8
-    model = "gpt-3.5-turbo"
-    temperature: float = 1
+    model = "gpt-4"
+    temperature: float = 0.5
     frequency_penalty: float = 0.2
     presence_penalty: float = 0.2
     answer_length: str = "as you need"
@@ -65,6 +71,7 @@ class Johnny:
         self.activated = False
 
         self.lang_code = None
+        self.files_and_images_counter = 0  # needed to save images and files each with different name - its id (number)
 
         self.messages_history = []
         self.messages_count = 0  # incremented by one each message, think() function is called when hit trigger_messages_count
@@ -134,6 +141,29 @@ class Johnny:
             groups[self.owner_id].total_spent_messages = self.total_spent_messages
         return gpt.extract_text(response)
 
+    def download_file(self, message):
+        makedirs(f"output\\files\\{self.chat_id}", exist_ok=True)
+        file_info = self.bot.get_file(message.document.file_id)
+        downloaded_file = self.bot.download_file(file_info.file_path)
+        file_name = message.document.file_name
+        with open(
+            f"output\\files\\{self.chat_id}\\file___{self.files_and_images_counter}___{file_name}",
+            "wb",
+        ) as new_file:
+            new_file.write(downloaded_file)
+        self.files_and_images_counter += 1
+
+    def download_image(self, message):
+        makedirs(f"output\\files\\{self.chat_id}", exist_ok=True)
+        file_info = self.bot.get_file(message.photo[-1].file_id)
+        downloaded_file = self.bot.download_file(file_info.file_path)
+        with open(
+            f"output\\files\\{self.chat_id}\\image___{self.files_and_images_counter}.jpg",
+            "wb",
+        ) as new_file:
+            new_file.write(downloaded_file)
+        self.files_and_images_counter += 1
+
     def new_message(self, message: Message, groups: dict) -> str:
         # --- Check on limit on groups of one men ---
         # if (
@@ -156,7 +186,9 @@ class Johnny:
                 text = "[USER SENT A FILE] Content:" + get_file_content(
                     self.bot, message
                 )
+                threading.Thread(target=self.download_file, args=(message,)).start()
             case "photo":
+                threading.Thread(target=self.download_image, args=(message,)).start()
                 self.messages_to_be_deleted.append(
                     self.bot.send_message(
                         self.chat_id,
@@ -167,7 +199,7 @@ class Johnny:
                 image_url = f"https://api.telegram.org/file/bot{environ['BOT_API_TOKEN_OFFICIAL']}/{image_info.file_path}"
                 text = (
                     "[USER SENT AN IMAGE] Description:"
-                    + describe_image(image_url)
+                    + describe_image2(image_url)
                     + "| Detected text on image: "
                     + read_text_from_image(image_url)
                 )
@@ -260,7 +292,7 @@ class Johnny:
                 else self.static_generation(self.response)
             )
 
-            self.total_spent_messages += 1 
+            self.total_spent_messages += 1
             groups[self.owner_id].total_spent_messages += 1
 
             # Adding GPT answer to db and messages_history
@@ -290,7 +322,9 @@ class Johnny:
             self.messages_to_be_deleted.append(
                 self.bot.send_message(
                     self.message.chat.id,
-                    templates[self.lang_code][functions_waiting_messages[function_name]].format(argument),
+                    templates[self.lang_code][
+                        functions_waiting_messages[function_name]
+                    ].format(argument),
                     parse_mode="html",
                     disable_web_page_preview=True,
                 )

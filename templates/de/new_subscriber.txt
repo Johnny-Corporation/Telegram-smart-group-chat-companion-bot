@@ -1,0 +1,4 @@
+Glückwunsch! Jetzt haben Sie ein Abonnement: <b>{sub}</b>
+
+<i>Sie können dieses Abonnement verlängern in  /purchase </i>
+<i> /account_info, um Änderungen anzuzeigen</i>

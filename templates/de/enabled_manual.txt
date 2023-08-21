@@ -1,0 +1,3 @@
+Ihr Bot arbeitet im manuellen Modus!
+
+Den Modus ändern oder ihn deaktivieren können Sie unten!

@@ -1,0 +1,3 @@
+Wie viel Geld möchten Sie spenden?
+
+<i>*Geben Sie einen Wert als Antwort auf die Nachricht ein*</i>

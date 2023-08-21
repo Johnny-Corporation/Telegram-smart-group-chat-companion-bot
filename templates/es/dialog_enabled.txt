@@ -1,0 +1,3 @@
+Se habilitó el diálogo de modo. Johnny listo para charlar contigo.
+
+ /disable_dialog - para salir de este modo

@@ -1,0 +1,11 @@
+<i>Аккаунт: {first_name} </i>
+
+<b>Подписка: {subscription}</b>
+
+<b>Оставлено {left_messages} сообщений</b>
+
+<b>Левые {left_groups} группы</b>
+
+Группы: {name_of_groups}
+
+Ниже вы можете увидеть больше:

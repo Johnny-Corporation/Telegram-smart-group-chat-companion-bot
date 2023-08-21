@@ -168,6 +168,15 @@ def describe_image(link: str, prompt: str = "Describe image") -> str:
     return output
 
 
+def describe_image2(link: str) -> str:
+    model = "salesforce/blip:2e1dddc8621f72155f24cf2e0adbde548458d3cab9f00c0139eea840d0ac4746"
+    output = replicate.run(
+        model,
+        input={"image": link},
+    )
+    return output.replace("Caption: ", "")
+
+
 def check_file_existing(client_first_name, file_path):
     clients = listdir(file_path)
 
@@ -664,7 +673,10 @@ def read_text_from_image(url):
     print(status_code)
     print(result)
 
-    return response.json()["all_text"]
+    if "all_text" in response.json():
+        return response.json()["all_text"]
+    else:
+        return "No text detected!"
 
 
 def get_avaible_langs():

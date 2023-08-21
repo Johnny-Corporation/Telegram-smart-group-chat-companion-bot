@@ -1,0 +1,3 @@
+Der Bot ist jetzt eingeschaltet und liest eine neue Nachricht zur Debatte!
+Nachfolgend können Sie mit der Konservierung erneut beginnen und zusätzliche Werkzeuge anwenden
+<i>*Verwenden Sie  /about um mehr zu erfahren!*</i>

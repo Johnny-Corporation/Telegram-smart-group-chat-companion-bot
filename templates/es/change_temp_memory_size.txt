@@ -1,0 +1,4 @@
+Introduzca un valor <b>superior a 0 en respuesta a este mensaje</b>.
+Johnny se relaciona con los mensajes en la memoria temporal por solicitud.
+
+<i>Configurar {memory} ahora</i>

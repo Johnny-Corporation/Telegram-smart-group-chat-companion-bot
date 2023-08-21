@@ -1,0 +1,17 @@
+<i>Gruppe: {group_name}</i>
+<b>Besitzer: {username}</b>
+
+Der Bot funktioniert mit der Sprache {language}.
+
+<b>INFORMATIONEN zum Eigentümer</b>
+
+<b>Abonnement</b>
+Abonnement: {subscription}
+
+<b>Nachrichten</b>
+Die Gruppe hat <b>{spent_messages} Nachrichten</b> ausgegeben.
+Hinterlassene Nachrichten: {messages_left}
+
+Unten sehen Sie die Einstellungen in dieser Gruppe:
+
+<i>/change_owner_of_group, um den Eigentümer der Gruppe zu ändern</i>

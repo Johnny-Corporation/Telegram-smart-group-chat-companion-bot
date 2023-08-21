@@ -1,0 +1,21 @@
+<i>Account: {first_name} </i>
+
+
+<b>Abbonamento: {subscription}</b>
+
+messaggi: ricevi {messages} messaggi gratuiti.
+<b>Hai lasciato {left_messages} messaggi</b>
+
+Gruppi: può avere {groups} gruppi.
+<b>A sinistra {left_groups} gruppi</b>
+
+Gruppi: {name_of_groups}
+
+Memoria: può contenere massimo {temp_memory_limit} messaggi.
+<b>Stabilito: {temp_memory}</b>
+
+Generazione dinamica {dyn_gen_per}
+
+Uscita vocale {voice_out_per}
+
+Impostazioni delle risposte di Johnny {set_up_per}
