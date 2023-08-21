@@ -56,6 +56,7 @@ groups: Dict[int, Johnny] = {}  # {group chat_id:Johnny object}
 
 makedirs("output\\groups_info", exist_ok=True)
 makedirs("output\\clients_info", exist_ok=True)
+makedirs("output\\files", exist_ok=True)
 
 
 bot = TeleBot(bot_token)
