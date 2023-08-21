@@ -301,7 +301,7 @@ class Johnny:
                 self.messages_to_be_deleted.append(
                     self.bot.send_message(
                         self.message.chat.id,
-                        templates[self.lang_code]["Function call failed"].format(function_name),
+                        templates[self.lang_code]["function_call_failed.txt"].format(function_name),
                         parse_mode="html"
                     )
                 )
@@ -486,7 +486,7 @@ class Johnny:
             first_name,
             str(last_name),
             username,
-            messages_total,
+            messages_total+self.total_spent_messages,
         )
 
         # If we wrote new user with new sub, give him 'congrats message'
@@ -511,13 +511,11 @@ class Johnny:
         db_controller.add_user_with_sub(
             chat_id,
             self.subscription,
-            self.allowed_groups,
-            self.temporary_memory_size_limit,
             date_of_start,
             first_name,
             str(last_name),
             username,
-            self.permissions[self.subscription]["messages_limit"],
+            self.permissions[self.subscription]["messages_limit"]+self.total_spent_messages,
         )
 
         self.bot.send_message(
