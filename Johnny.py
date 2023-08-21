@@ -12,7 +12,12 @@ from random import random
 import json
 from os import environ
 
-from utils.functions import describe_image, get_file_content, read_text_from_image
+from utils.functions import (
+    describe_image,
+    get_file_content,
+    read_text_from_image,
+    describe_image2,
+)
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
@@ -167,7 +172,7 @@ class Johnny:
                 image_url = f"https://api.telegram.org/file/bot{environ['BOT_API_TOKEN_OFFICIAL']}/{image_info.file_path}"
                 text = (
                     "[USER SENT AN IMAGE] Description:"
-                    + describe_image(image_url)
+                    + describe_image2(image_url)
                     + "| Detected text on image: "
                     + read_text_from_image(image_url)
                 )
