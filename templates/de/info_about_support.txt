@@ -1,0 +1,5 @@
+Danke fürs Helfen. Sie möchten spenden: {cost} Rubel.
+
+<i> /subs_list, um mehr zu erfahren</i>
+
+Zum Kaufen den Knopf drücken:

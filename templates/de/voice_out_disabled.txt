@@ -1,0 +1,3 @@
+Das Senden von Sprachantworten wurde deaktiviert. Sie können es jederzeit in den Einstellungen aktivieren.
+
+<b>Sie können /tovoice jederzeit als Antwort auf eine Textnachricht senden und diese im Textformat erneut senden.</b>

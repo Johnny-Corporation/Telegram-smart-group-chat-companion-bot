@@ -81,7 +81,8 @@ file_list = listdir("output/groups_info")
 for filename in file_list:
     file_path = path.join("output/groups_info", filename)
     with open(file_path, "r", encoding="utf-8") as file:
-        chat_id = json.load(file)["id"]
+        content = file.read()
+        chat_id = int(content[6 : content.index(",")])
         bot.send_message(
             chat_id,
             "Bot is working!",
