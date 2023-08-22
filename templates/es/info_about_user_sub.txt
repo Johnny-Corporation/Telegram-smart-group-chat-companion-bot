@@ -1,6 +1,5 @@
 <i>Cuenta: {first_name} </i>
 
-
 <b>Suscripción: {subscription}</b>
 
 mensajes: Tener {messages} mensajes gratis.
@@ -19,3 +18,5 @@ Generación dinámica {dyn_gen_per}
 Salida de voz {voice_out_per}
 
 Configuración de las respuestas de Johnny {set_up_per}
+
+<i> /subs_list para saber más</i>

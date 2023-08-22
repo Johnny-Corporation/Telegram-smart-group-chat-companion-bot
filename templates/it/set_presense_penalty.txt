@@ -1,4 +1,0 @@
-Inserisci il valore <b>da 0</b> (più direttamente) <b>a 2</b> (più creativo) <b> in risposta al messaggio</b>.
-Il parametro fa la probabilità di un modello di parlare di nuovi argomenti.
-
-<i>Configura {presense_penalty} ora</i>

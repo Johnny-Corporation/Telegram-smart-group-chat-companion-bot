@@ -1,4 +1,0 @@
-Inserisci un valore <b>da 0</b> (il meno vario) <b>a 2</b> (il più vario) <b>in risposta a questo messaggio</b>.
-La diversità delle risposte rende le risposte del bot più varie.
-
-<i>Configura {frequency_penalty} ora</i>

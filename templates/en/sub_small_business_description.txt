@@ -1,11 +1,11 @@
-<b>SMALL BUSINESS</b> plan - <i>7$ (699 Руб) </i>
+<b>SMALL BUSINESS</b> plan - <i>8$ (799 Руб) </i>
 
 <i>This rate for permanent using Johnny in groups, chats. You got many features, which will do a bot more useful!</i>
 
-<b>• 30000 free messages</b>
+<b>• 300 free messages</b>
 <b>• 5 groups with Johnny</b>
 <b>• Dynamic generation of messages</b>
 <b>• Voice messages output from Johnny</b>
 <b>• All settings the answers of bot</b>
 <b>• Memory size equals 100</b>
-<b>• Price to buy more messages: 0.005$ on 1 message (0.5 Руб) </b>
+<b>• Price to buy more messages: 0.035$ on 1 message (3.5 Руб) </b>

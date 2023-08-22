@@ -1,5 +1,0 @@
-Spiacenti, si è verificato un errore imprevisto.
-
-Il robot è ancora in esecuzione!
-
-Puoi aiutarci utilizzando il comando <i> report_bug </i> di seguito e fornendo alcuni dettagli.

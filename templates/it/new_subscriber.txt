@@ -1,4 +1,0 @@
-Congratulazioni! Ora hai un abbonamento: <b>{sub}</b>
-
-<i>Puoi estendere questo abbonamento in  /purchase </i>
-<i> /account_info per visualizzare le modifiche</i>

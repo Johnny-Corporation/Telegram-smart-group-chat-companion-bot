@@ -1,3 +1,0 @@
-Quanti soldi vuoi donare?
-
-<i>*Inserisci un valore nella risposta al messaggio*</i>

@@ -27,7 +27,7 @@ def rus_payment(message, type_of_sub):
         price = 399
 
         # --- Discount ---
-        if groups[message.chat.id].total_spent_messages <= 30 and groups[message.chat.id].subscription == "Free":
+        if groups[message.chat.id].total_spent_messages <= 20 and groups[message.chat.id].subscription == "Free":
             bot.send_message(message.chat.id, templates[language_code]["discount_yes.txt"])
             price = price * 0.8
 
@@ -35,10 +35,10 @@ def rus_payment(message, type_of_sub):
 
     elif type_of_sub == "middle":
 
-        price = 699
+        price = 799
 
         # --- Discount ---
-        if groups[message.chat.id].total_spent_messages <= 30 and groups[message.chat.id].subscription == "Free":
+        if groups[message.chat.id].total_spent_messages <= 20 and groups[message.chat.id].subscription == "Free":
             bot.send_message(message.chat.id, templates[language_code]["discount_yes.txt"])
             price = price * 0.8
 
@@ -46,10 +46,10 @@ def rus_payment(message, type_of_sub):
 
     elif type_of_sub == "pro":
 
-        price = 1299
+        price = 1899
 
         # --- Discount ---
-        if groups[message.chat.id].total_spent_messages <= 30 and groups[message.chat.id].subscription == "Free":
+        if groups[message.chat.id].total_spent_messages <= 20 and groups[message.chat.id].subscription == "Free":
             bot.send_message(message.chat.id, templates[language_code]["discount_yes.txt"])
             price = price * 0.8
 

@@ -1,4 +1,0 @@
-Inserisci il valore float <b>da 0</b> (nessuna risposta) <b>a 1></b> (risposte a ogni messaggio) <b>in risposta a questo messaggio</b>.
-Il bot risponderà tutte le volte che questo valore è alto.
-
-<i>Configura {probability} ora</i>

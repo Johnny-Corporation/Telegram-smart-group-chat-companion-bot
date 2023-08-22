@@ -1,5 +1,0 @@
-Il tuo bot funziona in AutoMode!
-
-Risponde con tale<i> {probability} probabilità</i>. Puoi cambiarlo nelle impostazioni!
-
-Cambia modalità o disabilitalo puoi qui sotto!

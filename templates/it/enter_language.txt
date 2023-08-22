@@ -1,1 +1,0 @@
-Inserisci la lingua sia come codice (es. "en") che come nome (es. "spagnolo")

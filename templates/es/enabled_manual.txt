@@ -1,3 +1,5 @@
 ¡Tu bot está trabajando en modo manual!
 
+¡Responde a Johnny o etiquétalo para llamar a Johnny!
+
 ¡Cambiar el modo o deshabilitarlo puede hacerlo a continuación!

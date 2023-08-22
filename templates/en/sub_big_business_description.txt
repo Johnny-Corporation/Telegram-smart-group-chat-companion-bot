@@ -1,11 +1,11 @@
-<b>BIG BUSINESS</b> plan - <i>12$ (1299 Руб) </i>
+<b>BIG BUSINESS</b> plan - <i>19$ (1899 Руб) </i>
 
 <i>All existing and future functions of Johnny for big groups with many people!</i>
 
-<b>• 50 000 free messages</b>
+<b>• 500 free messages</b>
 <b>• 10 groups with Johnny</b>
 <b>• Dynamic generation of messages</b>
 <b>• Voice messages output from Johnny</b>
 <b>• All settings the answers of bot</b>
 <b>• Infinity Memory Size</b>
-<b>• Price to buy more messages: 0.004$ on 1 message (0.4 Руб) </b>
+<b>• Price to buy more messages: 0.03$ on 1 message (3 Руб) </b>

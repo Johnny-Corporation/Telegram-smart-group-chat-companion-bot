@@ -1,3 +1,0 @@
-L'invio di risposte vocali è stato disattivato. In qualsiasi momento, puoi abilitarlo nelle impostazioni.
-
-<b>In qualsiasi momento, puoi inviare /tovoice in risposta a un messaggio di testo e il bot inviarlo nuovamente in formato testo.</b>

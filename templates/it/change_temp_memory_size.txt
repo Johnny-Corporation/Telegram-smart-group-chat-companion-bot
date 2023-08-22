@@ -1,4 +1,0 @@
-Inserisci un valore <b>più di 0 in risposta a questo messaggio</b>.
-Johnny si riferisce ai messaggi nella memoria temporanea per richiesta.
-
-<i>Configura {memory} ora</i>

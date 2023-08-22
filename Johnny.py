@@ -589,7 +589,7 @@ class Johnny:
                 current_date = datetime.now().isoformat()
 
                 db_controller.add_user_with_sub(
-                    chat_id, "Free", current_date, " ", " ", " ", 50
+                    chat_id, "Free", current_date, " ", " ", " ", 30
                 )
 
                 self.subscription = "Free"

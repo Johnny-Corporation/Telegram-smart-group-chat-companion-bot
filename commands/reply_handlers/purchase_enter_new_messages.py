@@ -19,18 +19,20 @@ def enter_new_messages_reply_handler(inner_message):
 
     if groups[inner_message.chat.id].subscription == "Free":
 
-        accept_payment(inner_message, templates[language_code]["messages_buy_text.txt"].format(val=val,sub="Free"), val*1, 'more_messages') 
+        print(val)
+
+        accept_payment(inner_message, templates[language_code]["messages_buy_text.txt"].format(val=val,sub="Free"), val*5, 'more_messages') 
 
     elif groups[inner_message.chat.id].subscription == "USER":
 
-        accept_payment(inner_message, templates[language_code]["messages_buy_text.txt"].format(val=val,sub="USER"), val*0.8, 'more_messages')
+        accept_payment(inner_message, templates[language_code]["messages_buy_text.txt"].format(val=val,sub="USER"), val*4.5, 'more_messages')
 
     elif groups[inner_message.chat.id].subscription == "SMALL BUSINESS":
 
-        accept_payment(inner_message, templates[language_code]["messages_buy_text.txt"].format(val=val,sub="SMALL BUSINESS"), val*0.5, 'more_messages')
+        accept_payment(inner_message, templates[language_code]["messages_buy_text.txt"].format(val=val,sub="SMALL BUSINESS"), val*3.5, 'more_messages')
 
     elif groups[inner_message.chat.id].subscription == "BIG BUSINESS":
 
-        accept_payment(inner_message, templates[language_code]["messages_buy_text.txt"].format(val=val,sub="BIG BUSINESS"), val*0.4, 'more_messages')
+        accept_payment(inner_message, templates[language_code]["messages_buy_text.txt"].format(val=val,sub="BIG BUSINESS"), val*3, 'more_messages')
     else:
         bot.send_message(inner_message.chat.id, "Problem")

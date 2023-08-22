@@ -1,3 +1,5 @@
 Your bot is working in Manual Mode! 
 
+Do a reply to Johnny or tag him to call Johnny!
+
 Change mode or disable him you can below!

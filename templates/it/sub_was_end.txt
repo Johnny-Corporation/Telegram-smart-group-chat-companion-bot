@@ -1,4 +1,0 @@
-Il tuo abbonamento è terminato. Ora sei in modalità Gratuito.
-
-<i> /acquisto per acquistare l'abbonamento</i>
-<i> /account_info per visualizzare le modifiche</i>

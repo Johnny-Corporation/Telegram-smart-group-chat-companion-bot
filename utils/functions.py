@@ -595,7 +595,7 @@ def take_info_about_sub(subscription):
     subscriptions = {
         "Free": {  # {type_of_sub: {point: value_of_point}}
             "allowed_groups": 1,
-            "messages_limit": 100,
+            "messages_limit": 30,
             "temporary_memory_size_limit": 20,
             "dynamic_gen_permission": False,
             "sphere_permission": False,
@@ -607,7 +607,7 @@ def take_info_about_sub(subscription):
         },
         "USER": {
             "allowed_groups": 3,
-            "messages_limit": 10000,
+            "messages_limit": 100,
             "temporary_memory_size_limit": 50,
             "dynamic_gen_permission": False,
             "sphere_permission": False,
@@ -619,7 +619,7 @@ def take_info_about_sub(subscription):
         },
         "SMALL BUSINESS": {
             "allowed_groups": 5,
-            "messages_limit": 30000,
+            "messages_limit": 300,
             "temporary_memory_size_limit": 100,
             "dynamic_gen_permission": True,
             "sphere_permission": True,
@@ -631,7 +631,7 @@ def take_info_about_sub(subscription):
         },
         "SMALL BUSINESS (trial)": {
             "allowed_groups": 5,
-            "messages_limit": 100,
+            "messages_limit": 50,
             "temporary_memory_size_limit": 100,
             "dynamic_gen_permission": True,
             "sphere_permission": True,
@@ -643,7 +643,7 @@ def take_info_about_sub(subscription):
         },
         "BIG BUSINESS": {
             "allowed_groups": 10,
-            "messages_limit": 50000,
+            "messages_limit": 500,
             "temporary_memory_size_limit": 1000000000000000000,
             "dynamic_gen_permission": True,
             "sphere_permission": True,

@@ -1,6 +1,5 @@
 <i>Account: {first_name} </i>
 
-
 <b>Subscription: {subscription}</b>
 
 messages: Have {messages} free messages.
@@ -19,3 +18,5 @@ Dynamic generation {dyn_gen_per}
 Voice output {voice_out_per}
 
 Settings of Johnny's answers {set_up_per}
+
+<i> /subs_list to know more</i>

@@ -1,3 +1,0 @@
-La finestra di dialogo modalità è stata abilitata. Johnny pronto a chiacchierare con te.
-
- /disable_dialog - per uscire da questa modalità

@@ -33,7 +33,7 @@ skip_old_messages = True  # True until message older than bot start time receive
 ignored_messages = 0  # count number of ignored messages when bot was offline for logs
 
 
-bot_token = environ.get("BOT_API_TOKEN_OFFICIAL")
+bot_token = environ.get("BOT_API_TOKEN")
 
 yoomoney_token = environ.get("PAYMENT_RUS_TOKEN")
 
@@ -81,8 +81,7 @@ file_list = listdir("output/groups_info")
 for filename in file_list:
     file_path = path.join("output/groups_info", filename)
     with open(file_path, "r", encoding="utf-8") as file:
-        content = file.read()
-        chat_id = int(content[6 : content.index(",")])
+        chat_id = json.load(file)["id"]
         bot.send_message(
             chat_id,
             "Bot is working!",
@@ -277,7 +276,7 @@ def send_welcome_text_and_load_data(
         # If there isn't data, registries new user
         if not sub_exist:
             new_user = True
-            groups[chat_id].add_new_user(chat_id, " ", " ", " ", "Free", 50)
+            groups[chat_id].add_new_user(chat_id, " ", " ", " ", "Free", 30)
             groups[chat_id].load_subscription(chat_id)
 
         else:

@@ -1,4 +1,0 @@
-Ihr Abonnement wurde beendet. Jetzt befinden Sie sich im Modus „Frei“.
-
-<i> /purchase, um ein Abonnement zu kaufen</i>
-<i> /account_info, um Änderungen anzuzeigen</i>

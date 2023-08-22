@@ -19,7 +19,5 @@ def change_language_reply_handler(inner_message):
 
     bot.delete_message(inner_message.chat.id, sent_message.message_id)
 
-    markup = load_buttons(types, groups, chat_id, language_code, owner_id=owner_id)
     bot.send_message(inner_message.chat.id, templates[lang_code[0]]["language_applied.txt"], reply_markup=markup)
-    groups[inner_message.chat.id].lang_code = lang_code[0]
     

@@ -56,7 +56,7 @@ def auto_enable(message):
         templates[language_code]["enabled_auto.txt"].format(
             probability=groups[message.chat.id].trigger_probability
         ),
-        reply_markup=markup_commands,
+        markup=markup_commands,
         parse_mode="HTML",
     )
 
@@ -98,4 +98,4 @@ def disable(message):
 
     markup = load_buttons(types, groups, message.chat.id, language_code, owner_id=groups[message.chat.id].owner_id)
 
-    bot.send_message(message.chat.id, templates[language_code]["disabled.txt"], reply_markup=markup)
+    bot.send_message(message.chat.id, templates[language_code]["disabled.txt"], markup=markup)
