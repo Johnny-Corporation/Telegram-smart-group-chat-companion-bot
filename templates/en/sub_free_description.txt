@@ -5,4 +5,4 @@ Free plan - <i>(free)</i>
 <b>• 30 free messages</b>
 <b>• 1 group with Johnny</b>
 <b>• Memory size equals 20</b>
-<b>• Price to buy more messages: 0.04$ on 1 message (4 Руб) </b>
+<b>• Price to buy more messages: 0.045$ on 1 message (4.5 Руб) </b>

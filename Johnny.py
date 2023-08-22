@@ -31,6 +31,7 @@ from utils.functions import (
     video_note_to_audio,
     take_info_about_sub,
 )
+from utils.text_to_voice import *
 
 templates = load_templates("templates\\")
 
@@ -280,7 +281,6 @@ class Johnny:
             )
             or (random() < self.trigger_probability)
         ):
-            print(f"HISTORY OF MESSAGES IN JOHNNY:    {self.messages_history}")
 
             # --- GPT answer generation ---
 
@@ -373,6 +373,10 @@ class Johnny:
         # Check context understanding
         if not self.check_understanding(text_answer):
             return None
+
+        if self.voice_out_enabled==True:
+            text_to_voice(self.bot, self.message, self.lang_code, reply=False, text_from=text_answer)
+            return text_answer
 
         self.bot.send_message(self.message.chat.id, text_answer, parse_mode="Markdown")
         return text_answer

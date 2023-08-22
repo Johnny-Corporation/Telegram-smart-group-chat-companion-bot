@@ -6,4 +6,4 @@ Here you got:
 <b>• 100 free messages</b>
 <b>• 3 groups with Johnny</b>
 <b>• Memory size equals 50</b>
-<b>• Price to buy more messages: 0.045$ on 1 message (4.5 Руб) </b>
+<b>• Price to buy more messages: 0.04$ on 1 message (4 Руб) </b>

@@ -125,14 +125,14 @@ def keyboard_buttons_handler(call):
             
 
         case "voice_out":
-            if groups[call.message.chat.id].voice_output_permission == False:
+            if groups[call.message.chat.id].permissions[groups[call.message.chat.id].subscription]["voice_output_permission"] == False:
                 bot.send_message(call.message.chat.id, templates[previous_language_code]["no_rights.txt"], parse_mode="HTML")
                 return 
             
 
             if groups[call.message.chat.id].dynamic_gen == True:
                 bot.send_message(call.message.chat.id, templates[previous_language_code]["dyn_gen_already_enabled.txt"])
-                groups[call.message.chat.id].dynamic_gen_permission = False
+                groups[call.message.chat.id].dynamic_gen = False
 
             
             enable_disable_voice_out(call.message)

@@ -1,5 +1,5 @@
 # ---------------  Imports ---------------
-from os import environ, makedirs
+from os import environ, makedirs, path, remove
 
 makedirs("output//", exist_ok=True)
 
@@ -13,7 +13,6 @@ from utils.internet_access import *
 from utils.functions import *
 from utils.logger import logger
 from utils.time_tracking import *
-from utils.text_to_voice import *
 
 # Other
 from dotenv import load_dotenv
@@ -447,6 +446,7 @@ from commands.commands_handler import *
 
 # Payment handler (need be there)
 from utils.yoomoney import *
+from utils.text_to_voice import *
 
 # --------------- Main messages handler ---------------
 

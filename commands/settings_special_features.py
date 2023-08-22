@@ -56,9 +56,11 @@ def enable_disable_dynamic_generation(message):
 @error_handler
 def enable_disable_voice_out(message):
 
-    groups[call.message.chat.id].voice_out_enabled = not groups[call.message.chat.id].voice_out_enabled
+    language_code = groups[message.chat.id].lang_code
 
-    if groups[call.message.chat.id].voice_out_enabled == True:
-        bot.send_message(call.message.chat.id, templates[language_code]["voice_out_enabled.txt"])
-    elif groups[call.message.chat.id].voice_out_enabled == False:
-        bot.send_message(call.message.chat.id, templates[language_code]["voice_out_disabled.txt"])
+    groups[message.chat.id].voice_out_enabled = not groups[message.chat.id].voice_out_enabled
+
+    if groups[message.chat.id].voice_out_enabled == True:
+        bot.send_message(message.chat.id, templates[language_code]["voice_out_enabled.txt"], parse_mode='html')
+    elif groups[message.chat.id].voice_out_enabled == False:
+        bot.send_message(message.chat.id, templates[language_code]["voice_out_disabled.txt"], parse_mode='html')

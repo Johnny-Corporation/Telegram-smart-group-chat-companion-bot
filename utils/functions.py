@@ -556,15 +556,16 @@ def to_text(bot, message, reply_to=None):
     return text
 
 
-def generate_voice_message(message, text, reply_to=None):
+def generate_voice_message(message, text, language, reply_to=None):
     """Got a text and generate voice file and return path to voice file"""
 
     if reply_to != None:
         message = reply_to
 
-    language = detect(text)
-
     voice_obj = gTTS(text=text, lang=language, slow=False)
+
+    if not path.exists("output\\voice_out"):
+        makedirs("output\\voice_out")
 
     voice_obj.save(f"output\\voice_out\\voice_out_{message.message_id}.mp3")
 
