@@ -104,7 +104,7 @@ def accept_payment(message, type_of_buy, cost, type_of_own='update'):
         quickpay_form="shop",
         targets="Buy product",
         paymentType="SB",
-        sum=2,           #cost
+        sum=cost,           #cost
         label=label,
     )
 
