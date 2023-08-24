@@ -1,4 +1,4 @@
 Ihr Abonnement wurde beendet. Jetzt befinden Sie sich im Modus „Frei“.
 
-<i> /purchase, um ein Abonnement zu kaufen</i>
-<i> /account_info, um Änderungen anzuzeigen</i>
+<i>Gehen Sie zu Konto -> Einkäufe</i>
+<i> Gehen Sie zu „Konto“, um Änderungen anzuzeigen</i>

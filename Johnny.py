@@ -12,6 +12,7 @@ from random import random
 import json
 from os import environ, makedirs
 import threading
+import tiktoken
 
 from utils.functions import (
     describe_image,
@@ -54,14 +55,15 @@ class Johnny:
     bot: TeleBot
     chat_id: int
     bot_username: str
-    temporary_memory_size: int = 20
+    temporary_memory_size: int = 7
     language_code: str = "eng"
     trigger_probability: float = 0.8
-    model = "gpt-4"
+    model = "gpt-3.5-turbo"
+    tokens_limit: int = 3800  # Leave gap for functions
     temperature: float = 0.5
     frequency_penalty: float = 0.2
     presence_penalty: float = 0.2
-    answer_length: str = "as you need"
+    answer_length: str = "brief"
     sphere: str = ""
     system_content: str = ""
     allow_functions: bool = True
@@ -80,7 +82,7 @@ class Johnny:
         self.enabled = False
         self.dynamic_gen = False
         # Needed to store requested links and restrict repeating useless requests
-        self.dynamic_gen_chunks_frequency = 30  # when dynamic generation is enabled, this value controls how often to edit telegram message, for example when set to 3, message will be updated each 3 chunks from OpenAI API stream
+        self.dynamic_gen_chunks_frequency = 20  # when dynamic generation is enabled, this value controls how often to edit telegram message, for example when set to 3, message will be updated each 3 chunks from OpenAI API stream
         self.voice_out_enabled = False
         self.total_spent_messages = 0  # prompt and completion messages
         self.last_function_request = None
@@ -112,7 +114,11 @@ class Johnny:
 
     def get_completion(self, allow_function_call=None):
         """Returns completion object and takes one time arguments."""
+        # Checking tokens limit
+        while self.get_num_tokens_from_messages() > self.tokens_limit:
+            self.messages_history.pop(0)
         return gpt.create_chat_completion(
+            self,
             self.messages_history,
             reply=bool(self.message.reply_to_message),
             answer_length=self.answer_length,
@@ -128,8 +134,15 @@ class Johnny:
             ),
         )
 
+    def clean_memory(self):
+        for m in self.messages_history:
+            if m[0] == "$FUNCTION$":
+                self.messages_history.remove(m)
+        self.messages_history = self.messages_history[:-1]
+
     def one_answer(self, message: Message, groups: dict):
         response = gpt.create_chat_completion(
+            self,
             [[message.from_user.first_name, message.text]],
             lang=self.lang_code,
             reply=None,
@@ -281,10 +294,12 @@ class Johnny:
             )
             or (random() < self.trigger_probability)
         ):
-
             # --- GPT answer generation ---
 
             self.response = self.get_completion()
+
+            if self.response == "[WAIT]":
+                return
 
             text_answer = (
                 self.dynamic_generation(self.response)
@@ -335,8 +350,10 @@ class Johnny:
                 self.messages_to_be_deleted.append(
                     self.bot.send_message(
                         self.message.chat.id,
-                        templates[self.lang_code]["function_call_failed.txt"].format(function_name),
-                        parse_mode="html"
+                        templates[self.lang_code]["function_call_failed.txt"].format(
+                            function_name
+                        ),
+                        parse_mode="html",
                     )
                 )
                 self.last_function_request = None
@@ -368,14 +385,22 @@ class Johnny:
             return self.static_generation(self.get_completion())
 
         self.delete_pending_messages()
+        self.clean_memory()
         self.response = completion
+        self.last_function_request = None
         text_answer = gpt.extract_text(self.response)
         # Check context understanding
         if not self.check_understanding(text_answer):
             return None
 
-        if self.voice_out_enabled==True:
-            text_to_voice(self.bot, self.message, self.lang_code, reply=False, text_from=text_answer)
+        if self.voice_out_enabled == True:
+            text_to_voice(
+                self.bot,
+                self.message,
+                self.lang_code,
+                reply=False,
+                text_from=text_answer,
+            )
             return text_answer
 
         self.bot.send_message(self.message.chat.id, text_answer, parse_mode="Markdown")
@@ -414,8 +439,11 @@ class Johnny:
                 self.messages_to_be_deleted.append(
                     self.bot.send_message(
                         self.message.chat.id,
-                        functions_waiting_messages[function_name].format(argument),
+                        templates[self.lang_code][
+                            functions_waiting_messages[function_name]
+                        ].format(argument),
                         disable_web_page_preview=True,
+                        parse_mode="html",
                     )
                 )
 
@@ -424,7 +452,7 @@ class Johnny:
                     self.messages_to_be_deleted.append(
                         self.bot.send_message(
                             self.message.chat.id,
-                            "(Function call failed)",
+                            templates[self.lang_code]["func_call_failed.txt"],
                         )
                     )
                     return self.dynamic_generation(
@@ -463,6 +491,7 @@ class Johnny:
 
                 if update_count == self.dynamic_gen_chunks_frequency:
                     update_count = 0
+                    self.delete_pending_messages()
                     self.bot.edit_message_text(
                         chat_id=self.message.chat.id,
                         message_id=self.thinking_message.message_id,
@@ -474,9 +503,30 @@ class Johnny:
                 chat_id=self.message.chat.id,
                 message_id=self.thinking_message.message_id,
                 text=text_answer,
+                parse_mode="Markdown",
             )
+        self.last_function_request = None
         self.delete_pending_messages()
+        self.clean_memory()
         return text_answer
+
+    def get_num_tokens_from_messages(self):
+        """Returns the number of tokens used by a list of messages."""
+        try:
+            encoding = tiktoken.encoding_for_model(self.model)
+        except KeyError:
+            encoding = tiktoken.get_encoding("cl100k_base")
+        num_tokens = 0
+        for message in gpt.get_messages_in_official_format(self.messages_history):
+            num_tokens += (
+                4  # every message follows <im_start>{role/name}\n{content}<im_end>\n
+            )
+            for key, value in message.items():
+                num_tokens += len(encoding.encode(value))
+                if key == "name":  # if there's a name, the role is omitted
+                    num_tokens += -1  # role is always required and always 1 token
+        num_tokens += 2  # every reply is primed with <im_start>assistant
+        return num_tokens
 
     def check_understanding(self, text_answer: str) -> bool:
         """Checks if GPT understands context of the question"""
@@ -497,7 +547,7 @@ class Johnny:
             and (not gpt.check_theme_context(text_answer, self.sphere))
         ):
             return False
-        # Count tokens !!!!
+
         return True
 
     def add_new_user(
@@ -524,7 +574,7 @@ class Johnny:
             first_name,
             str(last_name),
             username,
-            messages_total+self.total_spent_messages,
+            messages_total + self.total_spent_messages,
         )
 
         # If we wrote new user with new sub, give him 'congrats message'
@@ -553,7 +603,8 @@ class Johnny:
             first_name,
             str(last_name),
             username,
-            self.permissions[self.subscription]["messages_limit"]+self.total_spent_messages,
+            self.permissions[self.subscription]["messages_limit"]
+            + self.total_spent_messages,
         )
 
         self.bot.send_message(
@@ -716,12 +767,12 @@ class Johnny:
     def load_data(self) -> None:
         """Loads data from to object from db"""
         recent_events = db_controller.get_last_n_message_events_from_chat(
-            self.chat_id, self.temporary_memory_size
+            chat_id=self.chat_id, n=self.temporary_memory_size
         )
         if not recent_events:
             return
         self.messages_history = db_controller.get_last_n_messages_from_chat(
-            self.chat_id, self.temporary_memory_size
+            chat_id=self.chat_id, n=self.temporary_memory_size
         )[::-1]
         for i in recent_events:
             if i[5] == "JOHNNYBOT":

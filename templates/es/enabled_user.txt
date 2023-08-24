@@ -1,3 +1,3 @@
-¡El bot está encendido ahora y está leyendo un nuevo mensaje para debatir!
-A continuación puede comenzar la conservación nuevamente, aplicar herramientas adicionales
-<i>*Usa  /about para saber más.*</i>
+¡El bot está encendido ahora y leyendo un nuevo mensaje para debatir!
+A continuación puede comenzar la conservación nuevamente, aplicar herramientas adicionales.
+<i>*Utilízalo  /about para saber más.*</i>

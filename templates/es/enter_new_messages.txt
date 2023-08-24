@@ -1,1 +1,1 @@
-Introduzca la suma de mensajes en respuesta a este mensaje.
+Ingrese la suma de mensajes en respuesta a este mensaje.

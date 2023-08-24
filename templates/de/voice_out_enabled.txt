@@ -1,3 +1,1 @@
 Das Senden von Sprachantworten wurde aktiviert. Sie können es jederzeit in den Einstellungen deaktivieren.
-
-<b>Sie können jederzeit /totext als Antwort auf eine Sprachnachricht senden und diese im Textformat erneut senden.</b>

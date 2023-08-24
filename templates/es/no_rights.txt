@@ -1,3 +1,3 @@
-Lo siento, tienes que comprar una suscripción para activarlo.
+Lo sentimos, tienes que comprar una suscripción para activarlo.
 
-<i> /subs_list para conocerlo</i>
+<i> /subs_list para saberlo</i>

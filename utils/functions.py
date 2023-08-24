@@ -1,15 +1,20 @@
-from os import path, listdir, makedirs, remove, environ
+from os import path, listdir, makedirs, remove, environ, walk
 import json
 import re
 import replicate
 from googletrans import Translator
 import soundfile as sf
 import requests
+import zipfile
 
 from gtts import gTTS
 from langdetect import detect
 
 import utils.gpt_interface as gpt
+
+
+developer_chat_IDs = environ.get("DEVELOPER_CHAT_IDS")
+developer_chat_IDs = developer_chat_IDs.split(",")
 
 
 def load_templates(dir: str) -> dict:
@@ -67,6 +72,16 @@ def send_file(path: str, id: int, bot) -> None:
 def send_image_from_link(bot, url, chat_id):
     "Takes straight url to image and sends it to chat with specified id"
     bot.send_photo(chat_id, url)
+
+
+def download_and_save_image_from_link(link, filename):
+    response = requests.get(link)
+    if response.status_code == 200:
+        with open("output\\files\\DALLE\\" + filename, "wb") as file:
+            file.write(response.content)
+            print("Image downloaded successfully.")
+    else:
+        print("Failed to download image.")
 
 
 def send_to_developers(
@@ -412,6 +427,11 @@ def load_buttons(types, groups, chat_id, language_code, owner_id=None):
             text2 = translate_text(language_code, "ㅤStart a conversationㅤ")
             itembtn1 = types.KeyboardButton(text2)
 
+        if str(chat_id) in developer_chat_IDs:
+            text_dev_tools = translate_text(language_code, "/dev_tools")
+            itembtn_dev_tools = types.KeyboardButton(text_dev_tools)
+            markup.add(itembtn_dev_tools)
+
         text1 = translate_text(language_code, "ㅤAsk a question without contextㅤ")
         itembtn2 = types.KeyboardButton(text1)
 
@@ -427,10 +447,6 @@ def load_buttons(types, groups, chat_id, language_code, owner_id=None):
         text9 = translate_text(language_code, "ㅤSuggest an ideaㅤ")
         itembtn7 = types.KeyboardButton(text9)
 
-        # text10 = translate_text(language_code,'ㅤSupport usㅤ')
-        # itembtn10 = types.KeyboardButton(text10)
-        # groups[chat_id].button_commands.append(text10)
-
         groups[chat_id].button_commands.append(text2)
         groups[chat_id].button_commands.append(text1)
 
@@ -439,7 +455,6 @@ def load_buttons(types, groups, chat_id, language_code, owner_id=None):
         markup.add(itembtn4)
         markup.add(itembtn5)
         markup.add(itembtn6, itembtn7)
-        # markup.add(itembtn10)
 
         groups[chat_id].button_commands.append(text5)
         groups[chat_id].button_commands.append(text6)
@@ -688,3 +703,12 @@ def get_avaible_langs():
     # folder_path = '/path/to/your/folder'
     # directories = list_directories(folder_path)
     # print(directories)
+
+
+def create_archive(folder_path, output_path):
+    with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED) as archive:
+        for folder_root, _, files in walk(folder_path):
+            for file in files:
+                file_path = path.join(folder_root, file)
+                archive_path = path.relpath(file_path, folder_path)
+                archive.write(file_path, archive_path)

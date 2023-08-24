@@ -1,0 +1,13 @@
+ðŸŽ‰ **Notificación de actualización** ðŸŽ‰
+
+¡Hola! Nos complace compartir algunos cambios y mejoras recientes que hemos realizado en nuestro bot de Telegram. Esto es lo nuevo:
+
+ðŸ”§ **Corrección de errores:**
+- {bugs}
+
+âœ¨ **Mejoras:**
+- {improvements}
+
+Estamos dedicados a mejorar su experiencia con nuestro bot. Sus comentarios son increíblemente valiosos para nosotros, así que no dude en comunicarse con nosotros si encuentra algún problema o tiene sugerencias para realizar mejoras adicionales.
+
+¡Gracias por usar nuestro bot! ðŸ¤–ðŸš€

@@ -1,4 +1,4 @@
 Your subscription was ended. Now you are in mode Free.
 
-<i> /purchase to buy subscription</i>
-<i> /account_info to see changes</i>
+<i> Go to Account -> Purchases</i>
+<i> Go to Account to see changes</i>

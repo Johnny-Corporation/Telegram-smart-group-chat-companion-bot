@@ -1,1 +1,1 @@
-Elija, cuánto tiempo serán las respuestas del bot:
+Elija cuánto tiempo durarán las respuestas del bot:

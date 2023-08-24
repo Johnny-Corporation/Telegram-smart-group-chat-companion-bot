@@ -1,3 +1,1 @@
-Se habilitó el envío de respuestas de voz. En cualquier momento, puede desactivarlo en la configuración.
-
-<b>En cualquier momento, puede enviar /atexto en respuesta a un mensaje de voz y el bot lo reenvía en formato de texto.</b>
+Se habilitó el envío de respuestas de voz. En cualquier momento, puedes desactivarlo en la configuración.

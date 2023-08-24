@@ -1,5 +1,5 @@
-Sorry, unexpected error occurred.
+Sorry, unexpected error occurred. Please try to reset memory or wait a few seconds and repeat request, this usualy helps.
 
 Bot is still running!
 
-You can help us by using <i> report_bug </i> command below and providing some details.
+You can help us by using <i> /report_bug </i> command below and providing some details.

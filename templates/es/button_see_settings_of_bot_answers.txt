@@ -1,1 +1,1 @@
-Ver la configuración de las respuestas del bot
+Ver configuración de respuestas de bot

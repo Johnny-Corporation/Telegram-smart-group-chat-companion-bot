@@ -1,4 +1,4 @@
-Introduzca un valor <b>entre 0</b> (el más determinista) <b>a 2</b> (el más aleatorio) <b>en respuesta a este mensaje</b>.
-Este parámetro define qué tan aleatorias son las respuestas de GPT.
+Introduzca un valor <b>de 0</b> (el más determinista) <b>a 2</b> (el más aleatorio) <b>en respuesta a este mensaje</b>.
+Este parámetro define qué tan aleatorias son las respuestas GPT.
 
 <i>Configurar {temperature} ahora</i>

@@ -1,1 +1,1 @@
-Se canceló el cambio de propietario del grupo. Formato de datos incorrecto.
+Se canceló el cambio de propietario del grupo. Formato incorrecto de los datos.

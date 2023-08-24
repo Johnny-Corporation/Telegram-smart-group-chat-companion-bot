@@ -2,9 +2,9 @@
 
 <b>Suscripción: {subscription}</b>
 
-<b>Mensajes {left_messages} dejados</b>
+<b>Dejé {left_messages} mensajes</b>
 
-<b>Izquierda {left_groups} grupos</b>
+<b>Dejó {left_groups} grupos</b>
 
 Grupos: {name_of_groups}
 

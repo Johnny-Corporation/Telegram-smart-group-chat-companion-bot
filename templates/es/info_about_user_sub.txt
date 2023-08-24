@@ -2,8 +2,8 @@
 
 <b>Suscripción: {subscription}</b>
 
-mensajes: Tener {messages} mensajes gratis.
-<b>Mensajes {left_messages} dejados</b>
+mensajes: Ten {messages} mensajes gratis.
+<b>Dejé {left_messages} mensajes</b>
 
 Grupos: Puede tener {groups} grupos.
 <b>Izquierda {left_groups} grupos</b>

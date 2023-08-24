@@ -2,9 +2,9 @@
 
 <b>Подписка: {subscription}</b>
 
-<b>Оставлено {left_messages} сообщений</b>
+<b>Оставил {left_messages} сообщений</b>
 
-<b>Левые {left_groups} группы</b>
+<b>Покинули {left_groups} группы</b>
 
 Группы: {name_of_groups}
 

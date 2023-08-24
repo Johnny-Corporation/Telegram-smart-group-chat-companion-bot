@@ -1,1 +1,1 @@
-Se canceló la aplicación del código de promoción. Formato de datos incorrecto.
+La aplicación del código promocional fue cancelada. Formato incorrecto de los datos.

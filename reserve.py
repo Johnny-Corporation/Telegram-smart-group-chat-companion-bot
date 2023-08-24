@@ -10,11 +10,9 @@ from dotenv import load_dotenv
 
 load_dotenv(".env")
 
-crash_message = """
-We apologize for the inconvenience, but the bot will be briefly unavailable due to essential server maintenance. Rest assured, we'll notify you as soon as we're back online, and your data will remain safe and intact. Thank you for your understanding
-"""
+crash_message = "Apologies, bot down for maintenance"
 
-bot_token = environ.get("BOT_API_TOKEN_OFFICIAL")
+bot_token = environ.get("BOT_API_TOKEN")
 
 bot = TeleBot(bot_token)
 
@@ -53,14 +51,14 @@ def main_messages_handler(message: types.Message):
             "Bot is temporarily unavailable",
             reply_markup=markup,
         )
-        return 
-    if message.chat.type == 'private':
+        return
+    if message.chat.type == "private":
         bot.reply_to(
             message,
             "Bot is temporarily unavailable",
             reply_markup=markup,
         )
-        return 
+        return
 
 
 bot.polling()

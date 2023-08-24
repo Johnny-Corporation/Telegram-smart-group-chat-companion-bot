@@ -1,1 +1,1 @@
-Habilitar/deshabilitar la generación dinámica
+Activar/desactivar la generación dinámica
