@@ -46,7 +46,6 @@ else:
 
 
 templates = load_templates("templates\\")
-stickers = load_stickers("stickers.json")
 blacklist = {}  # chat_id:[messages_ids] needed for filtering messages
 reply_blacklist = {}  # chat_id:[messages_ids] needed for filtering replies to messages
 groups: Dict[int, Johnny] = {}  # {group chat_id:Johnny object}
