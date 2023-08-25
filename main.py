@@ -435,6 +435,7 @@ from commands.settings_change_language import *
 from commands.settings_bot_answers import *
 from commands.settings_change_owner_of_group import *
 from commands.settings_special_features import *
+from commands.settings_change_permissions import *
 from commands.about import *
 from commands.start import *
 from commands.subs_list import *

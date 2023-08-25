@@ -573,7 +573,6 @@ def generate_voice_message(message, text, language, reply_to=None):
 
 
 def video_note_to_audio(bot, message, reply_to=None):
-    print("!!!!!!!!!!!!!!!!!!!!!!!!")
 
     video_file_path = f"output\\video_notes\\video_note_{message.message_id}.mp4"
     audio_file_path = f"output\\video_notes\\audio_{message.message_id}.mp3"
@@ -645,7 +644,7 @@ def take_info_about_sub(subscription):
         "BIG BUSINESS": {
             "allowed_groups": 10,
             "messages_limit": 500,
-            "temporary_memory_size_limit": 1000000000000000000,
+            "temporary_memory_size_limit": 1000,
             "dynamic_gen_permission": True,
             "sphere_permission": True,
             "temperature_permission": True,

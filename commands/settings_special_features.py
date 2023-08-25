@@ -44,12 +44,23 @@ def special_features_settings(message):
 @error_handler
 def enable_disable_dynamic_generation(message):
     language_code = groups[message.chat.id].lang_code
+
+    markup = types.InlineKeyboardMarkup()
+    back_button = types.InlineKeyboardButton(
+        text="Come back",
+        callback_data="back_to_settings",
+    )
+    markup.add(back_button)
+
     groups[message.chat.id].dynamic_gen = not groups[message.chat.id].dynamic_gen
-    bot.reply_to(
-        message,
+    bot.edit_message_text(
         templates[language_code]["dynamic_generation.txt"].format(
             groups[message.chat.id].dynamic_gen
         ),
+        message.chat.id, 
+        message.message_id, 
+        reply_markup=markup, 
+        parse_mode='HTML'
     )
 
 # --- Voice out ---
@@ -58,9 +69,16 @@ def enable_disable_voice_out(message):
 
     language_code = groups[message.chat.id].lang_code
 
+    markup = types.InlineKeyboardMarkup()
+    back_button = types.InlineKeyboardButton(
+        text="Come back",
+        callback_data="back_to_settings",
+    )
+    markup.add(back_button)
+
     groups[message.chat.id].voice_out_enabled = not groups[message.chat.id].voice_out_enabled
 
     if groups[message.chat.id].voice_out_enabled == True:
-        bot.send_message(message.chat.id, templates[language_code]["voice_out_enabled.txt"], parse_mode='html')
+        bot.edit_message_text(templates[language_code]["voice_out_enabled.txt"], message.chat.id, message.message_id, reply_markup=markup, parse_mode='html')
     elif groups[message.chat.id].voice_out_enabled == False:
-        bot.send_message(message.chat.id, templates[language_code]["voice_out_disabled.txt"], parse_mode='html')
+        bot.edit_message_text(templates[language_code]["voice_out_disabled.txt"], message.chat.id, message.message_id, reply_markup=markup, parse_mode='html')

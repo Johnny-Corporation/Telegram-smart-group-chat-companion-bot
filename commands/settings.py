@@ -12,6 +12,11 @@ def settings(message, back_from: bool=False):
         text=templates[language_code]["button_set_up.txt"],
         callback_data="bot_answers",
     )
+    #sphere of conservation
+    sphere_button = types.InlineKeyboardButton(
+        text=templates[language_code]["button_set_sphere.txt"],
+        callback_data="sphere",
+    )
     button2 = types.InlineKeyboardButton(
         text=templates[language_code]["button_change_lang.txt"],
         callback_data="change_lang",
@@ -23,6 +28,7 @@ def settings(message, back_from: bool=False):
 
     # Adding buttons to keyboard
     markup.add(button1)
+    markup.add(sphere_button)
     markup.add(button2)
     markup.add(button3)
 
@@ -32,6 +38,16 @@ def settings(message, back_from: bool=False):
             callback_data="change_owner",
         )
         markup.add(owner_button)
+
+    if message.chat.id == groups[message.chat.id].owner_id:
+        permission_button = types.InlineKeyboardButton(
+            text="Change the permissions of group",
+            callback_data="change_permissions",
+        )
+        markup.add(permission_button)
+
+
+    #Initialize buttons
 
     if back_from:
         bot.edit_message_text(

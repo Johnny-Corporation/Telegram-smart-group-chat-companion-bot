@@ -45,17 +45,31 @@ def keyboard_buttons_handler(call):
             group(message=call.message, back_from=True)
 
 
-        #Translations
+        #Settings
 
         case 'back_to_settings':
             settings(message=call.message, back_from=True)
         case 'bot_answers':
             bot_answers_settings(call.message)
+        case "sphere":
+            if groups[call.message.chat.id].permissions[groups[call.message.chat.id].subscription]["temperature_permission"] == True:
+                set_sphere(call.message)
+            else:
+                bot.send_message(
+                    call.message.chat.id, 
+                    templates[previous_language_code]["no_rights.txt"],
+                    parse_mode = "HTML"
+                )
         case 'special_features':
             special_features_settings(call.message)
+        case 'change_permissions':
+            settings_change_permissions(call.message)
             
 
         # Set up funcs
+        
+        case "back_to_settings_bot_answers":
+            bot_answers_settings(call.message)
 
         case "temperature":
             if groups[call.message.chat.id].permissions[groups[call.message.chat.id].subscription]["temperature_permission"] == True:
@@ -90,15 +104,6 @@ def keyboard_buttons_handler(call):
                 )
         case "answer_length":
             set_length_answer(call.message)
-        case "sphere":
-            if groups[call.message.chat.id].permissions[groups[call.message.chat.id].subscription]["temperature_permission"] == True:
-                set_sphere(call.message)
-            else:
-                bot.send_message(
-                    call.message.chat.id, 
-                    templates[previous_language_code]["no_rights.txt"],
-                    parse_mode = "HTML"
-                )
         case "change_lang":
             change_language(call.message.chat.id)
         case "change_owner":
@@ -106,6 +111,9 @@ def keyboard_buttons_handler(call):
             
 
         # Customization
+
+        case "back_to_settings_customization":
+            special_features_settings(call.message)
 
         case "dyn_gen":
 
@@ -173,8 +181,6 @@ def keyboard_buttons_handler(call):
 
         case "apply_lang":
 
-            print(call)
-
             button_text, button_id = call.data.split('-')
             lang = check_language(button_text)
 
@@ -185,10 +191,8 @@ def keyboard_buttons_handler(call):
 
             try:
                 markup = load_buttons(types, groups, call.message.chat.id, language_code, owner_id=groups[call.message.chat.id].owner_id)
-                print("THE CONDITION IS SUCCESS")
                 bot.send_message(call.message.chat.id, translate_text(lang[1],f"Language changed to {lang[1]} "), reply_markup=markup)
             except:
-                print("THE CONDIOTION WAAS FAILED")
                 bot.send_message(call.message.chat.id, translate_text(lang[1],f"Language changed to {lang[1]} "))
 
 
