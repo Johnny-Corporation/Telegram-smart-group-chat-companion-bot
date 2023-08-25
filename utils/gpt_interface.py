@@ -6,6 +6,7 @@ import json
 from utils.internet_access import *
 from time import sleep
 
+
 # Cant import from functions because og the cycle imports
 def load_templates(dir: str) -> dict:
     file_dict = {}
@@ -156,7 +157,9 @@ def create_chat_completion(
     except openai.error.APIError as e:
         logger.error(f"OpenAI API returned an API Error: {e}")
         functions.send_to_developers(
-            "❗❗Server error occurred, trying to reset memory and wait 5 seconds...❗❗", johnny.bot, environ["DEVELOPER_CHAT_IDS"]
+            "❗❗Server error occurred, trying to reset memory and wait 5 seconds...❗❗",
+            johnny.bot,
+            environ["DEVELOPER_CHAT_IDS"].split(","),
         )
         johnny.messages_history = []
         sleep(5)
