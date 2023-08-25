@@ -20,7 +20,6 @@ import traceback
 from datetime import datetime
 import threading
 from typing import Dict
-from shutil import copytree
 
 # --------------- Initialization ---------------
 

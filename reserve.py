@@ -64,6 +64,8 @@ for filename in file_list:
     file_path = path.join("output/clients_info", filename)
     with open(file_path, "r", encoding="utf-8") as file:
         if str(chat_id := json.load(file)["id"]) in developer_chat_ids:
+            if path.exists("temp\\error.txt"):
+                send_file("temp\\error.txt", chat_id, bot)
             bot.send_message(chat_id, crash_message, reply_markup=dev_markup)
         else:
             bot.send_message(chat_id, crash_message, reply_markup=markup)
