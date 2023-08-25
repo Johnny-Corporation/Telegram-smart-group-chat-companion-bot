@@ -1,1 +1,1 @@
-Se canceló la compra de nuevos mensajes. Formato de datos incorrecto.
+Se canceló la compra de mensajes nuevos. Formato incorrecto de los datos.

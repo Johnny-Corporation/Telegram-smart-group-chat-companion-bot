@@ -1,9 +1,32 @@
 import openai
-from os import environ
+from os import environ, path, listdir
 from utils.logger import logger  # needed for hidden logs, do not remove
 import utils.functions as functions
 import json
 from utils.internet_access import *
+from time import sleep
+
+# Cant import from functions because og the cycle imports
+def load_templates(dir: str) -> dict:
+    file_dict = {}
+    for language_code in listdir(dir):
+        if path.isfile(path.join(dir, language_code)):
+            with open(path.join(dir, language_code), "r") as f:
+                file_dict[language_code] = f.read()
+            continue
+        for file_name in listdir(path.join(dir, language_code)):
+            if file_name.endswith(".txt"):
+                file_path = path.join(dir, language_code, file_name)
+                with open(file_path, "r", encoding="utf-8") as file:
+                    content = file.read()
+                    if language_code not in file_dict:
+                        file_dict[language_code] = {file_name: content}
+                    else:
+                        file_dict[language_code][file_name] = content
+    return file_dict
+
+
+templates = load_templates("templates\\")
 
 openAI_api_key = environ.get("OPENAI_API_KEY")
 if not openAI_api_key:
@@ -61,15 +84,19 @@ def generate_image_and_send(bot, chat_id, prompt, n=1, size="1024x1024"):
     urls = generate_image(prompt, n, size)
     for url in urls:
         functions.send_image_from_link(bot, url, chat_id)
+        functions.download_and_save_image_from_link(
+            url, f"DALLE_IMAGE_NUMBER_{urls.index(url)}_WITH_PROMPT_{prompt}.png"
+        )
 
     return f"Function has sent {n} AI-generated image(s). (prompt:'{prompt}')"
 
 
 def create_chat_completion(
+    johnny,  # for resetting memory in when server error
     messages: list,
     lang: str = "en",
     system_content: str = None,
-    answer_length: int = "as you need",
+    answer_length: int = "short",
     use_functions: bool = False,
     reply: bool = False,  # SYS
     model: str = "gpt-3.5-turbo",
@@ -87,19 +114,20 @@ def create_chat_completion(
     """
 
     # --- Building system content ---
-    system_content = "You are a group chat participant. "
-    if reply:
-        system_content += "Focus on the last message. "
+    # system_content = "You are a group chat participant. "
+    # if reply:
+    #     system_content += "Focus on the last message. "
 
-    system_content += "Ask questions if you need. "
-    system_content += f"Your answer should be {answer_length}. "
+    # system_content += "Ask questions if you need. "
+    system_content = f"Your answer should be {answer_length}. "
 
-    previous_messages = [
-        {
-            "role": "system",
-            "content": functions.translate_text(lang, system_content),
-        }
-    ]
+    if system_content:
+        previous_messages = [
+            {
+                "role": "system",
+                "content": system_content,
+            }
+        ]
 
     # --- Building messages ---
 
@@ -119,11 +147,34 @@ def create_chat_completion(
         "presence_penalty": presence_penalty,
     }
     if use_functions:
-        chat_completion_arguments["functions"] = load_functions_for_gpt()
+        chat_completion_arguments["functions"] = gpt_functions_description
         chat_completion_arguments["function_call"] = "auto"
 
-    # Context length exceeded
-    completion = openai.ChatCompletion.create(**chat_completion_arguments)
+    try:
+        logger.info("Requesting gpt...")
+        completion = openai.ChatCompletion.create(**chat_completion_arguments)
+    except openai.error.APIError as e:
+        logger.error(f"OpenAI API returned an API Error: {e}")
+        functions.send_to_developers(
+            "❗❗Server error occurred, trying to reset memory and wait 5 seconds...❗❗", johnny.bot, environ["DEVELOPER_CHAT_IDS"]
+        )
+        johnny.messages_history = []
+        sleep(5)
+        completion = openai.ChatCompletion.create(**chat_completion_arguments)
+
+    except openai.error.APIConnectionError as e:
+        logger.error(f"Failed to connect to OpenAI API: {e}")
+        raise e
+    except openai.error.RateLimitError as e:
+        print(f"OpenAI API request exceeded rate limit: {e}")
+        johnny.messages_to_be_deleted.append(
+            johnny.bot.send_message(
+                johnny.message.chat.id, templates[johnny.lang_code]["high_demand.txt"]
+            )
+        )
+        return "[WAIT]"
+    else:
+        logger.info("GPT answered, success 🎉🎉🎉")
 
     logger.info(f"API completion object: {completion}")
 
@@ -153,8 +204,13 @@ def get_official_function_response(
 
 
 def load_functions_for_gpt():
+    global gpt_functions_description
     with open("utils\\gpt_functions_description.json") as f:
-        return json.load(f)
+        gpt_functions_description = json.load(f)
+        return gpt_functions_description
+
+
+load_functions_for_gpt()
 
 
 def check_context_understanding(answer):

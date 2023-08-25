@@ -1,58 +1,57 @@
 from __main__ import *
 
 
-
 # ---------- Main message ----------
+
 
 @bot.message_handler(commands=["bot_answers_settings"], func=time_filter)
 @error_handler
 def bot_answers_settings(message):
     language_code = groups[message.chat.id].lang_code
 
-
     # --- Buttons ---
 
     set_up_markup = types.InlineKeyboardMarkup()
 
-    #probability
-    if message.chat.id<0:
+    # probability
+    if message.chat.id < 0:
         answer_probability_button = types.InlineKeyboardButton(
             text=templates[language_code]["button_set_ans.txt"],
             callback_data="answer_probability",
         )
         set_up_markup.add(answer_probability_button)
 
-    #temperature
+    # temperature
     temp_button = types.InlineKeyboardButton(
         text=templates[language_code]["button_set_temp.txt"],
         callback_data="temperature",
     )
 
-    #length of bot memory
+    # length of bot memory
     memory_button = types.InlineKeyboardButton(
         text=templates[language_code]["button_set_memory.txt"],
         callback_data="memory_length",
     )
 
-    #frequency_penalty
+    # frequency_penalty
     freq_penalty_button = types.InlineKeyboardButton(
         text=templates[language_code]["button_set_variety.txt"],
         callback_data="variety",
     )
 
-    #presence penalty
+    # presence penalty
     pres_penalty_button = types.InlineKeyboardButton(
         text=templates[language_code]["button_set_creativity.txt"],
         callback_data="creativity",
     )
 
-    #length of bot's answers
+    # length of bot's answers
     len_button = types.InlineKeyboardButton(
         text=templates[language_code]["button_set_length_answer.txt"],
         callback_data="answer_length",
     )
 
-    #Back to settings
+    # Back to settings
     back_button = types.InlineKeyboardButton(
         text="<<<",
         callback_data="back_to_settings",
@@ -60,24 +59,23 @@ def bot_answers_settings(message):
 
     # Adding buttons to keyboard
     set_up_markup.add(freq_penalty_button, pres_penalty_button)
-    set_up_markup.add(memory_button, temp_button)
+    # set_up_markup.add(memory_button, temp_button)
     set_up_markup.add(len_button)
     set_up_markup.add(back_button)
-    
-    
 
     # --- Edit 'Settings' message ---
     bot.edit_message_text(
-        templates[language_code]["set_up_functions.txt"], 
-        message.chat.id, 
-        message.message_id, 
+        templates[language_code]["set_up_functions.txt"],
+        message.chat.id,
+        message.message_id,
         reply_markup=set_up_markup,
-        parse_mode="HTML")
+        parse_mode="HTML",)
     
 
 
 
 # ---------- From buttons messages ----------
+
 
 # --- Set probability ---
 def set_probability(message):

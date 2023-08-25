@@ -12,4 +12,12 @@ MessageEvents.sqlite
 MessageEvents.db
 logs/
 output/
+outputs_archive/
 test.py
+test2.py
+critical_error.txt
+output.zip
+outputs_archive.zip
+outputs_archive/
+temp/
+server/

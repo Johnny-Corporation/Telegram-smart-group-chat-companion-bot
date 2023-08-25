@@ -4,4 +4,4 @@ La generación dinámica es {dynamic_gen_en}.
 
 La salida de voz es {voice_out}
 
-En <i>Configuración/Oportunidades especiales</i> puedes cambiarlo
+En <i>Configuración/oportunidades especiales</i> puedes cambiarlo.

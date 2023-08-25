@@ -18,7 +18,7 @@ def enable(message):
             message, templates[language_code]["enabled_user.txt"], reply_markup=markup_commands, parse_mode="HTML"
         )
     else:
-        markup = types.InlineKeyboardMarkup()
+        reply_markup = types.InlineKeyboardMarkup()
         button = types.InlineKeyboardButton(
             text=templates[language_code]["button_enable_auto.txt"],
             callback_data="auto_mode",
@@ -56,7 +56,7 @@ def auto_enable(message):
         templates[language_code]["enabled_auto.txt"].format(
             probability=groups[message.chat.id].trigger_probability
         ),
-        markup=markup_commands,
+        reply_markup=markup_commands,
         parse_mode="HTML",
     )
 
@@ -98,4 +98,4 @@ def disable(message):
 
     markup = load_buttons(types, groups, message.chat.id, language_code, owner_id=groups[message.chat.id].owner_id)
 
-    bot.send_message(message.chat.id, templates[language_code]["disabled.txt"], markup=markup)
+    bot.send_message(message.chat.id, templates[language_code]["disabled.txt"], reply_markup=markup)

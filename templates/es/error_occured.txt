@@ -1,5 +1,5 @@
-Lo sentimos, ocurrió un error inesperado.
+Lo sentimos, ocurrió un error inesperado. Intente restablecer la memoria o espere unos segundos y repita la solicitud; esto suele ayudar.
 
-¡El bot todavía se está ejecutando!
+¡El robot sigue funcionando!
 
-Puede ayudarnos utilizando el comando <i> report_bug </i> a continuación y proporcionando algunos detalles.
+Puedes ayudarnos usando el comando <i> /report_bug </i> a continuación y brindando algunos detalles.

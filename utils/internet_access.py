@@ -1,8 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 from utils.logger import logger
+import re
 
-tokens_limit = 16000  # depends on model!!!!
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
 }
@@ -23,7 +23,7 @@ def google(question: str) -> str:
             result_string += (
                 f"{result.get_text()} - {'https://www.google.com'+result['href']}\n"
             )
-        if i == 5:
+        if i == 4:  # 5 top results
             break
 
     logger.debug(f"Results from google search: {result_string}")
@@ -41,9 +41,8 @@ def read_from_link(link: str) -> str:
 
     soup = BeautifulSoup(response.content, "html.parser")
     texts = soup.stripped_strings
-    all_text = " ".join(texts)
-    if len(all_text) >= tokens_limit:
-        all_text = all_text[: tokens_limit - 2]
+    all_text = re.sub(r"[^a-zA-Z0-9\s]", "", " ".join(texts))[200:700]
+
     logger.info(f"Text parsed form link {link}:{all_text}")
 
     return all_text

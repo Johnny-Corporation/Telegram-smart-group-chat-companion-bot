@@ -21,7 +21,6 @@ from datetime import datetime
 import threading
 from typing import Dict
 
-
 # --------------- Initialization ---------------
 
 load_dotenv(".env")
@@ -47,7 +46,6 @@ else:
 
 
 templates = load_templates("templates\\")
-stickers = load_stickers("stickers.json")
 blacklist = {}  # chat_id:[messages_ids] needed for filtering messages
 reply_blacklist = {}  # chat_id:[messages_ids] needed for filtering replies to messages
 groups: Dict[int, Johnny] = {}  # {group chat_id:Johnny object}
@@ -56,7 +54,9 @@ groups: Dict[int, Johnny] = {}  # {group chat_id:Johnny object}
 makedirs("output\\groups_info", exist_ok=True)
 makedirs("output\\clients_info", exist_ok=True)
 makedirs("output\\files", exist_ok=True)
-
+makedirs("output\\files\\DALLE", exist_ok=True)
+makedirs("temp\\", exist_ok=True)
+makedirs("outputs_archive\\", exist_ok=True)
 
 bot = TeleBot(bot_token)
 bot_id = bot.get_me().id
@@ -236,7 +236,7 @@ def change_language(chat_id):
 
 
 def send_welcome_text_and_load_data(
-    chat_id: int, owner_id: int, language_code: str = "en"
+    message, chat_id: int, owner_id: int, language_code: str = "en"
 ) -> None:
     if owner_id not in groups:
         bot.send_message(chat_id, f"Register in @{bot_username}")
@@ -309,12 +309,13 @@ def send_welcome_text_and_load_data(
     # Welcome text for group and user
     if chat_id > 0:
         groups[chat_id].trigger_probability = 1
-        bot.send_message(
-            chat_id,
-            groups[chat_id].templates[language_code]["new_user_welcome.txt"],
-            reply_markup=markup,
-            parse_mode="HTML",
-        )
+        if str(chat_id) not in developer_chat_IDs:
+            bot.send_message(
+                chat_id,
+                groups[chat_id].templates[language_code]["new_user_welcome.txt"],
+                reply_markup=markup,
+                parse_mode="HTML",
+            )
     else:
         bot.send_message(
             chat_id,
@@ -325,6 +326,22 @@ def send_welcome_text_and_load_data(
 
     # Suggestion to user try trial subscription
     if chat_id > 0:
+        if str(chat_id) in developer_chat_IDs:
+            bot.send_message(
+                chat_id,
+                f"As a developer, you granted BIG BUSINESS \n {'='*20} \n Как разработчику, вам выдана подписка BIG BUSINESS",
+                reply_markup=markup,
+            )
+            groups[message.chat.id].add_new_user(
+                message.chat.id,
+                message.from_user.first_name,
+                message.from_user.last_name,
+                message.from_user.username,
+                "BIG BUSINESS",
+                99999999,
+            )
+            groups[message.chat.id].load_subscription(message.chat.id)
+            return
         if new_user:
             markup = types.InlineKeyboardMarkup()
 
@@ -487,7 +504,7 @@ def main_messages_handler(message: types.Message):
         if button_on:
             return
 
-        # Checks the regisration of user
+        # Checks the registration of user
         if groups[message.chat.id].activated == False:
             return
 

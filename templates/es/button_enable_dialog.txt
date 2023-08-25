@@ -1,1 +1,1 @@
-Diálogo: el bot responde en cada mensaje
+Diálogo: el robot responde a cada mensaje

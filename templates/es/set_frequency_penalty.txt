@@ -1,4 +1,4 @@
 Introduzca un valor <b>de 0</b> (el menos variado) <b>a 2</b> (el más variado) <b>en respuesta a este mensaje</b>.
-La diversidad de respuestas hace que el bot responda de forma más variada.
+La diversidad de respuestas hace que el bot responda de manera más variada.
 
 <i>Configurar {frequency_penalty} ahora</i>

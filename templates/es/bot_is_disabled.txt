@@ -1,1 +1,1 @@
-Su bot está deshabilitado. /habilitar para activarlo
+Tu bot está deshabilitado. /enable para activarlo

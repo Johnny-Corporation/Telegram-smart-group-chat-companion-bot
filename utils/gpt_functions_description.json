@@ -1,13 +1,13 @@
 [
     {
         "name": "google",
-        "description": "Google question in google",
+        "description": "Google question",
         "parameters": {
             "type": "object",
             "properties": {
                 "question": {
                     "type": "string",
-                    "description": "The question which will be googled"
+                    "description": "Will be googled"
                 }
             },
             "required": [
@@ -17,7 +17,7 @@
     },
     {
         "name": "read_from_link",
-        "description": "Get text and links from url",
+        "description": "Get content from url",
         "parameters": {
             "type": "object",
             "properties": {
@@ -33,17 +33,17 @@
     },
     {
         "name": "generate_image",
-        "description": "Uses DALLE to generate and send image(s)",
+        "description": "Generates and sends image(s)",
         "parameters": {
             "type": "object",
             "properties": {
                 "prompt": {
                     "type": "string",
-                    "description": "DALLE prompt. Only in english!"
+                    "description": "Very detailed, only in english"
                 },
                 "n": {
                     "type": "integer",
-                    "description": "Number of images to generate, all generated messages will be sent one by one"
+                    "description": "Number of images, all images will be sent one by one"
                 }
             },
             "required": [

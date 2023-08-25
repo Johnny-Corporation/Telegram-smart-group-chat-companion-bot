@@ -15,7 +15,7 @@
 <b>{presense_penalty}</b> – Die Wahrscheinlichkeit, dass das Model darüber sprichtt neue Themen.
  /set_creativity – Wahrscheinlichkeit des Modells ändern, über neue Themen zu sprechen.
 
-<b>{length}</b> – Die Größe der Antworten des Bots zurück
+<b>{length}</b> – Die Größe der Antworten des Bots
  /set_length_answer – zum Zurücksetzen der Größe der Bot-Nachrichten
 
 <b>'{sphere}</b> - Der Bereich Ihrer Erhaltung.

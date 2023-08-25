@@ -1,5 +1,5 @@
-¡Tu bot está trabajando en AutoMode!
+¡Tu bot está funcionando en modo automático!
 
 Responde con tal<i> {probability} probabilidad</i>. ¡Puedes cambiarlo en la configuración!
 
-¡Cambiar el modo o deshabilitarlo puede hacerlo a continuación!
+¡Puedes cambiar el modo o desactivarlo a continuación!

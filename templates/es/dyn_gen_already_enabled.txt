@@ -1,1 +1,1 @@
-Generación dinámica de mensajes ya habilitada. Se deshabilitará.
+Generación dinámica de mensajes ya habilitada. Se desactivará.

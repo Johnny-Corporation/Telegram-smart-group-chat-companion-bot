@@ -10,8 +10,8 @@ Suscripción: {subscription}
 
 <b>mensajes</b>
 El grupo ha gastado <b>{spent_messages} mensajes</b>.
-mensajes dejados: {messages_left}
+mensajes restantes: {messages_left}
 
-A continuación puede ver la configuración en este grupo:
+A continuación puede ver la configuración de este grupo:
 
 <i>/change_owner_of_group para cambiar el propietario del grupo</i>

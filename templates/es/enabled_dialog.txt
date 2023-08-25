@@ -1,3 +1,3 @@
 ¡Tu bot está trabajando en modo de diálogo!
 
-¡Cambiar el modo o deshabilitarlo puede hacerlo a continuación!
+¡Puedes cambiar el modo o desactivarlo a continuación!

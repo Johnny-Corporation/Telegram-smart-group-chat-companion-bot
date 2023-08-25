@@ -1,1 +1,1 @@
-Habilitar/deshabilitar el envío de mensajes de voz de Johnny
+Activar/desactivar el envío de mensajes de voz de Johnny

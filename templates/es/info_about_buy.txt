@@ -3,4 +3,4 @@ Costo: {cost} rublos.
 
 <i> /subs_list para saber más</i>
 
-Presione el botón para comprar:
+Pulsa el botón para comprar:

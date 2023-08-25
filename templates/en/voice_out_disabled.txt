@@ -1,3 +1,1 @@
 Sending voice answers was disabled. Anytime, you can enable it in settings.
-
-<b>Anytime, you can send /tovoice in reply to text message, and bot resend it in text format.</b>

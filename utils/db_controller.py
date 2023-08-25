@@ -235,7 +235,7 @@ class Controller:
 
         return users_dict
 
-    def get_last_n_message_events_from_chat(self, n: int, chat_id: int = None):
+    def get_last_n_message_events_from_chat(self, n: int, chat_id: int):
         """Get last n rows from db in list format
 
         Args:
@@ -246,17 +246,17 @@ class Controller:
             list
         """
         self.cursor.execute(
-            f"""
+            """
             SELECT * FROM MessageEvents
-            {"WHERE ChatID = ?" if chat_id else ""}
+            WHERE ChatID = ?
             ORDER BY Time DESC
             LIMIT ?
             """,
-            ((n, chat_id) if chat_id else (n,)),
+            (chat_id, n),
         )
         return self.cursor.fetchall()
 
-    def get_last_n_messages_from_chat(self, n: int, chat_id: int = None):
+    def get_last_n_messages_from_chat(self, n: int, chat_id: int):
         """Get last n messages from db
 
         Args:
@@ -266,7 +266,7 @@ class Controller:
         Returns:
             list
         """
-        message_events = self.get_last_n_message_events_from_chat(n, chat_id)
+        message_events = self.get_last_n_message_events_from_chat(n=n, chat_id=chat_id)
 
         # Extract the text and names from events
         messages = [[event[4], event[2]] for event in message_events]
