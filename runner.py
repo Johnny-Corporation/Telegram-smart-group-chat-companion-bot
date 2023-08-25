@@ -1,4 +1,7 @@
+from time import sleep
+
 try:
+    sleep(1)
     exec(open("main.py", encoding="utf-8").read())
 except Exception as e:
     print("~" * 3000)
