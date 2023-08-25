@@ -106,7 +106,7 @@ def keyboard_buttons_handler(call):
                 ]["temperature_permission"]
                 == True
             ):
-                set_sphere(call.message)
+                set_sphere_command(call.message)
             else:
                 bot.send_message(
                     call.message.chat.id,
