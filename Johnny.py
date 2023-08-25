@@ -115,8 +115,10 @@ class Johnny:
     def get_completion(self, allow_function_call=None):
         """Returns completion object and takes one time arguments."""
         # Checking tokens limit
-        while self.get_num_tokens_from_messages() > self.tokens_limit:
+        current_tokens = self.get_num_tokens_from_messages()
+        while current_tokens > self.tokens_limit:
             self.messages_history.pop(0)
+            current_tokens = self.get_num_tokens_from_messages()
         return gpt.create_chat_completion(
             self,
             self.messages_history,
@@ -522,7 +524,8 @@ class Johnny:
                 4  # every message follows <im_start>{role/name}\n{content}<im_end>\n
             )
             for key, value in message.items():
-                num_tokens += len(encoding.encode(value))
+                print("@@@", value)
+                num_tokens += len(encoding.encode(str(value)))
                 if key == "name":  # if there's a name, the role is omitted
                     num_tokens += -1  # role is always required and always 1 token
         num_tokens += 2  # every reply is primed with <im_start>assistant
