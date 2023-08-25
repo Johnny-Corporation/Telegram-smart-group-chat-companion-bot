@@ -1,5 +1,6 @@
 # ---------------  Imports ---------------
-from os import environ, makedirs, path, remove
+from os import environ, makedirs, path, remove, path
+from shutil import copytree
 
 makedirs("output//", exist_ok=True)
 
@@ -50,6 +51,12 @@ blacklist = {}  # chat_id:[messages_ids] needed for filtering messages
 reply_blacklist = {}  # chat_id:[messages_ids] needed for filtering replies to messages
 groups: Dict[int, Johnny] = {}  # {group chat_id:Johnny object}
 
+if path.exists("output"):
+    makedirs("outputs_archive", exist_ok=True)
+    copytree(
+        "output",
+        f"outputs_archive\\output_{str(datetime.now()).split('.')[0].replace(' ','_').replace(':','-')}",
+    )
 
 makedirs("output\\groups_info", exist_ok=True)
 makedirs("output\\clients_info", exist_ok=True)
