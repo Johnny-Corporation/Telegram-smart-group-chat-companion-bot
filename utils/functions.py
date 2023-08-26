@@ -9,6 +9,7 @@ import zipfile
 import xlrd
 import openpyxl
 import docx2txt
+import PyPDF2
 
 from gtts import gTTS
 from langdetect import detect
@@ -192,18 +193,31 @@ def get_file_content(path):
             file_content = read_text_from_xlsx(path)
         elif path.split(".")[-1] == "docx":
             file_content = read_word_file(path)
+
         elif path.split(".")[-1] == "doc":
             file_content = (
                 "You cant read content of this file, ask user to send in .docx format"
             )
+        elif path.split(".")[-1] == "pdf":
+            file_content = extract_text_from_pdf(path)
         else:
             with open(path, "r", encoding="utf-8") as f:
                 file_content = f.read()
 
-        # Send back the first 1000 characters of the file (to avoid message length limits)
-        return file_content[:4000]
+        return file_content[:2000]
     except Exception as e:
         return "file content cant be read"
+
+
+def extract_text_from_pdf(pdf_path):
+    text = ""
+    with open(pdf_path, "rb") as pdf_file:
+        pdf_reader = PyPDF2.PdfReader(pdf_file)
+        num_pages = len(pdf_reader.pages)
+        for page_num in range(num_pages):
+            page = pdf_reader.pages[page_num]
+            text += page.extract_text()
+    return text[:4000]
 
 
 def read_word_file(file_path):
@@ -731,7 +745,7 @@ def read_text_from_image(url):
     print(result)
 
     if "all_text" in response.json():
-        return response.json()["all_text"]
+        return response.json()["all_text"][:2000]
     else:
         return "No text detected!"
 

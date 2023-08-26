@@ -140,7 +140,12 @@ class Johnny:
 
     def clean_memory(self):
         for m in self.messages_history:
-            if (m[0] == "$FUNCTION$") or ("[FILE]" in m[1]):
+            if (
+                m[0]
+                == "$FUNCTION$"
+                # or ("[FILE]" in m[1])
+                # or ("[USER SENT AN IMAGE]" in m[1])
+            ):
                 self.messages_history.remove(m)
         self.messages_history = self.messages_history[:-1]
 
@@ -203,7 +208,10 @@ class Johnny:
         match message.content_type:
             case "document":
                 self.download_file(message)
-                text = get_file_content(self.last_downloaded_file_path)
+                text = (
+                    "[FILE](Because u cant process files, i will provide its content: )\n"
+                    + get_file_content(self.last_downloaded_file_path)
+                )
             case "photo":
                 threading.Thread(target=self.download_image, args=(message,)).start()
                 self.messages_to_be_deleted.append(
@@ -242,7 +250,12 @@ class Johnny:
         )
         self.message = message
         # --- Add message to temporary memory ---
-        self.messages_history.append([message.from_user.first_name, text.replace("@SmartGroupParticipant_bot","")])
+        self.messages_history.append(
+            [
+                message.from_user.first_name,
+                text.replace("@SmartGroupParticipant_bot", ""),
+            ]
+        )
         if len(self.messages_history) == self.temporary_memory_size:
             self.messages_history.pop(0)
 
