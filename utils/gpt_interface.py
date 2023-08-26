@@ -120,7 +120,7 @@ def create_chat_completion(
     #     system_content += "Focus on the last message. "
 
     # system_content += "Ask questions if you need. "
-    system_content = f"Your answer should be {answer_length}. If user will send file, you will receive its content."
+    system_content = f"Your answer should be {answer_length}"
 
     previous_messages = [
         {

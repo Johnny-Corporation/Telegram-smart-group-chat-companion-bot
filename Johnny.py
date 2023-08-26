@@ -139,15 +139,16 @@ class Johnny:
         )
 
     def clean_memory(self):
-        for m in self.messages_history:
+        for m in self.messages_history[:-4]:
             if (
                 m[0]
                 == "$FUNCTION$"
-                # or ("[FILE]" in m[1])
-                # or ("[USER SENT AN IMAGE]" in m[1])
+                or ("[FILE]" in m[1])
+                or ("[USER SENT AN IMAGE]" in m[1])
             ):
                 self.messages_history.remove(m)
-        self.messages_history = self.messages_history[:-1]
+        if len(self.messages_history) > 6:
+            self.messages_history = self.messages_history[1:]
 
     def one_answer(self, message: Message, groups: dict):
         response = gpt.create_chat_completion(
