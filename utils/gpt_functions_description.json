@@ -39,11 +39,7 @@
             "properties": {
                 "prompt": {
                     "type": "string",
-                    "description": "Very detailed, only in english"
-                },
-                "n": {
-                    "type": "integer",
-                    "description": "Number of images, all images will be sent one by one"
+                    "description": "Extremely detailed and verbose, only in english"
                 }
             },
             "required": [

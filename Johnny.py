@@ -45,6 +45,8 @@ functions_waiting_messages = {
     "google": "googling_question.txt",
     "read_from_link": "reading_from_link.txt",
     "generate_image": "generate_image.txt",
+    "generate_image_dalle": "generate_image.txt",
+    "generate_image_replicate_kandinsky_2_2": "generate_image.txt",
 }
 
 

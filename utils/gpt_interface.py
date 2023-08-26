@@ -5,6 +5,7 @@ import utils.functions as functions
 import json
 from utils.internet_access import *
 from time import sleep
+import replicate
 
 
 # Cant import from functions because og the cycle imports
@@ -71,7 +72,7 @@ def get_messages_in_official_format(messages):
     return previous_messages
 
 
-def generate_image(prompt, n, size):
+def generate_image_dalle(prompt, n, size):
     """Returns links to image"""
     response = openai.Image.create(prompt=prompt, n=n, size=size)
     links = []
@@ -80,9 +81,22 @@ def generate_image(prompt, n, size):
     return links
 
 
+def generate_image_replicate_kandinsky_2_2(prompt, n, size):
+    output = replicate.run(
+        "ai-forever/kandinsky-2.2:ea1addaab376f4dc227f5368bbd8eff901820fd1cc14ed8cad63b29249e9d463",
+        input={
+            "prompt": prompt,
+            "num_outputs": 1,
+            "width": 384,
+            "height": 384,
+        },
+    )
+    return output
+
+
 def generate_image_and_send(bot, chat_id, prompt, n=1, size="1024x1024"):
     """Returns message which will be added to history, prompt and info about image"""
-    urls = generate_image(prompt, n, size)
+    urls = generate_image_replicate_kandinsky_2_2(prompt, n, size)
     for url in urls:
         functions.send_image_from_link(bot, url, chat_id)
         functions.download_and_save_image_from_link(
