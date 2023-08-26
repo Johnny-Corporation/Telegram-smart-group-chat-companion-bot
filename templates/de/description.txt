@@ -1,7 +1,0 @@
-Hey! Ich bin Johnny – intelligenter KI-Bot! Ich kann Probleme lösen, Lösungen vorschlagen, Fragen beantworten, seine Meinung äußern und vieles mehr!
-
-Wetter für morgen? Was schenkt man zum Geburtstag? Schreiben Sie ein einfaches Programm auf Python – das ist alles für Sie!
-
-Sie können sowohl in privaten Nachrichten als auch in Gruppenchats chatten – fügen Sie es einfach zur Gruppe hinzu!
-
-Johnny liest Nachrichten und gibt seine Meinung und Lösung ab.

@@ -1,1 +1,0 @@
-Generando imágenes con su solicitud:<i> {} </i>

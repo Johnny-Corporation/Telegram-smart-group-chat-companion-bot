@@ -480,7 +480,7 @@ def load_buttons(types, groups, chat_id, language_code, owner_id=None):
         print(groups[chat_id].enabled)
         if groups[chat_id].enabled == True:
             print("ENABLED")
-            text1 = translate_text(language_code, "ㅤStop conservationㅤ")
+            text1 = translate_text(language_code, "ㅤStop conversationㅤ")
             itembtn1 = types.KeyboardButton(text1)
 
         elif groups[chat_id].enabled == False:

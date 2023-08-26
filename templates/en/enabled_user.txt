@@ -1,5 +1,5 @@
 Bot is turned on now and reading new messsage to debate!
 
-Below you can start conservation again, apply additional tools
+Below you can start conversation again, apply additional tools
 
 <i>*Use  /about to know more!*</i>

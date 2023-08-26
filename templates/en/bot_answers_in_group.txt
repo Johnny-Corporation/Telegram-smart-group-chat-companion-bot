@@ -18,7 +18,7 @@
 <b>{length}</b> - The size of bot's answers back
  /set_length_answer - for change the size of bot's messages back
 
-<b>'{sphere}'</b> - The sphere of your conservation.
+<b>'{sphere}'</b> - The sphere of your conversation.
  /set_sphere - for add/change the sphere of 
  
  In<i> Settings/change the answers of Johnny </i> you can change it

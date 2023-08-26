@@ -1,6 +1,0 @@
-{type_of_buy}.
-Kosten: {cost} Rubel.
-
-<i> /subs_list, um mehr zu erfahren</i>
-
-Zum Kaufen den Knopf drücken:

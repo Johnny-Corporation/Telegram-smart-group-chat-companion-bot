@@ -1,1 +1,0 @@
-Sie kaufen neue {val} Nachrichten. Sie haben einen {sub}-Plan, also dieser Preisnachlass.

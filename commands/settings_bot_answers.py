@@ -51,7 +51,7 @@ def bot_answers_settings(message):
         callback_data="answer_length",
     )
 
-    # sphere of conservation
+    # sphere of conversation
     sphere_button = types.InlineKeyboardButton(
         text=templates[language_code]["button_set_sphere.txt"],
         callback_data="sphere",
@@ -190,7 +190,7 @@ def set_length_answer_command(message):
     )
 
 
-# --- Set sphere of conservation ---
+# --- Set sphere of conversation ---
 @error_handler
 def set_sphere_command(message):
     language_code = groups[message.chat.id].lang_code

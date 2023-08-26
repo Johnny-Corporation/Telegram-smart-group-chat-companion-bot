@@ -122,13 +122,12 @@ def create_chat_completion(
     # system_content += "Ask questions if you need. "
     system_content = f"Your answer should be {answer_length}. "
 
-    if system_content:
-        previous_messages = [
-            {
-                "role": "system",
-                "content": system_content,
-            }
-        ]
+    previous_messages = [
+        {
+            "role": "system",
+            "content": system_content,
+        }
+    ]
 
     # --- Building messages ---
 
@@ -161,7 +160,32 @@ def create_chat_completion(
             johnny.bot,
             environ["DEVELOPER_CHAT_IDS"].split(","),
         )
-        johnny.messages_history = []
+        johnny.messages_history = [
+            johnny.messages_history[-1],
+        ]
+        previous_messages = [
+            {
+                "role": "system",
+                "content": system_content,
+            }
+        ]
+        previous_messages.extend(
+            get_messages_in_official_format(johnny.messages_history)
+        )
+        chat_completion_arguments = {
+            "model": model,
+            "messages": previous_messages,
+            "temperature": temperature,
+            "top_p": top_p,
+            "n": n,
+            "stream": stream,
+            "stop": stop,
+            "frequency_penalty": frequency_penalty,
+            "presence_penalty": presence_penalty,
+        }
+        if use_functions:
+            chat_completion_arguments["functions"] = gpt_functions_description
+            chat_completion_arguments["function_call"] = "auto"
         sleep(5)
         completion = openai.ChatCompletion.create(**chat_completion_arguments)
 

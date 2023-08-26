@@ -1,5 +1,0 @@
-Ihr Bot arbeitet im manuellen Modus!
-
-Antworten Sie Johnny oder markieren Sie ihn, damit er Johnny anruft!
-
-Den Modus ändern oder ihn deaktivieren können Sie unten!

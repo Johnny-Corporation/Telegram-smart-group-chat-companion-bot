@@ -1,4 +1,0 @@
-Geben Sie als Antwort auf die Nachricht <b>den Umfang Ihrer Erhaltung (z. B. geschäftliches ETP) ein</b>.
-Der Bot antwortet jetzt nur, wenn Sie dieses Thema besprechen.
-
-<i>Jetzt einrichten: {sphere}</i>
