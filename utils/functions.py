@@ -6,6 +6,9 @@ from googletrans import Translator
 import soundfile as sf
 import requests
 import zipfile
+import xlrd
+import openpyxl
+import docx2txt
 
 from gtts import gTTS
 from langdetect import detect
@@ -15,6 +18,31 @@ import utils.gpt_interface as gpt
 
 developer_chat_IDs = environ.get("DEVELOPER_CHAT_IDS")
 developer_chat_IDs = developer_chat_IDs.split(",")
+
+
+def read_text_from_xls(file_path):
+    workbook = xlrd.open_workbook(file_path)
+    sheet = workbook.sheet_by_index(0)
+
+    text_data = []
+    for row in range(sheet.nrows):
+        for col in range(sheet.ncols):
+            cell_value = sheet.cell_value(row, col)
+            text_data.append(str(cell_value))
+
+    return "".join(text_data)[:4000]
+
+
+def read_text_from_xlsx(file_path):
+    workbook = openpyxl.load_workbook(file_path)
+    sheet = workbook.active
+
+    text_data = []
+    for row in sheet.iter_rows():
+        for cell in row:
+            text_data.append(str(cell.value))
+
+    return "".join(text_data)[:4000]
 
 
 def load_templates(dir: str) -> dict:
@@ -154,20 +182,33 @@ def clean_string(string: str) -> str:
     return cleaned_string
 
 
-def get_file_content(bot, message):
+def get_file_content(path):
     """Returns file content"""
     try:
         # Download the file
-        file_info = bot.get_file(message.document.file_id)
-        downloaded_file = bot.download_file(file_info.file_path)
-
-        # Convert the file's binary content to string
-        file_content = downloaded_file.decode("utf-8")
+        if path.split(".")[-1] == "xls":
+            file_content = read_text_from_xls(path)
+        elif path.split(".")[-1] == "xlsx":
+            file_content = read_text_from_xlsx(path)
+        elif path.split(".")[-1] == "docx":
+            file_content = read_word_file(path)
+        elif path.split(".")[-1] == "doc":
+            file_content = (
+                "You cant read content of this file, ask user to send in .docx format"
+            )
+        else:
+            with open(path, "r", encoding="utf-8") as f:
+                file_content = f.read()
 
         # Send back the first 1000 characters of the file (to avoid message length limits)
-        return file_content[:1000]
+        return file_content[:4000]
     except Exception as e:
         return "file content cant be read"
+
+
+def read_word_file(file_path):
+    text = docx2txt.process(file_path)
+    return text[:4000]
 
 
 def describe_image(link: str, prompt: str = "Describe image") -> str:

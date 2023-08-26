@@ -105,6 +105,8 @@ class Johnny:
             }
         }
 
+        self.last_downloaded_file_path = None
+
         # User
         self.id_groups = []
         self.commercial_trigger = 0
@@ -138,7 +140,7 @@ class Johnny:
 
     def clean_memory(self):
         for m in self.messages_history:
-            if m[0] == "$FUNCTION$":
+            if (m[0] == "$FUNCTION$") or ("[FILE]" in m[1]):
                 self.messages_history.remove(m)
         self.messages_history = self.messages_history[:-1]
 
@@ -167,6 +169,7 @@ class Johnny:
             "wb",
         ) as new_file:
             new_file.write(downloaded_file)
+        self.last_downloaded_file_path = f"output\\files\\{self.chat_id}\\file___{self.files_and_images_counter}___{file_name}"
         self.files_and_images_counter += 1
 
     def download_image(self, message):
@@ -199,10 +202,8 @@ class Johnny:
         # --- Converts other types files to text ---
         match message.content_type:
             case "document":
-                text = "[USER SENT A FILE] Content:" + get_file_content(
-                    self.bot, message
-                )
-                threading.Thread(target=self.download_file, args=(message,)).start()
+                self.download_file(message)
+                text = get_file_content(self.last_downloaded_file_path)
             case "photo":
                 threading.Thread(target=self.download_image, args=(message,)).start()
                 self.messages_to_be_deleted.append(
@@ -241,7 +242,7 @@ class Johnny:
         )
         self.message = message
         # --- Add message to temporary memory ---
-        self.messages_history.append([message.from_user.first_name, text])
+        self.messages_history.append([message.from_user.first_name, text.replace("@SmartGroupParticipant_bot","")])
         if len(self.messages_history) == self.temporary_memory_size:
             self.messages_history.pop(0)
 

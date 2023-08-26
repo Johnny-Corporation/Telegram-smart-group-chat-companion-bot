@@ -120,7 +120,7 @@ def create_chat_completion(
     #     system_content += "Focus on the last message. "
 
     # system_content += "Ask questions if you need. "
-    system_content = f"Your answer should be {answer_length}. "
+    system_content = f"Your answer should be {answer_length}. If user will send file, you will receive its content."
 
     previous_messages = [
         {
@@ -155,37 +155,42 @@ def create_chat_completion(
         completion = openai.ChatCompletion.create(**chat_completion_arguments)
     except openai.error.APIError as e:
         logger.error(f"OpenAI API returned an API Error: {e}")
+        # functions.send_to_developers(
+        #     "❗❗Server error occurred, trying to reset memory and wait 5 seconds...❗❗",
+        #     johnny.bot,
+        #     environ["DEVELOPER_CHAT_IDS"].split(","),
+        # )
         functions.send_to_developers(
-            "❗❗Server error occurred, trying to reset memory and wait 5 seconds...❗❗",
+            "❗❗Server error occurred, trying to wait 5 seconds...❗❗",
             johnny.bot,
             environ["DEVELOPER_CHAT_IDS"].split(","),
         )
-        johnny.messages_history = [
-            johnny.messages_history[-1],
-        ]
-        previous_messages = [
-            {
-                "role": "system",
-                "content": system_content,
-            }
-        ]
-        previous_messages.extend(
-            get_messages_in_official_format(johnny.messages_history)
-        )
-        chat_completion_arguments = {
-            "model": model,
-            "messages": previous_messages,
-            "temperature": temperature,
-            "top_p": top_p,
-            "n": n,
-            "stream": stream,
-            "stop": stop,
-            "frequency_penalty": frequency_penalty,
-            "presence_penalty": presence_penalty,
-        }
-        if use_functions:
-            chat_completion_arguments["functions"] = gpt_functions_description
-            chat_completion_arguments["function_call"] = "auto"
+        # johnny.messages_history = [
+        #     johnny.messages_history[-1],
+        # ]
+        # previous_messages = [
+        #     {
+        #         "role": "system",
+        #         "content": system_content,
+        #     }
+        # ]
+        # previous_messages.extend(
+        #     get_messages_in_official_format(johnny.messages_history)
+        # )
+        # chat_completion_arguments = {
+        #     "model": model,
+        #     "messages": previous_messages,
+        #     "temperature": temperature,
+        #     "top_p": top_p,
+        #     "n": n,
+        #     "stream": stream,
+        #     "stop": stop,
+        #     "frequency_penalty": frequency_penalty,
+        #     "presence_penalty": presence_penalty,
+        # }
+        # if use_functions:
+        #     chat_completion_arguments["functions"] = gpt_functions_description
+        #     chat_completion_arguments["function_call"] = "auto"
         sleep(5)
         completion = openai.ChatCompletion.create(**chat_completion_arguments)
 
