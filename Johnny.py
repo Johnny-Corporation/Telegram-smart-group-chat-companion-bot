@@ -28,6 +28,7 @@ from __main__ import *
 from utils.functions import (
     load_templates,
     generate_voice_message,
+    generate_voice_message_premium,
     to_text,
     video_note_to_audio,
     take_info_about_sub,
@@ -65,7 +66,7 @@ class Johnny:
     temperature: float = 0.5
     frequency_penalty: float = 0.2
     presence_penalty: float = 0.2
-    answer_length: str = "brief"
+    answer_length: str = "short"
     sphere: str = ""
     system_content: str = ""
     allow_functions: bool = True
@@ -143,8 +144,7 @@ class Johnny:
     def clean_memory(self):
         for m in self.messages_history[:-4]:
             if (
-                m[0]
-                == "$FUNCTION$"
+                m[0] == "$FUNCTION$"
                 or ("[FILE]" in m[1])
                 or ("[USER SENT AN IMAGE]" in m[1])
             ):

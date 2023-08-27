@@ -11,6 +11,7 @@ import openpyxl
 import docx2txt
 import PyPDF2
 
+from utils import sber_auth
 from gtts import gTTS
 from langdetect import detect
 
@@ -640,6 +641,34 @@ def generate_voice_message(message, text, language, reply_to=None):
     voice_obj.save(f"output\\voice_out\\voice_out_{message.message_id}.mp3")
 
     return f"output\\voice_out\\voice_out_{message.message_id}.mp3"
+
+
+def generate_voice_message_premium(message, text, language, reply_to=None):
+    """Got a text and generate voice file and return path to voice file"""
+
+    access_token = sber_auth.get_access_token()
+
+    url = "https://smartspeech.sber.ru/rest/v1/text:synthesize"
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/text",
+    }
+    params = {"format": "wav16", "voice": "Bys_24000"}
+
+    response = requests.post(
+        url, headers=headers, params=params, data=text.encode("utf-8"), verify=False
+    )
+
+    if response.status_code == 200:
+        makedirs("output\\voice_out", exist_ok=True)
+        with open(
+            f"output\\voice_out\\voice_out_premium_{message.message_id}.wav", "wb"
+        ) as f:
+            f.write(response.content)
+    else:
+        print(f"Error: {response.status_code}, {response.text}")
+
+    return f"output\\voice_out\\voice_out_premium_{message.message_id}.wav"
 
 
 def video_note_to_audio(bot, message, reply_to=None):

@@ -129,12 +129,8 @@ def create_chat_completion(
     """
 
     # --- Building system content ---
-    # system_content = "You are a group chat participant. "
-    # if reply:
-    #     system_content += "Focus on the last message. "
-
-    # system_content += "Ask questions if you need. "
-    system_content = f"Your answer should be {answer_length}"
+    # system_content = ""
+    system_content = f"You are a bot named Johnny for telegram, developed by JohnnyCorp team. Your answers should be {answer_length}"
 
     previous_messages = [
         {
