@@ -50,6 +50,7 @@ templates = load_templates("templates\\")
 blacklist = {}  # chat_id:[messages_ids] needed for filtering messages
 reply_blacklist = {}  # chat_id:[messages_ids] needed for filtering replies to messages
 groups: Dict[int, Johnny] = {}  # {group chat_id:Johnny object}
+messages_to_be_deleted_global = []
 
 if path.exists("output"):
     makedirs("outputs_archive", exist_ok=True)
@@ -94,6 +95,11 @@ for filename in file_list:
             "Bot is working!",
             reply_markup=markup,
         )
+
+
+def delete_pending_messages():
+    for m in messages_to_be_deleted_global:
+        bot.delete_message(m.chat.id, m.message_id)
 
 
 # --------------- Error handling ---------------
@@ -239,7 +245,9 @@ def change_language(chat_id):
             )
         )  # lang[0] = language_code, lang[1] = full name of lang
 
-    bot.send_message(chat_id, "Choose language", reply_markup=keyboard)
+    messages_to_be_deleted_global.append(
+        bot.send_message(chat_id, "Choose language", reply_markup=keyboard)
+    )
 
 
 def send_welcome_text_and_load_data(

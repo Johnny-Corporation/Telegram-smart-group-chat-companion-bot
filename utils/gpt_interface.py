@@ -130,7 +130,7 @@ def create_chat_completion(
 
     # --- Building system content ---
     # system_content = ""
-    system_content = f"You are a bot named Johnny for telegram, developed by JohnnyCorp team. Your answers should be {answer_length}"
+    system_content = f"You are a telegram bot named Johnny, developed by JohnnyCorp team. Your answers should be {answer_length}, use emojis."
 
     previous_messages = [
         {

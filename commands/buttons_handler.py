@@ -229,6 +229,7 @@ def keyboard_buttons_handler(call):
                     translate_text(lang[1], f"Language changed to {lang[1]} "),
                 )
 
+            delete_pending_messages()
         # DEV TOOLS
 
         case "get_cur_out":
