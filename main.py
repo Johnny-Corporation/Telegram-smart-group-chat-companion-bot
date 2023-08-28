@@ -32,8 +32,7 @@ skip_old_messages = True  # True until message older than bot start time receive
 ignored_messages = 0  # count number of ignored messages when bot was offline for logs
 
 
-# bot_token = environ.get("BOT_API_TOKEN")
-bot_token = '6386393540:AAEYh8-sCQdRL7nGabG7YV7_mnaFxss8p2U' #ANOTHER TEST BOT
+bot_token = environ.get("BOT_API_TOKEN")
 
 yoomoney_token = environ.get("PAYMENT_RUS_TOKEN")
 
@@ -370,6 +369,13 @@ def handle_new_chat_members(message):
     except:
         None
 
+bot.message_handler(content_types=["migrate_to_chat_id"], func=time_filter)
+def handle_migrate_group_to_supergroup(message):
+    bot.send_message(
+        message.chat.id,
+        templates[lang_code]["group_upgraded_to_super_group.txt"],
+        parse_mode="Markdown",
+    )
 
 def init_new_group(chat_id):
     if chat_id in groups:
