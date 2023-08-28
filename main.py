@@ -331,23 +331,23 @@ def send_welcome_text_and_load_data(
             parse_mode="HTML",
         )
 
-    # if chat_id > 0:
-    #     if str(chat_id) in developer_chat_IDs:
-    #         bot.send_message(
-    #             chat_id,
-    #             f"As a developer, you granted Pro sub\n {'='*20} \n Как разработчику, вам выдана подписка Pro",
-    #             reply_markup=markup,
-    #         )
-    #         groups[message.chat.id].add_new_user(
-    #             message.chat.id,
-    #             message.from_user.first_name,
-    #             message.from_user.last_name,
-    #             message.from_user.username,
-    #             "Pro",
-    #             99999999,
-    #         )
-    #         groups[message.chat.id].load_subscription(message.chat.id)
-    #         return
+    if chat_id > 0:
+        if str(chat_id) in developer_chat_IDs:
+            bot.send_message(
+                chat_id,
+                f"As a developer, you granted Pro sub\n {'='*20} \n Как разработчику, вам выдана подписка Pro",
+                reply_markup=markup,
+            )
+            groups[message.chat.id].add_new_user(
+                message.chat.id,
+                message.from_user.first_name,
+                message.from_user.last_name,
+                message.from_user.username,
+                "Pro",
+                99999999,
+            )
+            groups[message.chat.id].load_subscription(message.chat.id)
+            return
 
 
 # ---------------  Handling and initialing new groups ---------------

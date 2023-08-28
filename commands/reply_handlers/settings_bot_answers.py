@@ -44,7 +44,7 @@ def set_sphere_reply_handler(inner_message):
 
 # --- reply handler for set presense penalty
 @error_handler
-def set_presense_penalty_reply_handler(inner_message):
+def set_presence_penalty_reply_handler(inner_message):
     language_code = groups[inner_message.chat.id].lang_code
     try:
         val = int(inner_message.text)

@@ -28,6 +28,10 @@ def keyboard_buttons_handler(call):
         case "about":
             about(message=call.message,back_from=True)
 
+        #---FOR MATVEY---
+        case "generate_image":
+            None
+
         # Choosing mode
 
         case "auto_mode":

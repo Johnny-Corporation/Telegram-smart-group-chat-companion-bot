@@ -158,7 +158,7 @@ def set_presence_penalty(message):
 
     bot_reply = bot.edit_message_text(
         templates[language_code]["set_presence_penalty.txt"].format(
-            frequency_penalty=groups[message.chat.id].frequency_penalty
+            presence_penalty=groups[message.chat.id].presence_penalty
         ),
         message.chat.id, 
         message.message_id,

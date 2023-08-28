@@ -34,7 +34,7 @@ from utils.functions import (
     take_info_about_sub,
 )
 from utils.text_to_voice import *
-from telebot.apihelper import ApiTelegramException
+from telebot.apihelper import *
 
 
 templates = load_templates("templates\\")
@@ -388,9 +388,6 @@ class Johnny:
 
             # Additional arguments
             additional_args = {}
-            if function_name == "generate_image":
-                self.bot.send_chat_action(self.message.chat.id, 'upload_photo')
-                additional_args = {"bot": self.bot, "chat_id": self.chat_id}
 
             # Saving function result to history
             self.messages_history.append(
@@ -403,8 +400,6 @@ class Johnny:
                     ),
                 ]
             )
-            if function_name == "generate_image":
-                return "[IMAGES]"  # this will be saved as bot message in history
 
             return self.static_generation(self.get_completion())
 
@@ -491,8 +486,6 @@ class Johnny:
 
                 # Additional arguments
                 additional_args = {}
-                if function_name == "generate_image":
-                    additional_args = {"bot": self.bot, "chat_id": self.chat_id}
 
                 self.messages_history.append(
                     [
@@ -504,9 +497,6 @@ class Johnny:
                         ),
                     ]
                 )
-
-                if function_name == "generate_image":
-                    return "[IMAGES]"  # this will be saved as bot message in history
 
                 return self.dynamic_generation(self.get_completion())
                 # End of handling function call
