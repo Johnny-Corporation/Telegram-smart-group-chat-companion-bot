@@ -62,7 +62,7 @@ class Johnny:
     language_code: str = "eng"
     trigger_probability: float = 0.8
     model = "gpt-3.5-turbo"
-    tokens_limit: int = 3800  # Leave gap for functions
+    tokens_limit: int = 3950  # Leave gap for functions
     temperature: float = 0.5
     frequency_penalty: float = 0.2
     presence_penalty: float = 0.2
