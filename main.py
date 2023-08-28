@@ -32,7 +32,8 @@ skip_old_messages = True  # True until message older than bot start time receive
 ignored_messages = 0  # count number of ignored messages when bot was offline for logs
 
 
-bot_token = environ.get("BOT_API_TOKEN")
+# bot_token = environ.get("BOT_API_TOKEN")
+bot_token = '6386393540:AAEYh8-sCQdRL7nGabG7YV7_mnaFxss8p2U' #ANOTHER TEST BOT
 
 yoomoney_token = environ.get("PAYMENT_RUS_TOKEN")
 
@@ -225,7 +226,7 @@ def reply_blacklist_filter(message: types.Message):
 # --------------- Some functions ---------------
 
 
-def change_language(chat_id):
+def change_language(chat_id, message_id=None):
     avaible_languages = get_avaible_langs()
 
     keyboard = types.InlineKeyboardMarkup()
@@ -239,6 +240,16 @@ def change_language(chat_id):
             )
         )  # lang[0] = language_code, lang[1] = full name of lang
 
+    if message_id!=None:
+        keyboard.add(
+            types.InlineKeyboardButton(
+                text='<<<',
+                callback_data="settings",
+            )
+        )
+        bot.edit_message_text("Choose language", chat_id, message_id, reply_markup=keyboard)
+        return
+
     bot.send_message(chat_id, "Choose language", reply_markup=keyboard)
 
 
@@ -248,25 +259,6 @@ def send_welcome_text_and_load_data(
     if owner_id not in groups:
         bot.send_message(chat_id, f"Register in @{bot_username}")
         return
-
-    # Check group
-    if chat_id < 0:
-        print(
-            groups[owner_id].permissions[groups[owner_id].subscription][
-                "allowed_groups"
-            ]
-        )
-        if (
-            len(groups[owner_id].id_groups)
-            >= groups[owner_id].permissions[groups[owner_id].subscription][
-                "allowed_groups"
-            ]
-        ):
-            bot.send_message(
-                chat_id,
-                "Your limit on groups was exceeded. Buy the subscription to use Johnny in more groups.",
-            )
-            return
 
     groups[chat_id].activated = True
 
@@ -283,7 +275,7 @@ def send_welcome_text_and_load_data(
         # If there isn't data, registries new user
         if not sub_exist:
             new_user = True
-            groups[chat_id].add_new_user(chat_id, " ", " ", " ", "Free", 30)
+            groups[chat_id].add_new_user(chat_id, " ", " ", " ", "Free", 20)
             groups[chat_id].load_subscription(chat_id)
 
         else:
@@ -296,12 +288,12 @@ def send_welcome_text_and_load_data(
     # For group/chat
     else:
         # Load info to group from loader of group (owner_id)
-        groups[chat_id].permissions = {}
+        groups[chat_id].characteristics_of_sub = {}
 
         groups[chat_id].subscription = groups[owner_id].subscription
 
-        permissions = take_info_about_sub(groups[chat_id].subscription)
-        groups[chat_id].permissions[groups[chat_id].subscription] = permissions
+        characteristics_of_sub = take_info_about_sub(groups[chat_id].subscription)
+        groups[chat_id].characteristics_of_sub[groups[chat_id].subscription] = characteristics_of_sub
 
         groups[chat_id].owner_id = owner_id
 
@@ -331,39 +323,23 @@ def send_welcome_text_and_load_data(
             parse_mode="HTML",
         )
 
-    # Suggestion to user try trial subscription
-    if chat_id > 0:
-        if str(chat_id) in developer_chat_IDs:
-            bot.send_message(
-                chat_id,
-                f"As a developer, you granted BIG BUSINESS \n {'='*20} \n Как разработчику, вам выдана подписка BIG BUSINESS",
-                reply_markup=markup,
-            )
-            groups[message.chat.id].add_new_user(
-                message.chat.id,
-                message.from_user.first_name,
-                message.from_user.last_name,
-                message.from_user.username,
-                "BIG BUSINESS",
-                99999999,
-            )
-            groups[message.chat.id].load_subscription(message.chat.id)
-            return
-        if new_user:
-            markup = types.InlineKeyboardMarkup()
-
-            button = types.InlineKeyboardButton(
-                text=groups[chat_id].templates[language_code]["button_activate.txt"],
-                callback_data="free_sub",
-            )
-            markup.add(button)
-
-            bot.send_message(
-                chat_id,
-                groups[chat_id].templates[language_code]["free_use_subscription.txt"],
-                reply_markup=markup,
-                parse_mode="HTML",
-            )
+    # if chat_id > 0:
+    #     if str(chat_id) in developer_chat_IDs:
+    #         bot.send_message(
+    #             chat_id,
+    #             f"As a developer, you granted Pro sub\n {'='*20} \n Как разработчику, вам выдана подписка Pro",
+    #             reply_markup=markup,
+    #         )
+    #         groups[message.chat.id].add_new_user(
+    #             message.chat.id,
+    #             message.from_user.first_name,
+    #             message.from_user.last_name,
+    #             message.from_user.username,
+    #             "Pro",
+    #             99999999,
+    #         )
+    #         groups[message.chat.id].load_subscription(message.chat.id)
+    #         return
 
 
 # ---------------  Handling and initialing new groups ---------------
@@ -464,6 +440,7 @@ from commands.about import *
 from commands.start import *
 from commands.subs_list import *
 from commands.tranzzo import *
+from commands.menu import *
 
 # Buttons handler
 from commands.buttons_handler import *
@@ -494,6 +471,10 @@ from utils.text_to_voice import *
 )
 def main_messages_handler(message: types.Message):
     """Handles all messages"""
+
+    chat_member = bot.get_chat_member(message.chat.id, bot.get_me().id)
+    if chat_member.status == 'kicked':
+        return
 
     if (message.chat.id not in groups) or (not groups[message.chat.id].lang_code):
         init_new_group(message.chat.id)

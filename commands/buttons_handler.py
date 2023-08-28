@@ -11,8 +11,23 @@ def keyboard_buttons_handler(call):
     call_data = call.data
     if "apply_lang" in call.data:
         call_data = "apply_lang"
+    # if "group_permission" in call.data:
+    #     call_data
 
     match call_data:
+
+        case "menu":
+            menu(message=call.message, back_from=True)
+
+        case "question_to_bot":
+            question_to_bot(message=call.message)
+        case "report_bug":
+            report_bug(message=call.message)
+        case "request_feature":
+            request_feature(message=call.message)
+        case "about":
+            about(message=call.message,back_from=True)
+
         # Choosing mode
 
         case "auto_mode":
@@ -28,8 +43,8 @@ def keyboard_buttons_handler(call):
             purchase(message=call.message)
         case "about_sub":
             sub_info(message=call.message)
-        case "back_to_account":
-            account(message=call.message, back_from=True)
+        case "account":
+            account(message=call.message)
 
         # Group info
 
@@ -37,140 +52,119 @@ def keyboard_buttons_handler(call):
             see_settings_of_bot_answers(message=call.message)
         case "see_settings_of_special_functions":
             see_settings_of_special_functions(message=call.message)
-        case "back_to_group":
-            group(message=call.message, back_from=True)
+        case "group":
+            group(message=call.message)
 
         # Translations
 
         #Settings
 
-        case "back_to_settings":
-            settings(message=call.message, back_from=True)
+        case "settings":
+            settings(message=call.message)
         case "bot_answers":
             bot_answers_settings(call.message)
         case "special_features":
             special_features_settings(call.message)
+        case "permissions_of_group":
+            change_permission_settings(call.message)
 
         # Set up funcs
         
-        case "back_to_settings_bot_answers":
+        case "settings_bot_answers":
             bot_answers_settings(call.message)
-
         case "temperature":
-            if (
-                groups[call.message.chat.id].permissions[
-                    groups[call.message.chat.id].subscription
-                ]["temperature_permission"]
-                == True
-            ):
-                set_temp(call.message)
-            else:
-                bot.send_message(
-                    call.message.chat.id,
-                    templates[previous_language_code]["no_rights.txt"],
-                    parse_mode="HTML",
-                )
+            set_temp(call.message)
         case "answer_probability":
             set_probability(call.message)
-        case "memory_length":
-            set_temp_memory_size(call.message)
         case "variety":
-            if (
-                groups[call.message.chat.id].permissions[
-                    groups[call.message.chat.id].subscription
-                ]["temperature_permission"]
-                == True
-            ):
-                set_frequency_penalty(call.message)
-            else:
-                bot.send_message(
-                    call.message.chat.id,
-                    templates[previous_language_code]["no_rights.txt"],
-                    parse_mode="HTML",
-                )
+            set_frequency_penalty(call.message)
         case "creativity":
-            if (
-                groups[call.message.chat.id].permissions[
-                    groups[call.message.chat.id].subscription
-                ]["temperature_permission"]
-                == True
-            ):
-                set_presence_penalty(call.message)
-            else:
-                bot.send_message(
-                    call.message.chat.id,
-                    templates[previous_language_code]["no_rights.txt"],
-                    parse_mode="HTML",
-                )
+            set_presence_penalty(call.message)
         case "answer_length":
             set_length_answer(call.message)
         case "sphere":
+
             if (
-                groups[call.message.chat.id].permissions[
+                groups[call.message.chat.id].characteristics_of_sub[
                     groups[call.message.chat.id].subscription
-                ]["temperature_permission"]
+                ]["sphere_permission"]
                 == True
             ):
                 set_sphere(call.message)
             else:
-                bot.send_message(
-                    call.message.chat.id,
+                markup = types.InlineKeyboardMarkup()
+                back_button = types.InlineKeyboardButton(
+                    text="<<<",
+                    callback_data="settings",
+                )
+                markup.add(back_button)
+                bot.edit_message_text(
                     templates[previous_language_code]["no_rights.txt"],
+                    call.message.chat.id,
+                    call.message.message_id,
+                    reply_markup=markup,
                     parse_mode="HTML",
                 )
+
         case "change_lang":
-            change_language(call.message.chat.id)
+            change_language(call.message.chat.id, call.message.message_id)
         case "change_owner":
             change_owner_of_group(call.message)
 
         # Customization
 
-        case "back_to_settings_customization":
+        case "settings_customization":
             special_features_settings(call.message)
 
         case "dyn_gen":
             if (
-                groups[call.message.chat.id].permissions[
+                groups[call.message.chat.id].characteristics_of_sub[
                     groups[call.message.chat.id].subscription
                 ]["dynamic_gen_permission"]
                 == True
             ):
                 if groups[call.message.chat.id].voice_out_enabled == True:
-                    bot.send_message(
-                        call.message.chat.id,
-                        templates[previous_language_code][
-                            "voice_out_already_enabled.txt"
-                        ],
-                    )
                     groups[call.message.chat.id].voice_out_enabled = False
 
                 enable_disable_dynamic_generation(call.message)
             else:
-                bot.send_message(
-                    call.message.chat.id,
+                markup = types.InlineKeyboardMarkup()
+                back_button = types.InlineKeyboardButton(
+                    text="<<<",
+                    callback_data="settings",
+                )
+                markup.add(back_button)
+                bot.edit_message_text(
                     templates[previous_language_code]["no_rights.txt"],
+                    call.message.chat.id,
+                    call.message.message_id,
+                    reply_markup=markup,
                     parse_mode="HTML",
                 )
 
         case "voice_out":
             if (
-                groups[call.message.chat.id].permissions[
+                groups[call.message.chat.id].characteristics_of_sub[
                     groups[call.message.chat.id].subscription
-                ]["voice_output_permission"]
+                ]["pro_voice_output"]
                 == False
             ):
-                bot.send_message(
-                    call.message.chat.id,
+                markup = types.InlineKeyboardMarkup()
+                back_button = types.InlineKeyboardButton(
+                    text="<<<",
+                    callback_data="settings",
+                )
+                markup.add(back_button)
+                bot.edit_message_text(
                     templates[previous_language_code]["no_rights.txt"],
+                    call.message.chat.id,
+                    call.message.message_id,
+                    reply_markup=markup,
                     parse_mode="HTML",
                 )
                 return
 
             if groups[call.message.chat.id].dynamic_gen == True:
-                bot.send_message(
-                    call.message.chat.id,
-                    templates[previous_language_code]["dyn_gen_already_enabled.txt"],
-                )
                 groups[call.message.chat.id].dynamic_gen = False
 
             enable_disable_voice_out(call.message)
@@ -229,10 +223,7 @@ def keyboard_buttons_handler(call):
                     reply_markup=markup,
                 )
             except:
-                bot.send_message(
-                    call.message.chat.id,
-                    translate_text(lang[1], f"Language changed to {lang[1]} "),
-                )
+                None
 
         # DEV TOOLS
 

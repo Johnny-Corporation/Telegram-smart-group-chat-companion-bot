@@ -1,3 +1,1 @@
-Here are commands to set up your bot:
-
-<i>To know current values  /group_info </i>
+Here are commands to set up answers of bot:

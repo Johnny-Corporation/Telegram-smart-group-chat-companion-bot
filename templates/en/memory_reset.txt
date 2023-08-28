@@ -1,1 +1,1 @@
-Memory was successfully reset
+The current conversation has ended

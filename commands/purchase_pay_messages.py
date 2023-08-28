@@ -5,7 +5,7 @@ from __main__ import *
 @error_handler
 def enter_purchase_of_messages(message):
     language_code = groups[message.chat.id].lang_code
-    bot_reply = bot.reply_to(
+    bot_reply = bot.edit_message_text(
         message,
         templates[language_code]["enter_new_messages.txt"],
         parse_mode="HTML",

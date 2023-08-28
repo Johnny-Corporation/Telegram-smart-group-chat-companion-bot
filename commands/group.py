@@ -3,10 +3,10 @@ from __main__ import *
 
 # --- Group info ---
 @bot.message_handler(commands=["group"], func=time_filter)
-def group(message, back_from=False):
+def group(message):
     language_code = groups[message.chat.id].lang_code
 
-    # --- Detect Permissions
+    # --- Detect characteristics_of_sub
 
     if message.chat.id>0:
         bot.send_message(message.chat.id, templates[language_code]["group_info_in_private.txt"])
@@ -34,55 +34,43 @@ def group(message, back_from=False):
         callback_data="see_settings_of_special_functions",
     )
     markup.add(button2)
+    back_button = types.InlineKeyboardButton(
+        text="<<<",
+        callback_data="menu",
+    )
+    markup.add(back_button)
     
 
     # --- If we went back from ahead settings ---
-    if back_from:
-        bot.edit_message_text(
-            templates[language_code]["group_info.txt"].format(
-                group_name=message.chat.title,
-                username=str(bot.get_chat(groups[message.chat.id].owner_id).username),
-                subscription=groups[message.chat.id].subscription,
-                spent_messages=groups[message.chat.id].total_spent_messages,
-                messages_left = groups[message.chat.id].permissions[groups[message.chat.id].subscription]["messages_limit"]-groups[message.chat.id].total_spent_messages,
-                language=language_code1,
-            ),
-            message.chat.id, 
-            message.message_id, 
-            reply_markup=markup,
-            parse_mode="HTML"
-        )
-        return
-
-    bot.send_message(
-        message.chat.id,
+    bot.edit_message_text(
         templates[language_code]["group_info.txt"].format(
             group_name=message.chat.title,
             username=str(bot.get_chat(groups[message.chat.id].owner_id).username),
             subscription=groups[message.chat.id].subscription,
             spent_messages=groups[message.chat.id].total_spent_messages,
-            messages_left = groups[message.chat.id].permissions[groups[message.chat.id].subscription]["messages_limit"]-groups[message.chat.id].total_spent_messages,
+            messages_left = groups[message.chat.id].characteristics_of_sub[groups[message.chat.id].subscription]["messages_limit"]-groups[message.chat.id].total_spent_messages,
             language=language_code1,
-            ),
-        reply_markup=markup, 
-        parse_mode="HTML",
+        ),
+        message.chat.id, 
+        message.message_id, 
+        reply_markup=markup,
+        parse_mode="HTML"
     )
-
 
 def see_settings_of_special_functions(message):
     language_code = groups[message.chat.id].lang_code
 
 
-    # --- Detect the permissions ---
+    # --- Detect the characteristics_of_sub ---
 
     #Dynamic gemeration
-    if groups[message.chat.id].permissions[groups[message.chat.id].subscription]["dynamic_gen_permission"] == False:
+    if groups[message.chat.id].characteristics_of_sub[groups[message.chat.id].subscription]["dynamic_gen_permission"] == False:
         dynamic_gen_en = "disabled"
     else:
         dynamic_gen_en = "enabled"
         
     #Voice out
-    if groups[message.chat.id].permissions[groups[message.chat.id].subscription]["voice_output_permission"] == True:
+    if groups[message.chat.id].characteristics_of_sub[groups[message.chat.id].subscription]["voice_output_permission"] == True:
         voice_out = "allowed"
     else:
         voice_out = "disallowed"
@@ -115,7 +103,7 @@ def see_settings_of_bot_answers(message):
     language_code = groups[message.chat.id].lang_code
 
 
-    # --- Detect permissions ---
+    # --- Detect characteristics_of_sub ---
 
     if groups[message.chat.id].answer_length == "as you need":
         answer_length = translate_text(language_code, "as bot need")

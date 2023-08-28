@@ -2,12 +2,11 @@ from __main__ import *
 
 
 # --- Help ---
-@bot.message_handler(commands=["account"], func=time_filter)
-def account(message, back_from: bool = False):
+def account(message):
     language_code = groups[message.chat.id].lang_code
 
     left_messages = (
-        groups[message.chat.id].permissions[groups[message.chat.id].subscription][
+        groups[message.chat.id].characteristics_of_sub[groups[message.chat.id].subscription][
             "messages_limit"
         ]
         - groups[message.chat.id].total_spent_messages
@@ -25,51 +24,27 @@ def account(message, back_from: bool = False):
     if name_of_groups == "":
         name_of_groups = "None"
 
-    # Buttons
     markup = types.InlineKeyboardMarkup()
-    button1 = types.InlineKeyboardButton(
-        text=templates[language_code]["button_purchase.txt"],
-        callback_data="purchase",
-    )
-    markup.add(button1)
     button2 = types.InlineKeyboardButton(
         text=templates[language_code]["button_about_sub.txt"],
         callback_data="about_sub",
     )
     markup.add(button2)
+    back_button = types.InlineKeyboardButton(
+        text="<<<",
+        callback_data="menu",
+    )
+    markup.add(back_button)
 
-    if back_from:
-        bot.edit_message_text(
-            templates[language_code]["account_info.txt"].format(
-                first_name=message.from_user.first_name,
-                subscription=groups[message.chat.id].subscription,
-                left_messages=left_messages,
-                left_groups=groups[message.chat.id].permissions[
-                    groups[message.chat.id].subscription
-                ]["allowed_groups"]
-                - len(groups[message.chat.id].id_groups),
-                name_of_groups=name_of_groups,
-            ),
-            message.chat.id,
-            message.message_id,
-            reply_markup=markup,
-            parse_mode="HTML",
-        )
-        return
-
-    bot.send_message(
-        message.chat.id,
+    bot.edit_message_text(
         templates[language_code]["account_info.txt"].format(
-            first_name=message.chat.first_name,
+            first_name=message.from_user.first_name,
             subscription=groups[message.chat.id].subscription,
             left_messages=left_messages,
-            left_groups=groups[message.chat.id].permissions[
-                groups[message.chat.id].subscription
-            ]["allowed_groups"]
-            - len(groups[message.chat.id].id_groups),
             name_of_groups=name_of_groups,
         ),
+        message.chat.id,
+        message.message_id,
         reply_markup=markup,
         parse_mode="HTML",
-        disable_web_page_preview=True,
     )

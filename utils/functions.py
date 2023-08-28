@@ -424,7 +424,7 @@ def load_buttons(types, groups, chat_id, language_code, owner_id=None):
             itembtn1 = types.KeyboardButton(text2)
 
         elif groups[chat_id].enabled == False:
-            text2 = translate_text(language_code, "ㅤStart a conversationㅤ")
+            text2 = translate_text(language_code, "ㅤ🗣 Start a conversationㅤ")
             itembtn1 = types.KeyboardButton(text2)
 
         if str(chat_id) in developer_chat_IDs:
@@ -432,42 +432,45 @@ def load_buttons(types, groups, chat_id, language_code, owner_id=None):
             itembtn_dev_tools = types.KeyboardButton(text_dev_tools)
             markup.add(itembtn_dev_tools)
 
-        text1 = translate_text(language_code, "ㅤAsk a question without contextㅤ")
+        text1 = translate_text(language_code, "ㅤ📲 Menuㅤ")
         itembtn2 = types.KeyboardButton(text1)
 
-        text5 = translate_text(language_code, "ㅤAccountㅤ")
-        itembtn4 = types.KeyboardButton(text5)
+        # text1 = translate_text(language_code, "ㅤAsk a question without contextㅤ")
+        # itembtn2 = types.KeyboardButton(text1)
 
-        text6 = translate_text(language_code, "ㅤSettingsㅤ")
-        itembtn5 = types.KeyboardButton(text6)
+        # text5 = translate_text(language_code, "ㅤAccountㅤ")
+        # itembtn4 = types.KeyboardButton(text5)
 
-        text8 = translate_text(language_code, "ㅤReport bugㅤ")
-        itembtn6 = types.KeyboardButton(text8)
+        # text6 = translate_text(language_code, "ㅤSettingsㅤ")
+        # itembtn5 = types.KeyboardButton(text6)
 
-        text9 = translate_text(language_code, "ㅤSuggest an ideaㅤ")
-        itembtn7 = types.KeyboardButton(text9)
+        # text8 = translate_text(language_code, "ㅤReport bugㅤ")
+        # itembtn6 = types.KeyboardButton(text8)
+
+        # text9 = translate_text(language_code, "ㅤSuggest an ideaㅤ")
+        # itembtn7 = types.KeyboardButton(text9)
 
         groups[chat_id].button_commands.append(text2)
         groups[chat_id].button_commands.append(text1)
 
         markup.add(itembtn1)
         markup.add(itembtn2)
-        markup.add(itembtn4)
-        markup.add(itembtn5)
-        markup.add(itembtn6, itembtn7)
+        # markup.add(itembtn4)
+        # markup.add(itembtn5)
+        # markup.add(itembtn6, itembtn7)
 
-        groups[chat_id].button_commands.append(text5)
-        groups[chat_id].button_commands.append(text6)
-        groups[chat_id].button_commands.append(text8)
-        groups[chat_id].button_commands.append(text9)
+        # groups[chat_id].button_commands.append(text5)
+        # groups[chat_id].button_commands.append(text6)
+        # groups[chat_id].button_commands.append(text8)
+        # groups[chat_id].button_commands.append(text9)
 
     elif chat_id < 0:
         print("GROUP CONDITION")
 
         if owner_id == None:
-            text1 = translate_text(language_code, "ㅤActivate botㅤ")
+            text1 = translate_text(language_code, "ㅤ🚀 Activate botㅤ")
             itembtn1 = types.KeyboardButton(text1)
-            text2 = translate_text(language_code, "ㅤAboutㅤ")
+            text2 = translate_text(language_code, "ㅤ🤔 About Botㅤ")
             itembtn2 = types.KeyboardButton(text2)
             markup.add(itembtn1)
             markup.add(itembtn2)
@@ -480,57 +483,58 @@ def load_buttons(types, groups, chat_id, language_code, owner_id=None):
         print(groups[chat_id].enabled)
         if groups[chat_id].enabled == True:
             print("ENABLED")
-            text1 = translate_text(language_code, "ㅤStop conservationㅤ")
+            text1 = translate_text(language_code, "ㅤ🔒 Stop conservationㅤ")
             itembtn1 = types.KeyboardButton(text1)
 
         elif groups[chat_id].enabled == False:
-            text1 = translate_text(language_code, "ㅤStart a conversationㅤ")
+            text1 = translate_text(language_code, "ㅤ🗣 Start a conversationㅤ")
             itembtn1 = types.KeyboardButton(text1)
 
-        text2 = translate_text(language_code, "ㅤAsk a question without contextㅤ")
-        itembtn2 = types.KeyboardButton(text2)
+        # text5 = translate_text(language_code, "ㅤGroupㅤ")
+        # itembtn5 = types.KeyboardButton(text5)
 
-        text5 = translate_text(language_code, "ㅤGroupㅤ")
-        itembtn5 = types.KeyboardButton(text5)
+        # text6 = translate_text(language_code, "ㅤSettingsㅤ")
+        # itembtn6 = types.KeyboardButton(text6)
 
-        text6 = translate_text(language_code, "ㅤSettingsㅤ")
-        itembtn6 = types.KeyboardButton(text6)
+        # text7 = translate_text(language_code, "ㅤReport bugㅤ")
+        # itembtn7 = types.KeyboardButton(text7)
 
-        text7 = translate_text(language_code, "ㅤReport bugㅤ")
-        itembtn7 = types.KeyboardButton(text7)
-
-        text8 = translate_text(language_code, "ㅤSuggest an ideaㅤ")
-        itembtn8 = types.KeyboardButton(text8)
+        # text8 = translate_text(language_code, "ㅤSuggest an ideaㅤ")
+        # itembtn8 = types.KeyboardButton(text8)
 
         # text10 = translate_text(language_code,'ㅤSupport usㅤ')
         # itembtn10 = types.KeyboardButton(text10)
         # groups[chat_id].button_commands.append(text10)
 
         groups[chat_id].button_commands.append(text1)
-        groups[chat_id].button_commands.append(text2)
 
         markup.add(itembtn1)
-        markup.add(itembtn2)
+        
 
         if groups[chat_id].enabled == True:
-            text3 = translate_text(language_code, "ㅤView current modeㅤ")
+            text3 = translate_text(language_code, "ㅤ🔎 View current modeㅤ")
             itembtn3 = types.KeyboardButton(text3)
             groups[chat_id].button_commands.append(text3)
             markup.add(itembtn3)
-            text4 = translate_text(language_code, "ㅤChange modeㅤ")
+            text4 = translate_text(language_code, "ㅤ🛠 Change modeㅤ")
             itembtn4 = types.KeyboardButton(text4)
             groups[chat_id].button_commands.append(text4)
             markup.add(itembtn4)
 
-        markup.add(itembtn5)
-        markup.add(itembtn6)
-        markup.add(itembtn7, itembtn8)
+        text2 = translate_text(language_code, "ㅤ📲 Menuㅤ")
+        itembtn2 = types.KeyboardButton(text2)
+        groups[chat_id].button_commands.append(text2)
+        markup.add(itembtn2)
+
+        # markup.add(itembtn5)
+        # markup.add(itembtn6)
+        # markup.add(itembtn7, itembtn8)
         # markup.add(itembtn10)
 
-        groups[chat_id].button_commands.append(text5)
-        groups[chat_id].button_commands.append(text6)
-        groups[chat_id].button_commands.append(text7)
-        groups[chat_id].button_commands.append(text8)
+        # groups[chat_id].button_commands.append(text5)
+        # groups[chat_id].button_commands.append(text6)
+        # groups[chat_id].button_commands.append(text7)
+        # groups[chat_id].button_commands.append(text8)
 
         print(f"TEXTS OF BUTTONS : {groups[chat_id].button_commands}")
 
@@ -609,70 +613,24 @@ def video_note_to_audio(bot, message, reply_to=None):
 def take_info_about_sub(subscription):
     subscriptions = {
         "Free": {  # {type_of_sub: {point: value_of_point}}
-            "allowed_groups": 1,
-            "messages_limit": 30,
-            "temporary_memory_size_limit": 20,
-            "dynamic_gen_permission": False,
+            "messages_limit": 20,
+            "price_of_message": 10,
             "sphere_permission": False,
-            "temperature_permission": False,
-            "frequency_penalty_permission": False,
-            "presense_penalty_permission": False,
-            "voice_output_permission": False,
-            "generate_picture_permission": False,
-        },
-        "USER": {
-            "allowed_groups": 3,
-            "messages_limit": 100,
-            "temporary_memory_size_limit": 50,
             "dynamic_gen_permission": False,
-            "sphere_permission": False,
-            "temperature_permission": False,
-            "frequency_penalty_permission": False,
-            "presense_penalty_permission": False,
-            "voice_output_permission": False,
-            "generate_picture_permission": False,
+            "pro_voice_output": False
         },
-        "SMALL BUSINESS": {
-            "allowed_groups": 5,
-            "messages_limit": 300,
-            "temporary_memory_size_limit": 100,
-            "dynamic_gen_permission": True,
-            "sphere_permission": True,
-            "temperature_permission": True,
-            "frequency_penalty_permission": True,
-            "presense_penalty_permission": True,
-            "voice_output_permission": True,
-            "generate_picture_permission": True,
-        },
-        "SMALL BUSINESS (trial)": {
-            "allowed_groups": 5,
-            "messages_limit": 50,
-            "temporary_memory_size_limit": 100,
-            "dynamic_gen_permission": True,
-            "sphere_permission": True,
-            "temperature_permission": True,
-            "frequency_penalty_permission": True,
-            "presense_penalty_permission": True,
-            "voice_output_permission": True,
-            "generate_picture_permission": True,
-        },
-        "BIG BUSINESS": {
-            "allowed_groups": 10,
+        "Pro": {
             "messages_limit": 500,
-            "temporary_memory_size_limit": 1000,
-            "dynamic_gen_permission": True,
+            "price_of_message": 10,
             "sphere_permission": True,
-            "temperature_permission": True,
-            "frequency_penalty_permission": True,
-            "presense_penalty_permission": True,
-            "voice_output_permission": True,
-            "generate_picture_permission": True,
+            "dynamic_gen_permission": True,
+            "pro_voice_output": True
         },
     }
 
-    permissions = subscriptions[subscription]
+    characteristics_of_sub = subscriptions[subscription]
 
-    return permissions
+    return characteristics_of_sub
 
 
 def read_text_from_image(url):

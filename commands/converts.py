@@ -2,7 +2,7 @@ from __main__ import *
 
 
 # --- To text ---
-@bot.message_handler(commands=["totext"], func=time_filter)
+# @bot.message_handler(commands=["totext"], func=time_filter)
 @error_handler
 def totext_command(message):
     language_code = groups[message.chat.id].lang_code

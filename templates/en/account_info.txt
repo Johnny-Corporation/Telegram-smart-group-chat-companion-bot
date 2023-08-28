@@ -1,11 +1,10 @@
-<i>Account: {first_name} </i>
+👨 <i>Account: {first_name} </i>
 
-<b>Subscription: {subscription}</b>
+➡ <b>Plan: {subscription}</b>
 
-<b>Left {left_messages} messages</b>
+📨 <b>Left {left_messages} messages</b> 
+ 🔹<i>In <b>Purchases</b> owner can buy more</i>🔹
 
-<b>Left {left_groups} groups</b>
+👥 Groups: {name_of_groups}
 
-Groups: {name_of_groups}
-
-Below you can see more:
+⬇ <i>Below you can see more</i> ⬇

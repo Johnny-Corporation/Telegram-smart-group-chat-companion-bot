@@ -65,6 +65,10 @@ def auto_enable(message):
         owner_id=groups[message.chat.id].owner_id,
     )
 
+    bot.delete_message(message.chat.id,message.message_id)
+
+    groups[message.chat.id].trigger_probability = 1
+
     bot.send_message(
         message.chat.id,
         templates[language_code]["enabled_auto.txt"].format(
@@ -88,6 +92,8 @@ def dialog_enable(message):
         owner_id=groups[message.chat.id].owner_id,
     )
 
+    bot.delete_message(message.chat.id,message.message_id)
+
     groups[message.chat.id].trigger_probability = 1
 
     bot.send_message(
@@ -110,8 +116,11 @@ def manual_enable(message):
         owner_id=groups[message.chat.id].owner_id,
     )
 
+    bot.delete_message(message.chat.id,message.message_id)
+
     groups[message.chat.id].trigger_probability = 0
-    bot.reply_to(
+
+    bot.senfd_messge(
         message,
         templates[language_code]["enabled_manual.txt"],
         reply_markup=markup_commands,
@@ -120,7 +129,6 @@ def manual_enable(message):
 
 
 # --- Disable ---
-@bot.message_handler(commands=["disable"], func=time_filter)
 @error_handler
 def disable(message):
     language_code = groups[message.chat.id].lang_code
@@ -135,5 +143,5 @@ def disable(message):
     )
 
     bot.send_message(
-        message.chat.id, templates[language_code]["disabled.txt"], reply_markup=markup
+        message.chat.id, '😴', reply_markup=markup
     )

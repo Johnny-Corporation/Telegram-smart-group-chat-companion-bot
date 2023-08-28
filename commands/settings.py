@@ -3,7 +3,7 @@ from __main__ import *
 
 # --- set_up functions ---
 @bot.message_handler(commands=["settings"], func=time_filter)
-def settings(message, back_from: bool=False):
+def settings(message):
     language_code = groups[message.chat.id].lang_code
 
     markup = types.InlineKeyboardMarkup()
@@ -34,35 +34,33 @@ def settings(message, back_from: bool=False):
 
     if message.chat.id < 0:
         owner_button = types.InlineKeyboardButton(
-            text="Change owner of group",
+            text=templates[language_code]["button_change_owner.txt"],
             callback_data="change_owner",
         )
         markup.add(owner_button)
 
-    if message.chat.id == groups[message.chat.id].owner_id:
-        permission_button = types.InlineKeyboardButton(
-            text="Change the permissions of group",
-            callback_data="change_permissions",
-        )
-        markup.add(permission_button)
+    # if groups[message.chat.id].owner_id and message.chat.id>0:
+    #     permission_button = types.InlineKeyboardButton(
+    #         text="Change the characteristics of group",
+    #         callback_data="permissions_of_group",
+    #     )
+    #     markup.add(permission_button)
+
+    back_button = types.InlineKeyboardButton(
+        text="<<<",
+        callback_data="menu",
+    )
+    markup.add(back_button)
 
 
     #Initialize buttons
 
-    if back_from:
-        bot.edit_message_text(
-            templates[language_code]["change_bot_settings.txt"], 
-            message.chat.id, 
-            message.message_id, 
-            reply_markup=markup,
-            parse_mode="HTML"
-        )
-        return
 
-    # Seconding keyboard
-    bot.send_message(
-            message.chat.id,
-            templates[language_code]["change_bot_settings.txt"],
-            reply_markup=markup,
-            parse_mode="HTML",
-        )
+    bot.edit_message_text(
+        templates[language_code]["change_bot_settings.txt"], 
+        message.chat.id, 
+        message.message_id, 
+        reply_markup=markup,
+        parse_mode="HTML"
+    )
+    return

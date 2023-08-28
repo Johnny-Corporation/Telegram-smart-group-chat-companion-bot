@@ -32,9 +32,9 @@ def enter_promocode_reply_handler(inner_message):
 
         for group_id in groups[inner_message.chat.id].id_groups:
             groups[group_id].subscription = groups[inner_message.chat.id].subscription
-            groups[group_id].permissions[groups[group_id].subscription]["messages_limit"] = groups[inner_message.chat.id].permissions[groups[inner_message.chat.id].subscription]["messages_limit"]
-            groups[group_id].permissions[groups[group_id].subscription]["dynamic_gen_permission"] = groups[inner_message.chat.id].permissions[groups[inner_message.chat.id].subscription]["dynamic_gen_permission"]
-            groups[group_id].permissions[groups[group_id].subscription]["voice_output_permission"] = groups[inner_message.chat.id].permissions[groups[inner_message.chat.id].subscription]["voice_output_permission"]
+            groups[group_id].characteristics_of_sub[groups[group_id].subscription]["messages_limit"] = groups[inner_message.chat.id].characteristics_of_sub[groups[inner_message.chat.id].subscription]["messages_limit"]
+            groups[group_id].characteristics_of_sub[groups[group_id].subscription]["dynamic_gen_permission"] = groups[inner_message.chat.id].characteristics_of_sub[groups[inner_message.chat.id].subscription]["dynamic_gen_permission"]
+            groups[group_id].characteristics_of_sub[groups[group_id].subscription]["voice_output_permission"] = groups[inner_message.chat.id].characteristics_of_sub[groups[inner_message.chat.id].subscription]["voice_output_permission"]
 
         groups[inner_message.chat.id].track_sub(inner_message.chat.id, new=True)
 

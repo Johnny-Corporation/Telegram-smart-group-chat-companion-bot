@@ -1,17 +1,13 @@
-<i>Group: {group_name}</i>
-<b>Owner: {username}</b>
+👥 <i>Group: {group_name}</i>
+👤 <b>Owner: {username}</b>
 
-Bot works on {language} language.
+😛 Bot works on {language} language.
 
 <b>INFO about owner</b>
 
-<b>Subscription</b>
-Subscription: {subscription} 
+<b>Subscription: {subscription} </b>
 
-<b>messages</b>
-Group have spent <b>{spent_messages} messages</b>.
-messages left: {messages_left}
+🔷 Group have spent <b>{spent_messages} messages</b>.
 
-Below you can see settings in this group:
-
-<i>/change_owner_of_group to change owner of group</i>
+🔷 Messages left: {messages_left}
+ 🔹<i>In <b>Purchases</b> owner can buy more</i>🔹

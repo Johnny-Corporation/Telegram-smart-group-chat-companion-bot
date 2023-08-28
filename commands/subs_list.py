@@ -22,18 +22,18 @@ def sub_info(message):
         )
         return
     
-    left_messages = groups[message.chat.id].permissions[groups[message.chat.id].subscription]["messages_limit"]-groups[message.chat.id].total_spent_messages
+    left_messages = groups[message.chat.id].characteristics_of_sub[groups[message.chat.id].subscription]["messages_limit"]-groups[message.chat.id].total_spent_messages
     if left_messages < 0:
         left_messages = 0
 
     dyn_gen_per = translate_text(language_code, 'allowed')
-    if groups[message.chat.id].permissions[groups[message.chat.id].subscription]["dynamic_gen_permission"] == False:
+    if groups[message.chat.id].characteristics_of_sub[groups[message.chat.id].subscription]["dynamic_gen_permission"] == False:
         dyn_gen_per = translate_text(language_code, 'not allowed')
     voice_out_per = translate_text(language_code, 'allowed')
-    if groups[message.chat.id].permissions[groups[message.chat.id].subscription]["voice_output_permission"] == False:
+    if groups[message.chat.id].characteristics_of_sub[groups[message.chat.id].subscription]["voice_output_permission"] == False:
         voice_out_per = translate_text(language_code, 'not allowed')
     set_up_per = translate_text(language_code, 'allowed')
-    if groups[message.chat.id].permissions[groups[message.chat.id].subscription]["sphere_permission"] == False:
+    if groups[message.chat.id].characteristics_of_sub[groups[message.chat.id].subscription]["sphere_permission"] == False:
         set_up_per = translate_text(language_code, 'not allowed')
 
     name_of_groups = ''
@@ -50,13 +50,11 @@ def sub_info(message):
         templates[language_code]["info_about_user_sub.txt"].format(
         first_name=message.chat.first_name,
         subscription=groups[message.chat.id].subscription,
-        messages=groups[message.chat.id].permissions[groups[message.chat.id].subscription]["messages_limit"],
+        messages=groups[message.chat.id].characteristics_of_sub[groups[message.chat.id].subscription]["messages_limit"],
         left_messages=left_messages,
-        groups=groups[message.chat.id].permissions[groups[message.chat.id].subscription]["allowed_groups"],
-        left_groups=groups[message.chat.id].permissions[groups[message.chat.id].subscription]["allowed_groups"] - len(groups[message.chat.id].id_groups),
+        groups=groups[message.chat.id].characteristics_of_sub[groups[message.chat.id].subscription]["allowed_groups"],
+        left_groups=groups[message.chat.id].characteristics_of_sub[groups[message.chat.id].subscription]["allowed_groups"] - len(groups[message.chat.id].id_groups),
         name_of_groups=name_of_groups,
-        temp_memory_limit=groups[message.chat.id].permissions[groups[message.chat.id].subscription]["temporary_memory_size_limit"],
-        temp_memory=groups[message.chat.id].temporary_memory_size,
         dyn_gen_per=dyn_gen_per,
         voice_out_per=voice_out_per,
         set_up_per=set_up_per
@@ -76,6 +74,4 @@ def subs_list(message):
     language_code = groups[message.chat.id].lang_code 
 
     bot.send_message(message.chat.id, templates[language_code]["sub_free_description.txt"], parse_mode = "HTML")
-    bot.send_message(message.chat.id, templates[language_code]["sub_user_description.txt"], parse_mode = "HTML")
-    bot.send_message(message.chat.id, templates[language_code]["sub_small_business_description.txt"], parse_mode = "HTML")
-    bot.send_message(message.chat.id, templates[language_code]["sub_big_business_description.txt"], parse_mode = "HTML")
+    bot.send_message(message.chat.id, templates[language_code]["sub_pro_description.txt"], parse_mode = "HTML")

@@ -1,5 +1,5 @@
-Your bot is working in AutoMode! 
+Your bot is working in AutoMode!💥
 
-It answers in such<i> {probability} probability</i>. You can change it in settings!
+It answers in such<i> {probability} probability</i>. You can change it in settings!🔧
 
 Change mode or disable him you can below!

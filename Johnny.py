@@ -86,22 +86,16 @@ class Johnny:
         self.voice_out_enabled = False
         self.total_spent_messages = 0  # prompt and completion messages
         self.last_function_request = None
-        self.button_commands = []
         self.messages_to_be_deleted = []
-        # Permissions
+        # characteristics_of_sub
         self.subscription = "Free"
-        self.permissions = {
+        self.characteristics_of_sub = {
             "Free": {  # {type_of_sub: {point: value_of_point}}
-                "allowed_groups": 1,
-                "messages_limit": 30,
-                "temporary_memory_size_limit": 20,
-                "dynamic_gen_permission": False,
+                "messages_limit": 20,
+                "price_of_message": 10,
                 "sphere_permission": False,
-                "temperature_permission": False,
-                "frequency_penalty_permission": False,
-                "presense_penalty_permission": False,
-                "voice_output_permission": False,
-                "generate_picture_permission": False,
+                "dynamic_gen_permission": False,
+                "pro_voice_output": False
             }
         }
 
@@ -184,7 +178,7 @@ class Johnny:
         # --- Check on limit on groups of one men ---
         # if (
         #     len(groups[self.owner_id].id_groups)
-        #     > groups[self.owner_id].permissions[self.subscription]["allowed_groups"]
+        #     > groups[self.owner_id].characteristics_of_sub[self.subscription]["allowed_groups"]
         # ):
         #     self.bot.send_message(
         #         message.chat.id,
@@ -265,25 +259,25 @@ class Johnny:
         # --- Checks on messages ---
         if (
             self.total_spent_messages
-            >= self.permissions[self.subscription]["messages_limit"]
+            >= self.characteristics_of_sub[self.subscription]["messages_limit"]
         ):
             self.bot.send_message(
                 message.chat.id,
                 templates[self.lang_code]["exceed_limit_on_messages.txt"],
             )
-            self.total_spent_messages = self.permissions[self.subscription][
+            self.total_spent_messages = self.characteristics_of_sub[self.subscription][
                 "messages_limit"
             ]
             return
         elif (
             groups[self.owner_id].total_spent_messages
-            >= self.permissions[self.subscription]["messages_limit"]
+            >= self.characteristics_of_sub[self.subscription]["messages_limit"]
         ):
             self.bot.send_message(
                 message.chat.id,
                 templates[self.lang_code]["exceed_limit_on_messages.txt"],
             )
-            groups[self.owner_id].total_spent_messages = self.permissions[
+            groups[self.owner_id].total_spent_messages = self.characteristics_of_sub[
                 self.subscription
             ]["messages_limit"]
             return
@@ -297,6 +291,11 @@ class Johnny:
             or (random() < self.trigger_probability)
         ):
             # --- GPT answer generation ---
+            
+            if self.voice_out_enabled:
+                self.bot.send_chat_action(self.message.chat.id, 'record_audio')
+            else:
+                self.bot.send_chat_action(self.message.chat.id, 'typing')
 
             self.response = self.get_completion()
 
@@ -368,6 +367,7 @@ class Johnny:
             # Additional arguments
             additional_args = {}
             if function_name == "generate_image":
+                self.bot.send_chat_action(self.message.chat.id, 'upload_photo')
                 additional_args = {"bot": self.bot, "chat_id": self.chat_id}
 
             # Saving function result to history
@@ -396,6 +396,7 @@ class Johnny:
             return None
 
         if self.voice_out_enabled == True:
+            
             text_to_voice(
                 self.bot,
                 self.message,
@@ -606,7 +607,7 @@ class Johnny:
             first_name,
             str(last_name),
             username,
-            self.permissions[self.subscription]["messages_limit"]
+            self.characteristics_of_sub[self.subscription]["messages_limit"]
             + self.total_spent_messages,
         )
 
@@ -652,10 +653,10 @@ class Johnny:
 
                 self.subscription = "Free"
 
-                self.permissions = {}
+                self.characteristics_of_sub = {}
 
-                permissions = take_info_about_sub(self.subscription)
-                self.permissions[self.subscription] = permissions
+                characteristics_of_sub = take_info_about_sub(self.subscription)
+                self.characteristics_of_sub[self.subscription] = characteristics_of_sub
 
                 self.temperature = 1
                 self.frequency_penalty = 0.2
@@ -675,26 +676,10 @@ class Johnny:
                 parse_mode="HTML",
             )
 
-        if self.subscription == "SMALL BUSINESS (trial)":
-            start_date_txt = db_controller.get_last_date_of_start_of_user(chat_id)
-            start_date = datetime.fromisoformat(start_date_txt)
-
-            # create a scheduler
-            sub_scheduler = BackgroundScheduler()
-
-            # schedule a task to print a number after 2 seconds
-            sub_scheduler.add_job(
-                sub_tracking,
-                "date",
-                run_date=start_date + relativedelta(days=3),
-                args=[chat_id, start_date_txt],
-                misfire_grace_time=86400,
-            )
-
             # start the scheduler
             sub_scheduler.start()
 
-        elif self.subscription != "Free":
+        if self.subscription != "Free":
             if new:
                 start_date_txt = db_controller.get_last_date_of_start_of_user(chat_id)
                 start_date = datetime.fromisoformat(start_date_txt)
@@ -754,12 +739,12 @@ class Johnny:
         if data != {}:
             self.subscription = data["TypeOfSubscription"]
 
-            self.permissions = {}
+            self.characteristics_of_sub = {}
 
-            permissions = take_info_about_sub(self.subscription)
-            self.permissions[self.subscription] = permissions
+            characteristics_of_sub = take_info_about_sub(self.subscription)
+            self.characteristics_of_sub[self.subscription] = characteristics_of_sub
 
-            self.permissions[self.subscription]["messages_limit"] = data[
+            self.characteristics_of_sub[self.subscription]["messages_limit"] = data[
                 "MessagesTotal"
             ]
 

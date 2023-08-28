@@ -16,9 +16,9 @@ def rus_payment(message, type_of_sub):
         #Apply new parameters to all groups
         for group_id in groups[message.chat.id].id_groups:
             groups[group_id].subscription = groups[message.chat.id].subscription
-            groups[group_id].permissions[groups[group_id].subscription]["messages_limit"] = groups[message.chat.id].permissions[groups[message.chat.id].subscription]["messages_limit"]
-            groups[group_id].permissions[groups[group_id].subscription]["dynamic_gen_permission"] = groups[message.chat.id].permissions[groups[message.chat.id].subscription]["dynamic_gen_permission"]
-            groups[group_id].permissions[groups[group_id].subscription]["voice_output_permission"] = groups[message.chat.id].permissions[groups[message.chat.id].subscription]["voice_output_permission"]
+            groups[group_id].characteristics_of_sub[groups[group_id].subscription]["messages_limit"] = groups[message.chat.id].characteristics_of_sub[groups[message.chat.id].subscription]["messages_limit"]
+            groups[group_id].characteristics_of_sub[groups[group_id].subscription]["dynamic_gen_permission"] = groups[message.chat.id].characteristics_of_sub[groups[message.chat.id].subscription]["dynamic_gen_permission"]
+            groups[group_id].characteristics_of_sub[groups[group_id].subscription]["voice_output_permission"] = groups[message.chat.id].characteristics_of_sub[groups[message.chat.id].subscription]["voice_output_permission"]
 
         groups[message.chat.id].track_sub(message.chat.id, new=True)
 

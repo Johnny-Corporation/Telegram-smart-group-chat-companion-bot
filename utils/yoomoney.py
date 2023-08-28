@@ -9,7 +9,7 @@ token = yoomoney_token
 client = Client(token)
 
 
-def accept_payment(message, type_of_buy, cost, type_of_own="update"):
+def accept_payment(message, cost, type_of_own="update", messages=0):
     def payment_with_timeout(url, timeout=120.0):
         result = [
             None
@@ -32,15 +32,26 @@ def accept_payment(message, type_of_buy, cost, type_of_own="update"):
             url=url,
         )
         markup.add(temp_button)
-        bot.send_message(
-            message.chat.id,
-            templates[language_code]["info_about_buy.txt"].format(
-                type_of_buy=type_of_buy, cost=cost
-            ),
-            reply_markup=markup,
-            parse_mode="HTML",
-        )
-        print(label)
+        if type_of_own == 'update' or type_of_own == 'extend':
+            bot.send_message(
+                message.chat.id,
+                templates[language_code]["info_about_buy_of_sub.txt"].format(
+                    cost=cost
+                ),
+                reply_markup=markup,
+                parse_mode="HTML",
+            )
+        elif type_of_own == 'more_messages':
+            bot.send_message(
+                message.chat.id,
+                templates[language_code]["info_about_buy_of_messages.txt"].format(
+                    count=messages,
+                    sub=groups[inner_message.chat.id].subscription,
+                    cost=cost
+                ),
+                reply_markup=markup,
+                parse_mode="HTML",
+            )
 
         start_time = time.time()
 
@@ -55,41 +66,16 @@ def accept_payment(message, type_of_buy, cost, type_of_own="update"):
 
         if result[0]:
             if type_of_own == "update":
-                if type_of_buy == "You buy USER subscription":
-                    groups[message.chat.id].add_new_user(
-                        message.chat.id,
-                        message.from_user.first_name,
-                        message.from_user.last_name,
-                        message.from_user.username,
-                        "USER",
-                        300,
-                    )
-                    groups[message.chat.id].load_subscription(message.chat.id)
-                    groups[message.chat.id].track_sub(message.chat.id, new=True)
-
-                elif type_of_buy == "You buy SMALL BUSINESS subscription":
-                    groups[message.chat.id].add_new_user(
-                        message.chat.id,
-                        message.from_user.first_name,
-                        message.from_user.last_name,
-                        message.from_user.username,
-                        "SMALL BUSINESS",
-                        700,
-                    )
-                    groups[message.chat.id].load_subscription(message.chat.id)
-                    groups[message.chat.id].track_sub(message.chat.id, new=True)
-
-                elif type_of_buy == "You buy BIG BUSINESS subscription":
-                    groups[message.chat.id].add_new_user(
-                        message.chat.id,
-                        message.from_user.first_name,
-                        message.from_user.last_name,
-                        message.from_user.username,
-                        "BIG BUSINESS",
-                        1000,
-                    )
-                    groups[message.chat.id].load_subscription(message.chat.id)
-                    groups[message.chat.id].track_sub(message.chat.id, new=True)
+                groups[message.chat.id].add_new_user(
+                    message.chat.id,
+                    message.from_user.first_name,
+                    message.from_user.last_name,
+                    message.from_user.username,
+                    "USER",
+                    100,
+                )
+                groups[message.chat.id].load_subscription(message.chat.id)
+                groups[message.chat.id].track_sub(message.chat.id, new=True)
 
                 for group_id in groups[message.chat.id].id_groups:
                     groups[group_id].subscription = groups[message.chat.id].subscription
@@ -113,6 +99,13 @@ def accept_payment(message, type_of_buy, cost, type_of_own="update"):
                         groups[message.chat.id].subscription
                     ][
                         "voice_output_permission"
+                    ]
+                    groups[group_id].permissions[groups[group_id].subscription][
+                        "sphere_permission"
+                    ] = groups[message.chat.id].permissions[
+                        groups[message.chat.id].subscription
+                    ][
+                        "sphere_permission"
                     ]
             elif type_of_own == "extend":
                 groups[message.chat.id].extend_sub(

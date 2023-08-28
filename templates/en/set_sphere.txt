@@ -1,4 +1,5 @@
-Enter <b>the scope of your conservation (for example, business etp) in reply to message</b>.
-Bot will now answer only when you discussing this theme. 
+Enter <b>the theme of your conservation (for example, business) in reply to message</b>.
+
+Bot will answer only when you discussing this theme. 
 
 <i>Set up now: {sphere}</i>

@@ -22,9 +22,9 @@ def reply_keyboard_buttons_handler(message, commands):
             else:
                 return
 
-        i = 2
+        i = 1
         if groups[message.chat.id].enabled == True:
-            i = 4
+            i = 3
 
         if message.text == commands[0]:
             if groups[message.chat.id].enabled == False:
@@ -34,33 +34,37 @@ def reply_keyboard_buttons_handler(message, commands):
                 disable(message)
             return True
 
-        elif message.text == commands[1]:
-            question_to_bot(message)
+        # elif message.text == commands[1]:
+        #     question_to_bot(message)
+        #     return True
+
+        elif message.text == commands[i]:
+            menu(message)
             return True
 
-        elif message.text == commands[2] and i == 4:
+        elif message.text == commands[1] and i == 3:
             view_mode(message)
             return True
 
-        elif message.text == commands[3] and i == 4:
+        elif message.text == commands[2] and i == 3:
             change_mode(message)
             return True
+        
+        # elif message.text == commands[i]:
+        #     group(message)
+        #     return True
 
-        elif message.text == commands[i]:
-            group(message)
-            return True
+        # elif message.text == commands[i + 1]:
+        #     settings(message)
+        #     return True
 
-        elif message.text == commands[i + 1]:
-            settings(message)
-            return True
+        # elif message.text == commands[i + 2]:
+        #     report_bug(message)
+        #     return True
 
-        elif message.text == commands[i + 2]:
-            report_bug(message)
-            return True
-
-        elif message.text == commands[i + 3]:
-            request_feature(message)
-            return True
+        # elif message.text == commands[i + 3]:
+        #     request_feature(message)
+        #     return True
 
         # elif message.text == commands[12]:
         #     support_us_command(message)
@@ -76,24 +80,28 @@ def reply_keyboard_buttons_handler(message, commands):
                 return True
 
         elif message.text == commands[1]:
-            question_to_bot(message)
+            menu(message)
             return True
 
-        elif message.text == commands[2]:
-            account(message)
-            return True
+        # elif message.text == commands[1]:
+        #     question_to_bot(message)
+        #     return True
 
-        elif message.text == commands[3]:
-            settings(message)
-            return True
+        # elif message.text == commands[2]:
+        #     account(message)
+        #     return True
 
-        elif message.text == commands[4]:
-            report_bug(message)
-            return True
+        # elif message.text == commands[3]:
+        #     settings(message)
+        #     return True
 
-        elif message.text == commands[5]:
-            request_feature(message)
-            return True
+        # elif message.text == commands[4]:
+        #     report_bug(message)
+        #     return True
+
+        # elif message.text == commands[5]:
+        #     request_feature(message)
+        #     return True
 
         # elif message.text == commands[9]:
         #     support_us_command(message)

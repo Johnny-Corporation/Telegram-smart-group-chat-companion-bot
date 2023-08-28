@@ -27,12 +27,6 @@ def bot_answers_settings(message):
         callback_data="temperature",
     )
 
-    # length of bot memory
-    memory_button = types.InlineKeyboardButton(
-        text=templates[language_code]["button_set_memory.txt"],
-        callback_data="memory_length",
-    )
-
     # frequency_penalty
     freq_penalty_button = types.InlineKeyboardButton(
         text=templates[language_code]["button_set_variety.txt"],
@@ -54,7 +48,7 @@ def bot_answers_settings(message):
     # Back to settings
     back_button = types.InlineKeyboardButton(
         text="<<<",
-        callback_data="back_to_settings",
+        callback_data="settings",
     )
 
     # Adding buttons to keyboard
@@ -85,7 +79,7 @@ def set_probability(message):
     markup = types.InlineKeyboardMarkup()
     back_button = types.InlineKeyboardButton(
         text="<<<",
-        callback_data="back_to_settings_bot_answers",
+        callback_data="settings_bot_answers",
     )
     markup.add(back_button)
 
@@ -110,7 +104,7 @@ def set_temperature(message):
     markup = types.InlineKeyboardMarkup()
     back_button = types.InlineKeyboardButton(
         text="<<<",
-        callback_data="back_to_settings_bot_answers",
+        callback_data="settings_bot_answers",
     )
     markup.add(back_button)
 
@@ -125,32 +119,6 @@ def set_temperature(message):
     )
     bot.register_for_reply(bot_reply, set_temp_reply_handler)
 
-
-# --- Set memory size ---
-def set_temp_memory_size(message):
-    language_code = groups[message.chat.id].lang_code
-
-    #Back to settings_bot_anwser
-    markup = types.InlineKeyboardMarkup()
-    back_button = types.InlineKeyboardButton(
-        text="<<<",
-        callback_data="back_to_settings_bot_answers",
-    )
-    markup.add(back_button)
-
-    bot_reply = bot.edit_message_text(
-        templates[language_code]["change_temp_memory_size.txt"].format(
-            memory=groups[message.chat.id].temporary_memory_size
-        ),
-        message.chat.id, 
-        message.message_id, 
-        reply_markup = markup,
-        parse_mode="HTML",
-    )
-    reply_blacklist[message.chat.id].append(bot_reply.message_id)
-    bot.register_for_reply(bot_reply, set_memory_size_reply_handler)
-
-
 # --- Set frequency penalty (variety of answers) ---
 def set_frequency_penalty(message):
     language_code = groups[message.chat.id].lang_code
@@ -159,7 +127,7 @@ def set_frequency_penalty(message):
     markup = types.InlineKeyboardMarkup()
     back_button = types.InlineKeyboardButton(
         text="<<<",
-        callback_data="back_to_settings_bot_answers",
+        callback_data="settings_bot_answers",
     )
     markup.add(back_button)
 
@@ -184,7 +152,7 @@ def set_presence_penalty(message):
     markup = types.InlineKeyboardMarkup()
     back_button = types.InlineKeyboardButton(
         text="<<<",
-        callback_data="back_to_settings_bot_answers",
+        callback_data="settings_bot_answers",
     )
     markup.add(back_button)
 
@@ -221,7 +189,7 @@ def set_length_answer(message):
     )
     back_button = types.InlineKeyboardButton(
         text="<<<",
-        callback_data="back_to_settings_bot_answers",
+        callback_data="settings_bot_answers",
     )
 
     length_markup.add(long_button)
@@ -247,7 +215,7 @@ def set_sphere(message):
     markup = types.InlineKeyboardMarkup()
     back_button = types.InlineKeyboardButton(
         text="<<<",
-        callback_data="back_to_settings",
+        callback_data="settings",
     )
     markup.add(back_button)
 

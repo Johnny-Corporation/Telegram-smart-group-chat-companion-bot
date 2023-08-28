@@ -28,10 +28,10 @@ def change_owner_reply_handler(inner_message):
     new_owner = get_user["ChatID"]
 
     groups[prev_owner].id_groups.remove(inner_message.chat.id)
-    groups[new_owner].permissions = {}
+    groups[new_owner].characteristics_of_sub = {}
     groups[chat_id].subscription = groups[new_owner].subscription
-    permissions = take_info_about_sub(groups[chat_id].subscription)
-    groups[chat_id].permissions[groups[chat_id].subscription] = permissions
+    characteristics_of_sub = take_info_about_sub(groups[chat_id].subscription)
+    groups[chat_id].characteristics_of_sub[groups[chat_id].subscription] = characteristics_of_sub
     groups[inner_message.chat.id].owner_id = new_owner
 
     bot.send_message(inner_message.chat.id, templates[language_code]["owner_was_changed.txt"])
