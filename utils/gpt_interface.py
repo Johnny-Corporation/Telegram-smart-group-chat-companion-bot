@@ -5,6 +5,8 @@ import utils.functions as functions
 import json
 from utils.internet_access import *
 from time import sleep
+import replicate
+
 
 # Cant import from functions because og the cycle imports
 def load_templates(dir: str) -> dict:
@@ -70,7 +72,7 @@ def get_messages_in_official_format(messages):
     return previous_messages
 
 
-def generate_image(prompt, n, size):
+def generate_image_dalle(prompt, n, size):
     """Returns links to image"""
     response = openai.Image.create(prompt=prompt, n=n, size=size)
     links = []
@@ -79,9 +81,22 @@ def generate_image(prompt, n, size):
     return links
 
 
+def generate_image_replicate_kandinsky_2_2(prompt, n, size):
+    output = replicate.run(
+        "ai-forever/kandinsky-2.2:ea1addaab376f4dc227f5368bbd8eff901820fd1cc14ed8cad63b29249e9d463",
+        input={
+            "prompt": prompt,
+            "num_outputs": 1,
+            "width": 384,
+            "height": 384,
+        },
+    )
+    return output
+
+
 def generate_image_and_send(bot, chat_id, prompt, n=1, size="1024x1024"):
     """Returns message which will be added to history, prompt and info about image"""
-    urls = generate_image(prompt, n, size)
+    urls = generate_image_replicate_kandinsky_2_2(prompt, n, size)
     for url in urls:
         functions.send_image_from_link(bot, url, chat_id)
         functions.download_and_save_image_from_link(
@@ -114,20 +129,15 @@ def create_chat_completion(
     """
 
     # --- Building system content ---
-    # system_content = "You are a group chat participant. "
-    # if reply:
-    #     system_content += "Focus on the last message. "
+    # system_content = ""
+    system_content = f"You are a telegram bot named Johnny, developed by JohnnyCorp team. Your answers should be {answer_length}, use emojis."
 
-    # system_content += "Ask questions if you need. "
-    system_content = f"Your answer should be {answer_length}. "
-
-    if system_content:
-        previous_messages = [
-            {
-                "role": "system",
-                "content": system_content,
-            }
-        ]
+    previous_messages = [
+        {
+            "role": "system",
+            "content": system_content,
+        }
+    ]
 
     # --- Building messages ---
 
@@ -146,19 +156,51 @@ def create_chat_completion(
         "frequency_penalty": frequency_penalty,
         "presence_penalty": presence_penalty,
     }
-    if use_functions:
-        chat_completion_arguments["functions"] = gpt_functions_description
-        chat_completion_arguments["function_call"] = "auto"
+    # if use_functions:
+    #     chat_completion_arguments["functions"] = gpt_functions_description
+    #     chat_completion_arguments["function_call"] = "auto"
 
     try:
         logger.info("Requesting gpt...")
         completion = openai.ChatCompletion.create(**chat_completion_arguments)
     except openai.error.APIError as e:
         logger.error(f"OpenAI API returned an API Error: {e}")
+        # functions.send_to_developers(
+        #     "❗❗Server error occurred, trying to reset memory and wait 5 seconds...❗❗",
+        #     johnny.bot,
+        #     environ["DEVELOPER_CHAT_IDS"].split(","),
+        # )
         functions.send_to_developers(
-            "❗❗Server error occurred, trying to reset memory and wait 5 seconds...❗❗", johnny.bot, environ["DEVELOPER_CHAT_IDS"]
+            "❗❗Server error occurred, trying to wait 5 seconds...❗❗",
+            johnny.bot,
+            environ["DEVELOPER_CHAT_IDS"].split(","),
         )
-        johnny.messages_history = []
+        # johnny.messages_history = [
+        #     johnny.messages_history[-1],
+        # ]
+        # previous_messages = [
+        #     {
+        #         "role": "system",
+        #         "content": system_content,
+        #     }
+        # ]
+        # previous_messages.extend(
+        #     get_messages_in_official_format(johnny.messages_history)
+        # )
+        # chat_completion_arguments = {
+        #     "model": model,
+        #     "messages": previous_messages,
+        #     "temperature": temperature,
+        #     "top_p": top_p,
+        #     "n": n,
+        #     "stream": stream,
+        #     "stop": stop,
+        #     "frequency_penalty": frequency_penalty,
+        #     "presence_penalty": presence_penalty,
+        # }
+        # if use_functions:
+        #     chat_completion_arguments["functions"] = gpt_functions_description
+        #     chat_completion_arguments["function_call"] = "auto"
         sleep(5)
         completion = openai.ChatCompletion.create(**chat_completion_arguments)
 
@@ -220,12 +262,13 @@ def check_context_understanding(answer):
         messages=[
             {
                 "role": "user",
-                "content": f"This is text model's answer: {answer}. Is model saying it doesn't understand context and/or just trying to keep up conversation? Answer Yes or No",
+                "content": f"This is text model's answer: {answer}. Is model saying it doesn't understand context? Answer Yes or No",
             }
         ],
         temperature=0,
         max_tokens=1,
     )
+    logger.info(f"Check understanding completion: {completion}")
     return extract_text(completion) == "No"
 
 
@@ -236,12 +279,13 @@ def check_theme_context(answer, theme):
         messages=[
             {
                 "role": "user",
-                "content": f"This is text model's answer: {answer}. Is model saying something about {theme}? Answer Yes or No",
+                "content": f'This is text mode\'l answer: "{answer}". Is model saying something about {theme}? Answer Yes or No',
             }
         ],
         temperature=0,
         max_tokens=1,
     )
+    logger.info(f"Check about theme completion: {completion}")
     return extract_text(completion) == "Yes"
 
 

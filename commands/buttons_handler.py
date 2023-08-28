@@ -90,7 +90,7 @@ def keyboard_buttons_handler(call):
                 ]["sphere_permission"]
                 == True
             ):
-                set_sphere(call.message)
+                set_sphere_command(call.message)
             else:
                 markup = types.InlineKeyboardMarkup()
                 back_button = types.InlineKeyboardButton(
@@ -225,6 +225,7 @@ def keyboard_buttons_handler(call):
             except:
                 None
 
+            delete_pending_messages()
         # DEV TOOLS
 
         case "get_cur_out":

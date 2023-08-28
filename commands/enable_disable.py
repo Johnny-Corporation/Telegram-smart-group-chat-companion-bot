@@ -120,7 +120,7 @@ def manual_enable(message):
 
     groups[message.chat.id].trigger_probability = 0
 
-    bot.senfd_messge(
+    bot.send_messge(
         message,
         templates[language_code]["enabled_manual.txt"],
         reply_markup=markup_commands,

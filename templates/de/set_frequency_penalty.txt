@@ -1,4 +1,0 @@
-Geben Sie als Antwort auf diese Nachricht</b> einen Wert <b>von 0</b> (die geringste Vielfalt) <b>bis 2</b> (die größte Vielfalt) ein.
-Durch die Vielfalt der Antworten wird der Bot vielfältiger reagieren.
-
-<i>Jetzt {frequency_penalty} einrichten</i>

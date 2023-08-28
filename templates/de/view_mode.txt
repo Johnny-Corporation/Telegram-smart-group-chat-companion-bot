@@ -1,1 +1,0 @@
-Der Bot ist {on_off} im {mode}-Modus.

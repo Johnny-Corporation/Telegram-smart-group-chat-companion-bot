@@ -1,7 +1,7 @@
 from __main__ import *
 
 
-# --- Set sphere of conservation ---
+# --- Set sphere of conversation ---
 @error_handler
 def enter_purchase_of_messages(message):
     language_code = groups[message.chat.id].lang_code

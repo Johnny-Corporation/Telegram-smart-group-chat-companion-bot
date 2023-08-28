@@ -1,3 +1,0 @@
-Glückwunsch! Jetzt haben Sie ein Abonnement: <b>{sub}</b>
-
-<i> Gehen Sie zu „Konto“, um Änderungen anzuzeigen</i>

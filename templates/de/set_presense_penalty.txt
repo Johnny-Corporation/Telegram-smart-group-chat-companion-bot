@@ -1,4 +1,0 @@
-Geben Sie als Antwort auf die Nachricht</b> den Wert <b>von 0</b> (direkter) <b>bis 2</b> (kreativer) <b> ein.
-Parameter bestimmen die Wahrscheinlichkeit eines Models, über neue Themen zu sprechen.
-
-<i>Jetzt {presense_penalty} einrichten</i>

@@ -1,0 +1,16 @@
+{
+    "name": "generate_image",
+    "description": "Generates and sends image(s)",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "prompt": {
+                "type": "string",
+                "description": "Extremely detailed and verbose, only in english"
+            }
+        },
+        "required": [
+            "prompt"
+        ]
+    }
+}

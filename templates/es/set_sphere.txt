@@ -1,4 +1,0 @@
-Introduzca <b>el alcance de su conservación (por ejemplo, etp empresarial) en respuesta al mensaje</b>.
-El bot ahora responderá solo cuando hables sobre este tema.
-
-<i>Configurar ahora: {sphere}</i>

@@ -1,7 +1,7 @@
 [
     {
         "name": "google",
-        "description": "Google question",
+        "description": "Use only in cases, when u dont know the answer",
         "parameters": {
             "type": "object",
             "properties": {
@@ -28,26 +28,6 @@
             },
             "required": [
                 "link"
-            ]
-        }
-    },
-    {
-        "name": "generate_image",
-        "description": "Generates and sends image(s)",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "prompt": {
-                    "type": "string",
-                    "description": "Very detailed, only in english"
-                },
-                "n": {
-                    "type": "integer",
-                    "description": "Number of images, all images will be sent one by one"
-                }
-            },
-            "required": [
-                "prompt"
             ]
         }
     }

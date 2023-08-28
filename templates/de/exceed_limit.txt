@@ -1,4 +1,0 @@
-Das Limit des temporären Speichers wurde überschritten.
-Jetzt können Sie maximal {temp_memory_size} Nachrichten haben.
-
-<i> /subs_list, um mehr über Limits zu erfahren</i>

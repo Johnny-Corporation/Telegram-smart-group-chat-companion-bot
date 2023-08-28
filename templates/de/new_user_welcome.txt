@@ -1,9 +1,0 @@
-Vielen Dank für die Registrierung! Ich bin ein Johnny – ein intelligenter Begleiter-Bot.
-
-Stellen Sie eine Frage, schlagen Sie ein Problem oder eine Idee vor. Johnny ist bereit, Ihnen zu helfen!
-
-<i>Sie können Johnny zur Gruppe hinzufügen!</i>
-
-<i>Unten sehen Sie zusätzliche Tools</i>
-
-<i>*Verwenden Sie  /about um mehr zu erfahren!*</i>

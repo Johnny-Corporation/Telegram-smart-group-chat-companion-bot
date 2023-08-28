@@ -6,7 +6,12 @@ from googletrans import Translator
 import soundfile as sf
 import requests
 import zipfile
+import xlrd
+import openpyxl
+import docx2txt
+import PyPDF2
 
+from utils import sber_auth
 from gtts import gTTS
 from langdetect import detect
 
@@ -15,6 +20,31 @@ import utils.gpt_interface as gpt
 
 developer_chat_IDs = environ.get("DEVELOPER_CHAT_IDS")
 developer_chat_IDs = developer_chat_IDs.split(",")
+
+
+def read_text_from_xls(file_path):
+    workbook = xlrd.open_workbook(file_path)
+    sheet = workbook.sheet_by_index(0)
+
+    text_data = []
+    for row in range(sheet.nrows):
+        for col in range(sheet.ncols):
+            cell_value = sheet.cell_value(row, col)
+            text_data.append(str(cell_value))
+
+    return "".join(text_data)[:4000]
+
+
+def read_text_from_xlsx(file_path):
+    workbook = openpyxl.load_workbook(file_path)
+    sheet = workbook.active
+
+    text_data = []
+    for row in sheet.iter_rows():
+        for cell in row:
+            text_data.append(str(cell.value))
+
+    return "".join(text_data)[:4000]
 
 
 def load_templates(dir: str) -> dict:
@@ -77,7 +107,9 @@ def send_image_from_link(bot, url, chat_id):
 def download_and_save_image_from_link(link, filename):
     response = requests.get(link)
     if response.status_code == 200:
-        with open("output\\files\\DALLE\\" + filename, "wb") as file:
+        with open(
+            "output\\files\\DALLE\\" + filename[:100], "wb"
+        ) as file:  # windows file length limit ~250 chars
             file.write(response.content)
             print("Image downloaded successfully.")
     else:
@@ -154,20 +186,46 @@ def clean_string(string: str) -> str:
     return cleaned_string
 
 
-def get_file_content(bot, message):
+def get_file_content(path):
     """Returns file content"""
     try:
         # Download the file
-        file_info = bot.get_file(message.document.file_id)
-        downloaded_file = bot.download_file(file_info.file_path)
+        if path.split(".")[-1] == "xls":
+            file_content = read_text_from_xls(path)
+        elif path.split(".")[-1] == "xlsx":
+            file_content = read_text_from_xlsx(path)
+        elif path.split(".")[-1] == "docx":
+            file_content = read_word_file(path)
 
-        # Convert the file's binary content to string
-        file_content = downloaded_file.decode("utf-8")
+        elif path.split(".")[-1] == "doc":
+            file_content = (
+                "You cant read content of this file, ask user to send in .docx format"
+            )
+        elif path.split(".")[-1] == "pdf":
+            file_content = extract_text_from_pdf(path)
+        else:
+            with open(path, "r", encoding="utf-8") as f:
+                file_content = f.read()
 
-        # Send back the first 1000 characters of the file (to avoid message length limits)
-        return file_content[:1000]
+        return file_content[:2000]
     except Exception as e:
         return "file content cant be read"
+
+
+def extract_text_from_pdf(pdf_path):
+    text = ""
+    with open(pdf_path, "rb") as pdf_file:
+        pdf_reader = PyPDF2.PdfReader(pdf_file)
+        num_pages = len(pdf_reader.pages)
+        for page_num in range(num_pages):
+            page = pdf_reader.pages[page_num]
+            text += page.extract_text()
+    return text[:4000]
+
+
+def read_word_file(file_path):
+    text = docx2txt.process(file_path)
+    return text[:4000]
 
 
 def describe_image(link: str, prompt: str = "Describe image") -> str:
@@ -483,7 +541,7 @@ def load_buttons(types, groups, chat_id, language_code, owner_id=None):
         print(groups[chat_id].enabled)
         if groups[chat_id].enabled == True:
             print("ENABLED")
-            text1 = translate_text(language_code, "ㅤ🔒 Stop conservationㅤ")
+            text1 = translate_text(language_code, "ㅤ🔒 Stop conversationㅤ")
             itembtn1 = types.KeyboardButton(text1)
 
         elif groups[chat_id].enabled == False:
@@ -591,6 +649,34 @@ def generate_voice_message(message, text, language, reply_to=None):
     return f"output\\voice_out\\voice_out_{message.message_id}.mp3"
 
 
+def generate_voice_message_premium(message, text, language, reply_to=None):
+    """Got a text and generate voice file and return path to voice file"""
+
+    access_token = sber_auth.get_access_token()
+
+    url = "https://smartspeech.sber.ru/rest/v1/text:synthesize"
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/text",
+    }
+    params = {"format": "wav16", "voice": "Bys_24000"}
+
+    response = requests.post(
+        url, headers=headers, params=params, data=text.encode("utf-8"), verify=False
+    )
+
+    if response.status_code == 200:
+        makedirs("output\\voice_out", exist_ok=True)
+        with open(
+            f"output\\voice_out\\voice_out_premium_{message.message_id}.wav", "wb"
+        ) as f:
+            f.write(response.content)
+    else:
+        print(f"Error: {response.status_code}, {response.text}")
+
+    return f"output\\voice_out\\voice_out_premium_{message.message_id}.wav"
+
+
 def video_note_to_audio(bot, message, reply_to=None):
 
     video_file_path = f"output\\video_notes\\video_note_{message.message_id}.mp4"
@@ -647,7 +733,7 @@ def read_text_from_image(url):
     print(result)
 
     if "all_text" in response.json():
-        return response.json()["all_text"]
+        return response.json()["all_text"][:2000]
     else:
         return "No text detected!"
 

@@ -207,8 +207,9 @@ def set_length_answer(message):
     )
 
 
-# --- Set sphere of conservation ---
-def set_sphere(message):
+# --- Set sphere of conversation ---
+@error_handler
+def set_sphere_command(message):
     language_code = groups[message.chat.id].lang_code
 
     #Back to settings

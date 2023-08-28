@@ -28,11 +28,14 @@ from __main__ import *
 from utils.functions import (
     load_templates,
     generate_voice_message,
+    generate_voice_message_premium,
     to_text,
     video_note_to_audio,
     take_info_about_sub,
 )
 from utils.text_to_voice import *
+from telebot.apihelper import ApiTelegramException
+
 
 templates = load_templates("templates\\")
 
@@ -45,6 +48,8 @@ functions_waiting_messages = {
     "google": "googling_question.txt",
     "read_from_link": "reading_from_link.txt",
     "generate_image": "generate_image.txt",
+    "generate_image_dalle": "generate_image.txt",
+    "generate_image_replicate_kandinsky_2_2": "generate_image.txt",
 }
 
 
@@ -59,11 +64,11 @@ class Johnny:
     language_code: str = "eng"
     trigger_probability: float = 0.8
     model = "gpt-3.5-turbo"
-    tokens_limit: int = 3800  # Leave gap for functions
+    tokens_limit: int = 3950  # Leave gap for functions
     temperature: float = 0.5
     frequency_penalty: float = 0.2
     presence_penalty: float = 0.2
-    answer_length: str = "brief"
+    answer_length: str = "short"
     sphere: str = ""
     system_content: str = ""
     allow_functions: bool = True
@@ -99,6 +104,8 @@ class Johnny:
             }
         }
 
+        self.last_downloaded_file_path = None
+
         # User
         self.id_groups = []
         self.commercial_trigger = 0
@@ -131,10 +138,15 @@ class Johnny:
         )
 
     def clean_memory(self):
-        for m in self.messages_history:
-            if m[0] == "$FUNCTION$":
+        for m in self.messages_history[:-4]:
+            if (
+                m[0] == "$FUNCTION$"
+                or ("[FILE]" in m[1])
+                or ("[USER SENT AN IMAGE]" in m[1])
+            ):
                 self.messages_history.remove(m)
-        self.messages_history = self.messages_history[:-1]
+        if len(self.messages_history) > 6:
+            self.messages_history = self.messages_history[1:]
 
     def one_answer(self, message: Message, groups: dict):
         response = gpt.create_chat_completion(
@@ -161,6 +173,7 @@ class Johnny:
             "wb",
         ) as new_file:
             new_file.write(downloaded_file)
+        self.last_downloaded_file_path = f"output\\files\\{self.chat_id}\\file___{self.files_and_images_counter}___{file_name}"
         self.files_and_images_counter += 1
 
     def download_image(self, message):
@@ -193,10 +206,11 @@ class Johnny:
         # --- Converts other types files to text ---
         match message.content_type:
             case "document":
-                text = "[USER SENT A FILE] Content:" + get_file_content(
-                    self.bot, message
+                self.download_file(message)
+                text = (
+                    "[FILE](Because u cant process files, i will provide its content: )\n"
+                    + get_file_content(self.last_downloaded_file_path)
                 )
-                threading.Thread(target=self.download_file, args=(message,)).start()
             case "photo":
                 threading.Thread(target=self.download_image, args=(message,)).start()
                 self.messages_to_be_deleted.append(
@@ -235,7 +249,12 @@ class Johnny:
         )
         self.message = message
         # --- Add message to temporary memory ---
-        self.messages_history.append([message.from_user.first_name, text])
+        self.messages_history.append(
+            [
+                message.from_user.first_name,
+                text.replace("@SmartGroupParticipant_bot", ""),
+            ]
+        )
         if len(self.messages_history) == self.temporary_memory_size:
             self.messages_history.pop(0)
 
@@ -322,7 +341,10 @@ class Johnny:
                 self.total_spent_messages,
             )
 
-            self.messages_history.append(["$BOT$", text_answer])
+            if (
+                text_answer
+            ):  # if it is None, this means gpt said it didn't understand context or said something outside the theme
+                self.messages_history.append(["$BOT$", text_answer])
 
     def static_generation(self, completion):
         """Takes completion object and returns text answer. Handles message in telegram"""
@@ -406,7 +428,25 @@ class Johnny:
             )
             return text_answer
 
-        self.bot.send_message(self.message.chat.id, text_answer, parse_mode="Markdown")
+        try:
+            self.bot.send_message(
+                self.message.chat.id, text_answer, parse_mode="Markdown"
+            )
+        except ApiTelegramException as e:
+            if (
+                e.result_json["error_code"] == 400
+                and "group chat was upgraded to a supergroup chat"
+                in e.result_json["description"]
+            ):
+                # Handle the scenario where the group was upgraded to a supergroup
+                # WARNING: THIS ISNT WORKING, ERROR WILL OCCUR ANYWAY BECAUSE IN THIS MESSAGE WE R USING CHAT ID WHICH WAS CHANGED
+                self.bot.send_message(
+                    self.message.chat.id,
+                    templates[self.lang_code]["group_upgraded_to_super_group.txt"],
+                    parse_mode="Markdown",
+                )
+            else:
+                raise e
         return text_answer
 
     def dynamic_generation(self, completion):
@@ -535,24 +575,28 @@ class Johnny:
     def check_understanding(self, text_answer: str) -> bool:
         """Checks if GPT understands context of the question"""
 
-        # Checking context understating
-        if (
-            (self.trigger_probability != 1)
-            and (self.trigger_probability != 0)
-            and (not gpt.check_context_understanding(text_answer))
-        ):
-            return False
+        if not self.sphere:
+            # Checking context understating
+            if (
+                (self.trigger_probability != 1)
+                and (self.trigger_probability != 0)
+                and (not gpt.check_context_understanding(text_answer))
+            ):
+                return False
+            else:
+                return True
 
-        # Checking model answer is about selected sphere
-        if (
-            (self.trigger_probability != 1)
-            and (self.trigger_probability != 0)
-            and (self.sphere)
-            and (not gpt.check_theme_context(text_answer, self.sphere))
-        ):
-            return False
-
-        return True
+        else:
+            # Checking model answer is about selected sphere
+            if (
+                (self.trigger_probability != 1)
+                and (self.trigger_probability != 0)
+                and (self.sphere)
+                and (not gpt.check_theme_context(text_answer, self.sphere))
+            ):
+                return False
+            else:
+                return True
 
     def add_new_user(
         self,
