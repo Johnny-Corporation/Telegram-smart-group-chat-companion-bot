@@ -34,6 +34,8 @@ from utils.functions import (
     take_info_about_sub,
 )
 from utils.text_to_voice import *
+from telebot.apihelper import ApiTelegramException
+
 
 templates = load_templates("templates\\")
 
@@ -425,7 +427,25 @@ class Johnny:
             )
             return text_answer
 
-        self.bot.send_message(self.message.chat.id, text_answer, parse_mode="Markdown")
+        try:
+            self.bot.send_message(
+                self.message.chat.id, text_answer, parse_mode="Markdown"
+            )
+        except ApiTelegramException as e:
+            if (
+                e.result_json["error_code"] == 400
+                and "group chat was upgraded to a supergroup chat"
+                in e.result_json["description"]
+            ):
+                # Handle the scenario where the group was upgraded to a supergroup
+                # WARNING: THIS ISNT WORKING, ERROR WILL OCCUR ANYWAY BECAUSE IN THIS MESSAGE WE R USING CHAT ID WHICH WAS CHANGED
+                self.bot.send_message(
+                    self.message.chat.id,
+                    templates[self.lang_code]["group_upgraded_to_super_group.txt"],
+                    parse_mode="Markdown",
+                )
+            else:
+                raise e
         return text_answer
 
     def dynamic_generation(self, completion):

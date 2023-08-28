@@ -107,7 +107,9 @@ def send_image_from_link(bot, url, chat_id):
 def download_and_save_image_from_link(link, filename):
     response = requests.get(link)
     if response.status_code == 200:
-        with open("output\\files\\DALLE\\" + filename, "wb") as file:
+        with open(
+            "output\\files\\DALLE\\" + filename[:100], "wb"
+        ) as file:  # windows file length limit ~250 chars
             file.write(response.content)
             print("Image downloaded successfully.")
     else:

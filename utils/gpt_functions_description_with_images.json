@@ -1,50 +1,16 @@
-[
-    {
-        "name": "google",
-        "description": "Google question",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "question": {
-                    "type": "string",
-                    "description": "Will be googled"
-                }
-            },
-            "required": [
-                "question"
-            ]
-        }
-    },
-    {
-        "name": "read_from_link",
-        "description": "Get content from url",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "link": {
-                    "type": "string",
-                    "description": "url"
-                }
-            },
-            "required": [
-                "link"
-            ]
-        }
-    },
-    {
-        "name": "generate_image",
-        "description": "Generates and sends image(s)",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "prompt": {
-                    "type": "string",
-                    "description": "Extremely detailed and verbose, only in english"
-                }
-            },
-            "required": [
-                "prompt"
-            ]
-        }
+{
+    "name": "generate_image",
+    "description": "Generates and sends image(s)",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "prompt": {
+                "type": "string",
+                "description": "Extremely detailed and verbose, only in english"
+            }
+        },
+        "required": [
+            "prompt"
+        ]
     }
-]
+}
