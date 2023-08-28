@@ -100,6 +100,7 @@ for filename in file_list:
 def delete_pending_messages():
     for m in messages_to_be_deleted_global:
         bot.delete_message(m.chat.id, m.message_id)
+        messages_to_be_deleted_global.remove(m)
 
 
 # --------------- Error handling ---------------

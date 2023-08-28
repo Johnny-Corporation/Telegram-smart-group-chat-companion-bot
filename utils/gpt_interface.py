@@ -156,9 +156,9 @@ def create_chat_completion(
         "frequency_penalty": frequency_penalty,
         "presence_penalty": presence_penalty,
     }
-    if use_functions:
-        chat_completion_arguments["functions"] = gpt_functions_description
-        chat_completion_arguments["function_call"] = "auto"
+    # if use_functions:
+    #     chat_completion_arguments["functions"] = gpt_functions_description
+    #     chat_completion_arguments["function_call"] = "auto"
 
     try:
         logger.info("Requesting gpt...")
@@ -262,12 +262,13 @@ def check_context_understanding(answer):
         messages=[
             {
                 "role": "user",
-                "content": f"This is text model's answer: {answer}. Is model saying it doesn't understand context and/or just trying to keep up conversation? Answer Yes or No",
+                "content": f"This is text model's answer: {answer}. Is model saying it doesn't understand context? Answer Yes or No",
             }
         ],
         temperature=0,
         max_tokens=1,
     )
+    logger.info(f"Check understanding completion: {completion}")
     return extract_text(completion) == "No"
 
 
@@ -278,12 +279,13 @@ def check_theme_context(answer, theme):
         messages=[
             {
                 "role": "user",
-                "content": f"This is text model's answer: {answer}. Is model saying something about {theme}? Answer Yes or No",
+                "content": f'This is text mode\'l answer: "{answer}". Is model saying something about {theme}? Answer Yes or No',
             }
         ],
         temperature=0,
         max_tokens=1,
     )
+    logger.info(f"Check about theme completion: {completion}")
     return extract_text(completion) == "Yes"
 
 

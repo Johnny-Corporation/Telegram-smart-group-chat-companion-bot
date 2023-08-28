@@ -115,6 +115,7 @@ def keyboard_buttons_handler(call):
                 )
         case "change_lang":
             change_language(call.message.chat.id)
+
         case "change_owner":
             change_owner_of_group(call.message)
 

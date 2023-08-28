@@ -340,7 +340,10 @@ class Johnny:
                 self.total_spent_messages,
             )
 
-            self.messages_history.append(["$BOT$", text_answer])
+            if (
+                text_answer
+            ):  # if it is None, this means gpt said it didn't understand context or said something outside the theme
+                self.messages_history.append(["$BOT$", text_answer])
 
     def static_generation(self, completion):
         """Takes completion object and returns text answer. Handles message in telegram"""
@@ -551,24 +554,28 @@ class Johnny:
     def check_understanding(self, text_answer: str) -> bool:
         """Checks if GPT understands context of the question"""
 
-        # Checking context understating
-        if (
-            (self.trigger_probability != 1)
-            and (self.trigger_probability != 0)
-            and (not gpt.check_context_understanding(text_answer))
-        ):
-            return False
+        if not self.sphere:
+            # Checking context understating
+            if (
+                (self.trigger_probability != 1)
+                and (self.trigger_probability != 0)
+                and (not gpt.check_context_understanding(text_answer))
+            ):
+                return False
+            else:
+                return True
 
-        # Checking model answer is about selected sphere
-        if (
-            (self.trigger_probability != 1)
-            and (self.trigger_probability != 0)
-            and (self.sphere)
-            and (not gpt.check_theme_context(text_answer, self.sphere))
-        ):
-            return False
-
-        return True
+        else:
+            # Checking model answer is about selected sphere
+            if (
+                (self.trigger_probability != 1)
+                and (self.trigger_probability != 0)
+                and (self.sphere)
+                and (not gpt.check_theme_context(text_answer, self.sphere))
+            ):
+                return False
+            else:
+                return True
 
     def add_new_user(
         self,

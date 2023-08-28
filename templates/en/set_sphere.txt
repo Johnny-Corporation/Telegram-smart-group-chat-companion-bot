@@ -1,4 +1,4 @@
 Enter <b>the scope of your conversation (for example, business etp) in reply to message</b>.
-Bot will now answer only when you discussing this theme. 
+Bot will now answer only when you discussing this theme. This feature works only in AutoMode.
 
 <i>Set up now: {sphere}</i>

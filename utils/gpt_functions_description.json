@@ -1,7 +1,7 @@
 [
     {
         "name": "google",
-        "description": "Google question",
+        "description": "Use only in cases, when u dont know the answer",
         "parameters": {
             "type": "object",
             "properties": {
