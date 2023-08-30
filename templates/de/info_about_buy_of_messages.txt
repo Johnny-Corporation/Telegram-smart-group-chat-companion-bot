@@ -1,0 +1,7 @@
+<b>Sie kaufen {count} Nachrichten. Sie haben einen {sub}-Plan, also ist dieser Preis für Sie.</b>
+<i> Für ein „kostenloses“ Abonnement – ​​1 für 0,1 $ (10 Rubel)
+ Für „Pro“-Abonnement – ​​1 für 0,05 $ (5 Rubel)</i>
+
+Gesamt: {cost} Rubel.
+
+Zum Kaufen den Knopf drücken:

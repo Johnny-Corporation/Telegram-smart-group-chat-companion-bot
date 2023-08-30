@@ -1,0 +1,13 @@
+🎉 **Update-Benachrichtigung** 🎉
+
+Hallo! Wir freuen uns, Ihnen einige aktuelle Änderungen und Verbesserungen mitzuteilen, die wir an unserem Telegram-Bot vorgenommen haben. Das ist neu:
+
+🔧 **Fehlerbehebungen:**
+- {bugs}
+
+✨ **Verbesserungen:**
+- {improvements}
+
+Wir sind bestrebt, Ihr Erlebnis mit unserem Bot zu verbessern. Ihr Feedback ist für uns unglaublich wertvoll. Zögern Sie also nicht, uns zu kontaktieren, wenn Sie auf Probleme stoßen oder Vorschläge für weitere Verbesserungen haben.
+
+Vielen Dank, dass Sie unseren Bot nutzen! 🤖🚀

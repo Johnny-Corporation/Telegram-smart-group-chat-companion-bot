@@ -108,7 +108,7 @@ def download_and_save_image_from_link(link, filename):
     response = requests.get(link)
     if response.status_code == 200:
         with open(
-            "output\\files\\DALLE\\" + filename[:100], "wb"
+            "output\\files\\KANDINKSY\\" + clean_string(filename[:100]), "wb"
         ) as file:  # windows file length limit ~250 chars
             file.write(response.content)
             print("Image downloaded successfully.")
@@ -427,7 +427,9 @@ def translate_templates(lang):
             # Only process .txt files
             if filename.endswith(".txt"):
                 # Read the source file
-                with open(path.join(source_directory, filename), "r") as file:
+                with open(
+                    path.join(source_directory, filename), "r", encoding="utf-8"
+                ) as file:
                     txt = file.read()
 
                 # Find all matches of the regular expression in the text
@@ -458,13 +460,12 @@ def translate_templates(lang):
                     file.write(translation)
 
 
-def translate_text(lang, text):
-    if lang == "en":
+def translate_text(lang, text, force=False):
+    if (lang == "en") and (not force):
         return text
-    else:
-        translator = Translator()
-        translated = translator.translate(text, dest=lang)
-        return translated.text
+    translator = Translator()
+    translated = translator.translate(text, dest=lang)
+    return translated.text
 
 
 def load_buttons(types, groups, chat_id, language_code, owner_id=None):
@@ -567,7 +568,6 @@ def load_buttons(types, groups, chat_id, language_code, owner_id=None):
         groups[chat_id].button_commands.append(text1)
 
         markup.add(itembtn1)
-        
 
         if groups[chat_id].enabled == True:
             text3 = translate_text(language_code, "ㅤ🔎 View current modeㅤ")
@@ -633,9 +633,24 @@ def to_text(bot, message, reply_to=None):
     return text
 
 
+def replace_links_with_text(input_string):
+    import re
+
+    url_pattern = r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
+    youtube_pattern = r"(?:http[s]?://)?(?:www\.)?(?:youtube\.com/watch\?v=|youtu\.be/)([a-zA-Z0-9_-]+)"
+
+    # Replace URLs
+    output_string = re.sub(url_pattern, " link ", input_string)
+
+    # Replace YouTube video URLs
+    output_string = re.sub(youtube_pattern, " link ", output_string)
+
+    return output_string
+
+
 def generate_voice_message(message, text, language, reply_to=None):
     """Got a text and generate voice file and return path to voice file"""
-
+    text = replace_links_with_text(text)
     if reply_to != None:
         message = reply_to
 
@@ -652,6 +667,7 @@ def generate_voice_message(message, text, language, reply_to=None):
 def generate_voice_message_premium(message, text, language, reply_to=None):
     """Got a text and generate voice file and return path to voice file"""
 
+    text = replace_links_with_text(text)
     access_token = sber_auth.get_access_token()
 
     url = "https://smartspeech.sber.ru/rest/v1/text:synthesize"
@@ -678,7 +694,6 @@ def generate_voice_message_premium(message, text, language, reply_to=None):
 
 
 def video_note_to_audio(bot, message, reply_to=None):
-
     video_file_path = f"output\\video_notes\\video_note_{message.message_id}.mp4"
     audio_file_path = f"output\\video_notes\\audio_{message.message_id}.mp3"
 
@@ -703,14 +718,14 @@ def take_info_about_sub(subscription):
             "price_of_message": 10,
             "sphere_permission": False,
             "dynamic_gen_permission": False,
-            "pro_voice_output": False
+            "pro_voice_output": False,
         },
         "Pro": {
             "messages_limit": 500,
             "price_of_message": 10,
             "sphere_permission": True,
             "dynamic_gen_permission": True,
-            "pro_voice_output": True
+            "pro_voice_output": True,
         },
     }
 
@@ -755,3 +770,28 @@ def create_archive(folder_path, output_path):
                 file_path = path.join(folder_root, file)
                 archive_path = path.relpath(file_path, folder_path)
                 archive.write(file_path, archive_path)
+
+
+def generate_image_replicate_kandinsky_2_2(prompt, n, size):
+    output = replicate.run(
+        "ai-forever/kandinsky-2.2:ea1addaab376f4dc227f5368bbd8eff901820fd1cc14ed8cad63b29249e9d463",
+        input={
+            "prompt": prompt,
+            "num_outputs": 1,
+            "width": 384,
+            "height": 384,
+        },
+    )
+    return output
+
+
+def generate_image_and_send(bot, chat_id, prompt, n=1, size="1024x1024"):
+    """Returns message which will be added to history, prompt and info about image"""
+    urls = generate_image_replicate_kandinsky_2_2(prompt, n, size)
+    for url in urls:
+        send_image_from_link(bot, url, chat_id)
+        download_and_save_image_from_link(
+            url, f"KANDISNKY_IMAGE_NUMBER_{urls.index(url)}_WITH_PROMPT_{prompt}.png"
+        )
+
+    return f"Function has sent {n} AI-generated image(s). (prompt:'{prompt}')"

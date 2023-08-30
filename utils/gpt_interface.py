@@ -81,31 +81,6 @@ def generate_image_dalle(prompt, n, size):
     return links
 
 
-def generate_image_replicate_kandinsky_2_2(prompt, n, size):
-    output = replicate.run(
-        "ai-forever/kandinsky-2.2:ea1addaab376f4dc227f5368bbd8eff901820fd1cc14ed8cad63b29249e9d463",
-        input={
-            "prompt": prompt,
-            "num_outputs": 1,
-            "width": 384,
-            "height": 384,
-        },
-    )
-    return output
-
-
-def generate_image_and_send(bot, chat_id, prompt, n=1, size="1024x1024"):
-    """Returns message which will be added to history, prompt and info about image"""
-    urls = generate_image_replicate_kandinsky_2_2(prompt, n, size)
-    for url in urls:
-        functions.send_image_from_link(bot, url, chat_id)
-        functions.download_and_save_image_from_link(
-            url, f"DALLE_IMAGE_NUMBER_{urls.index(url)}_WITH_PROMPT_{prompt}.png"
-        )
-
-    return f"Function has sent {n} AI-generated image(s). (prompt:'{prompt}')"
-
-
 def create_chat_completion(
     johnny,  # for resetting memory in when server error
     messages: list,
@@ -156,51 +131,44 @@ def create_chat_completion(
         "frequency_penalty": frequency_penalty,
         "presence_penalty": presence_penalty,
     }
-    # if use_functions:
-    #     chat_completion_arguments["functions"] = gpt_functions_description
-    #     chat_completion_arguments["function_call"] = "auto"
+    if use_functions:
+        chat_completion_arguments["functions"] = gpt_functions_description
+        chat_completion_arguments["function_call"] = "auto"
 
     try:
         logger.info("Requesting gpt...")
         completion = openai.ChatCompletion.create(**chat_completion_arguments)
     except openai.error.APIError as e:
         logger.error(f"OpenAI API returned an API Error: {e}")
-        # functions.send_to_developers(
-        #     "❗❗Server error occurred, trying to reset memory and wait 5 seconds...❗❗",
-        #     johnny.bot,
-        #     environ["DEVELOPER_CHAT_IDS"].split(","),
-        # )
         functions.send_to_developers(
-            "❗❗Server error occurred, trying to wait 5 seconds...❗❗",
+            "❗❗Server error occurred, trying to wait 5 seconds and clean cut memory to 3 last message...❗❗",
             johnny.bot,
             environ["DEVELOPER_CHAT_IDS"].split(","),
         )
-        # johnny.messages_history = [
-        #     johnny.messages_history[-1],
-        # ]
-        # previous_messages = [
-        #     {
-        #         "role": "system",
-        #         "content": system_content,
-        #     }
-        # ]
-        # previous_messages.extend(
-        #     get_messages_in_official_format(johnny.messages_history)
-        # )
-        # chat_completion_arguments = {
-        #     "model": model,
-        #     "messages": previous_messages,
-        #     "temperature": temperature,
-        #     "top_p": top_p,
-        #     "n": n,
-        #     "stream": stream,
-        #     "stop": stop,
-        #     "frequency_penalty": frequency_penalty,
-        #     "presence_penalty": presence_penalty,
-        # }
-        # if use_functions:
-        #     chat_completion_arguments["functions"] = gpt_functions_description
-        #     chat_completion_arguments["function_call"] = "auto"
+        johnny.messages_history = johnny.messages_history[-3:]
+        previous_messages = [
+            {
+                "role": "system",
+                "content": system_content,
+            }
+        ]
+        previous_messages.extend(
+            get_messages_in_official_format(johnny.messages_history)
+        )
+        chat_completion_arguments = {
+            "model": model,
+            "messages": previous_messages,
+            "temperature": temperature,
+            "top_p": top_p,
+            "n": n,
+            "stream": stream,
+            "stop": stop,
+            "frequency_penalty": frequency_penalty,
+            "presence_penalty": presence_penalty,
+        }
+        if use_functions:
+            chat_completion_arguments["functions"] = gpt_functions_description
+            chat_completion_arguments["function_call"] = "auto"
         sleep(5)
         completion = openai.ChatCompletion.create(**chat_completion_arguments)
 
@@ -226,7 +194,6 @@ def create_chat_completion(
 available_functions = {
     "google": google,
     "read_from_link": read_from_link,
-    "generate_image": generate_image_and_send,
 }
 
 
@@ -287,6 +254,24 @@ def check_theme_context(answer, theme):
     )
     logger.info(f"Check about theme completion: {completion}")
     return extract_text(completion) == "Yes"
+
+
+def improve_img_gen_prompt(start_prompt):
+    completion = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {
+                "role": "user",
+                "content": f"Make this prompt ({start_prompt}) for AI image generation a bit verbose and detailed",
+            }
+        ],
+        temperature=0,
+        max_tokens=50,
+    )
+    logger.info(
+        f"Image prompt improved from {start_prompt} to {extract_text(completion)}"
+    )
+    return extract_text(completion)
 
 
 def get_messages_in_official_format(messages):

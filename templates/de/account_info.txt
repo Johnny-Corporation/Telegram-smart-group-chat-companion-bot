@@ -1,0 +1,10 @@
+👨 <i>Konto: {first_name} </i>
+
+➡ <b>Plan: {subscription}</b>
+
+📨 <b>Hinterließ {left_messages} Nachrichten</b>
+ 🔹<i>In <b>Käufe</b> kann der Eigentümer mehr kaufen</i>🔹
+
+👥 Gruppen: {name_of_groups}
+
+⬇ <i>Unten sehen Sie mehr</i> ⬇

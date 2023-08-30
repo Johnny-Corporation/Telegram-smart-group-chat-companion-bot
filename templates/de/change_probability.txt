@@ -1,0 +1,4 @@
+Geben Sie einen Float-Wert <b>von 0</b> (keine Antworten) <b>bis 1></b> (Antworten auf jede Nachricht) <b>als Antwort auf diese Nachricht</b> ein.
+Der Bot antwortet so oft, wie dieser Wert hoch ist.
+
+<i>Jetzt {probability} einrichten</i>

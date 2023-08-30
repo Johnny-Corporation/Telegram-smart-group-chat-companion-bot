@@ -1,0 +1,4 @@
+Bitte geben Sie als Antwort auf diese Nachricht einen Wert <b>von 0</b> (am deterministischsten) <b>bis 2</b> (am zufälligsten) <b>ein.
+Dieser Parameter definiert, wie zufällig GPT-Antworten sind.
+
+<i>Jetzt {temperature} einrichten</i>

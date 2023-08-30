@@ -3,6 +3,7 @@ from __main__ import *
 
 # ---------- Main message ----------
 
+
 def menu(message, back_from=False):
     language_code = groups[message.chat.id].lang_code
 
@@ -18,7 +19,7 @@ def menu(message, back_from=False):
         callback_data="generate_image",
     )
     markup.add(button1)
-    if message.chat.id<0:
+    if message.chat.id < 0:
         button1 = types.InlineKeyboardButton(
             text=templates[language_code]["button_menu_group.txt"],
             callback_data="group",
@@ -30,7 +31,7 @@ def menu(message, back_from=False):
             callback_data="account",
         )
         markup.add(button1)
-    if message.chat.id>0:
+    if message.chat.id > 0:
         button1 = types.InlineKeyboardButton(
             text=templates[language_code]["button_purchase.txt"],
             callback_data="purchase",
@@ -55,10 +56,29 @@ def menu(message, back_from=False):
         callback_data="about",
     )
     markup.add(button2)
-    
 
     if back_from:
-        bot.edit_message_text(templates[language_code]["menu.txt"], message.chat.id, message.message_id, reply_markup=markup, parse_mode="HTML")
+        bot.edit_message_text(
+            templates[language_code]["menu.txt"],
+            message.chat.id,
+            message.message_id,
+            reply_markup=markup,
+            parse_mode="HTML",
+        )
         return
 
-    bot.send_message(message.chat.id, templates[language_code]["menu.txt"], reply_markup=markup, parse_mode="HTML")
+    target_message = bot.send_message(
+        message.chat.id,
+        templates[language_code]["menu.txt"],
+        reply_markup=markup,
+        parse_mode="HTML",
+    )
+
+    event_timer = threading.Timer(
+        30, bot.delete_message, args=(target_message.chat.id, target_message.message_id)
+    )
+    event_timer.start()
+    event_timer_user_msg = threading.Timer(
+        30, bot.delete_message, args=(message.chat.id, message.message_id)
+    )
+    event_timer_user_msg.start()

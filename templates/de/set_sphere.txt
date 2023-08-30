@@ -1,0 +1,5 @@
+Geben Sie als Antwort auf die Nachricht <b>das Thema Ihrer Konversation (z. B. Geschäft) ein</b>.
+
+Der Bot antwortet nur, wenn Sie dieses Thema besprechen. Diese Funktion funktioniert nur im AutoMode.
+
+<i>Jetzt einrichten: {sphere}</i>

@@ -17,6 +17,8 @@ def google(question: str) -> str:
     search_results = soup.select(".kCrYT a")
     result_string = ""
     for i, result in enumerate(search_results):
+        if "accuweather" in result["href"]:
+            continue
         if result["href"].startswith("http"):
             result_string += f"{result.get_text()} - {result['href']}\n"
         else:
@@ -41,7 +43,8 @@ def read_from_link(link: str) -> str:
 
     soup = BeautifulSoup(response.content, "html.parser")
     texts = soup.stripped_strings
-    all_text = re.sub(r"[^a-zA-Z0-9\s]", "", " ".join(texts))[200:700]
+    # all_text = re.sub(r"[^a-zA-Z0-9\s]", "", " ".join(texts))[:4000]
+    all_text = " ".join(texts)[:4000]
 
     logger.info(f"Text parsed form link {link}:{all_text}")
 

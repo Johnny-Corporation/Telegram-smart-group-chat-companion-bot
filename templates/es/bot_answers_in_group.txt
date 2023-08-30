@@ -1,0 +1,24 @@
+<b>Funciones de configuración</b>
+
+<b>{temperature}</b> - Aleatoriedad de respuesta
+ /set_temperature - para cambiar la aleatoriedad de la respuesta del robot
+
+<b>{answers_frequency}</b> - Frecuencia de las respuestas del bot en AutoMode
+ /set_answer_probability - para cambiar la frecuencia de las respuestas del bot
+
+<b>{temporary_memory_size}</b>: el bot considera <b>{temporary_memory_size}</b> mensajes anteriores.
+ /temporary_memory_size - para cambiar la frecuencia de las respuestas del Bot
+
+<b>{frequency_penalty}</b> - La variedad de respuestas del Bot
+ /set_variety - para cambiar la variedad de respuestas del Bot
+
+<b>{presense_penalty}</b> - Probabilidad del modelo de hablar sobret nuevos temas.
+ /set_creativity: cambia la probabilidad del modelo de hablar sobre nuevos temas.
+
+<b>{length}</b> - El tamaño de las respuestas del bot
+ /set_length_answer - para cambiar el tamaño de los mensajes del bot
+
+<b>'{sphere}'</b>: el ámbito de tu conversación.
+ /set_sphere - para agregar/cambiar la esfera de
+ 
+ En <i> Configuración/cambiar las respuestas de Johnny </i> puedes cambiarlo

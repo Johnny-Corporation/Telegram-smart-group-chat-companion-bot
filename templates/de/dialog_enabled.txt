@@ -1,0 +1,3 @@
+Modusdialog wurde aktiviert. Johnny ist bereit, mit Ihnen zu chatten.
+
+ /disable_dialog – um diesen Modus zu verlassen

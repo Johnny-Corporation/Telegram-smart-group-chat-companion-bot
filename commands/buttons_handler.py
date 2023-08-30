@@ -15,7 +15,6 @@ def keyboard_buttons_handler(call):
     #     call_data
 
     match call_data:
-
         case "menu":
             menu(message=call.message, back_from=True)
 
@@ -26,11 +25,11 @@ def keyboard_buttons_handler(call):
         case "request_feature":
             request_feature(message=call.message)
         case "about":
-            about(message=call.message,back_from=True)
+            about(message=call.message, back_from=True)
 
-        #---FOR MATVEY---
+        # ---FOR MATVEY---
         case "generate_image":
-            None
+            ask_gen_image_prompt(call.message)
 
         # Choosing mode
 
@@ -61,7 +60,7 @@ def keyboard_buttons_handler(call):
 
         # Translations
 
-        #Settings
+        # Settings
 
         case "settings":
             settings(message=call.message)
@@ -73,7 +72,7 @@ def keyboard_buttons_handler(call):
             change_permission_settings(call.message)
 
         # Set up funcs
-        
+
         case "settings_bot_answers":
             bot_answers_settings(call.message)
         case "temperature":
@@ -87,7 +86,6 @@ def keyboard_buttons_handler(call):
         case "answer_length":
             set_length_answer(call.message)
         case "sphere":
-
             if (
                 groups[call.message.chat.id].characteristics_of_sub[
                     groups[call.message.chat.id].subscription
@@ -205,7 +203,6 @@ def keyboard_buttons_handler(call):
         # Language
 
         case "apply_lang":
-
             button_text, button_id = call.data.split("-")
             lang = check_language(button_text)
 
@@ -229,7 +226,7 @@ def keyboard_buttons_handler(call):
             except:
                 None
 
-            delete_pending_messages()
+            bot.delete_message(call.message.chat.id, call.message.message_id)
         # DEV TOOLS
 
         case "get_cur_out":

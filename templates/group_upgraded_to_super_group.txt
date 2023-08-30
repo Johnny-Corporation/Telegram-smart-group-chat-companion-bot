@@ -1,1 +1,0 @@
-Your group was upgraded to super-group, don't worry, it is a telegram core feature. Please reinitialize bot by deleting and adding it to group!

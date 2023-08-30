@@ -1,0 +1,1 @@
+Ihre Gruppe wurde zur Supergruppe hochgestuft. Keine Sorge, es handelt sich um eine Kernfunktion von Telegram. Bitte initialisieren Sie den Bot neu, indem Sie ihn löschen und zur Gruppe hinzufügen!

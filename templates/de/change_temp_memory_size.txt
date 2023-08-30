@@ -1,0 +1,4 @@
+Bitte geben Sie als Antwort auf diese Nachricht einen Wert <b>größer als 0</b> ein.
+Johnny bezieht sich pro Anfrage auf Nachrichten im temporären Speicher.
+
+<i>Jetzt {memory} einrichten</i>

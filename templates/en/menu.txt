@@ -1,1 +1,3 @@
 Welcome to menu!
+
+This message will be deleted in about 1 minute

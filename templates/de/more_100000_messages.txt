@@ -1,0 +1,3 @@
+Glückwunsch! Du hast mehr als 100 Nachrichten erhalten!
+
+Jetzt haben Sie {messages} Nachrichten.

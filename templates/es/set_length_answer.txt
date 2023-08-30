@@ -1,0 +1,1 @@
+Elija cuánto tiempo durarán las respuestas del bot:

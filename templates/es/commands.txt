@@ -1,0 +1,39 @@
+Soy JohnnyBot. Puedo discutir, apelar, responder, sugerir soluciones a sus mensajes.
+Si eres nuevo en JohnnyBot, consulta la descripción.
+
+Puedes controlarme enviando estos comandos:
+
+<b>Funciones de configuración</b>
+ /change_language - cambia el idioma del bot
+
+ /set_temperature - establece lo caótico en las respuestas
+ /temporary_memory_size - establece el valor máximo de mensajes memorables
+
+
+<b>Funciones de interacción</b>
+ /question_to_bot - formula una pregunta, sacada de contexto
+
+ /enable - enciende el autmodo omodo. Bot lee los mensajes y decide cuándo debe responderlos.
+ /disable - activa el modo automático
+
+ /enable_dialog: activa el modo de diálogo. Es un chat, el bot responde en cada mensaje.
+ /disable_dialog: desactiva el modo de diálogo.
+
+
+<b>Personalización</b>
+ /dynamic_generation: activa la generación dinámica. Bot imprime el mensaje frente a tus ojos.
+
+
+<b>INFORMACIÓN</b>
+ /descripción - ver la descripción del bot
+ /commands - lista de todos los comandos con explicación
+
+
+<b>Configuración de la cuenta</b>
+ /mensajes_info - cuántos mensajes usaste
+ /about - mensaje de introducción
+
+
+<b>Asistencia</b>
+ /report_bug - envía a los desarrolladores información sobre el error
+ /request_feature: sugiere una nueva característica del bot a los desarrolladores

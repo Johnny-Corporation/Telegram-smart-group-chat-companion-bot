@@ -14,6 +14,7 @@ from utils.internet_access import *
 from utils.functions import *
 from utils.logger import logger
 from utils.time_tracking import *
+from utils.gpt_interface import *
 
 # Other
 from dotenv import load_dotenv
@@ -63,6 +64,7 @@ makedirs("output\\groups_info", exist_ok=True)
 makedirs("output\\clients_info", exist_ok=True)
 makedirs("output\\files", exist_ok=True)
 makedirs("output\\files\\DALLE", exist_ok=True)
+makedirs("output\\files\\KANDINKSY", exist_ok=True)
 makedirs("temp\\", exist_ok=True)
 makedirs("outputs_archive\\", exist_ok=True)
 
@@ -246,19 +248,19 @@ def change_language(chat_id, message_id=None):
             )
         )  # lang[0] = language_code, lang[1] = full name of lang
 
-    if message_id!=None:
+    if message_id != None:
         keyboard.add(
             types.InlineKeyboardButton(
-                text='<<<',
+                text="<<<",
                 callback_data="settings",
             )
         )
-        bot.edit_message_text("Choose language", chat_id, message_id, reply_markup=keyboard)
+        bot.edit_message_text(
+            "Choose language", chat_id, message_id, reply_markup=keyboard
+        )
         return
 
-    messages_to_be_deleted_global.append(
-        bot.send_message(chat_id, "Choose language", reply_markup=keyboard)
-    )
+    bot.send_message(chat_id, "Choose language", reply_markup=keyboard)
 
 
 def send_welcome_text_and_load_data(
@@ -301,7 +303,9 @@ def send_welcome_text_and_load_data(
         groups[chat_id].subscription = groups[owner_id].subscription
 
         characteristics_of_sub = take_info_about_sub(groups[chat_id].subscription)
-        groups[chat_id].characteristics_of_sub[groups[chat_id].subscription] = characteristics_of_sub
+        groups[chat_id].characteristics_of_sub[
+            groups[chat_id].subscription
+        ] = characteristics_of_sub
 
         groups[chat_id].owner_id = owner_id
 
@@ -369,13 +373,15 @@ def handle_new_chat_members(message):
     except:
         None
 
-bot.message_handler(content_types=["migrate_to_chat_id"], func=time_filter)
+
+@bot.message_handler(content_types=["migrate_to_chat_id"], func=time_filter)
 def handle_migrate_group_to_supergroup(message):
     bot.send_message(
         message.chat.id,
         templates[lang_code]["group_upgraded_to_super_group.txt"],
         parse_mode="Markdown",
     )
+
 
 def init_new_group(chat_id):
     if chat_id in groups:
@@ -423,6 +429,7 @@ from commands.reply_handlers.question_to_bot import *
 from commands.reply_handlers.settings_bot_answers import *
 from commands.reply_handlers.settings_change_language import *
 from commands.reply_handlers.settings_change_owner import *
+from commands.reply_handlers.gen_img_prompt import *
 
 # Commands
 from commands.about import *
@@ -456,6 +463,7 @@ from commands.start import *
 from commands.subs_list import *
 from commands.tranzzo import *
 from commands.menu import *
+from commands.ask_gen_image_prompt import *
 
 # Buttons handler
 from commands.buttons_handler import *
@@ -487,9 +495,9 @@ from utils.text_to_voice import *
 def main_messages_handler(message: types.Message):
     """Handles all messages"""
 
-    chat_member = bot.get_chat_member(message.chat.id, bot.get_me().id)
-    if chat_member.status == 'kicked':
-        return
+    # chat_member = bot.get_chat_member(message.chat.id, bot.get_me().id)
+    # if chat_member.status == "kicked":
+    #     return
 
     if (message.chat.id not in groups) or (not groups[message.chat.id].lang_code):
         init_new_group(message.chat.id)
@@ -517,7 +525,7 @@ def main_messages_handler(message: types.Message):
         new_thread.chat_id = message.chat.id
         new_thread.start()
         logger.info(
-            f"Created new thread for handling message, now threads running: {threading.active_count()}, 4 of which are system"
+            f"Created new thread for handling message, now threads running: {threading.active_count()}, some of which are system"
         )
 
 
