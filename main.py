@@ -355,7 +355,7 @@ def change_language(chat_id, message_id=None):
         lang = check_language(lang_code)
         keyboard.add(
             types.InlineKeyboardButton(
-                text=flags_languages[lang[1]]+" "+translate_text(lang[0], lang[1].capitalize()),
+                text=flags_languages[lang[0]]+" "+ translate_text(lang[0], lang[1].capitalize()),
                 callback_data=f"{lang[1]}-apply_lang",
             )
         )  # lang[0] = language_code, lang[1] = full name of lang
