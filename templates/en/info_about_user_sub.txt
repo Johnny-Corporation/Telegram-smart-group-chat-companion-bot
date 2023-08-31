@@ -2,21 +2,17 @@
 
 <b>Subscription: {subscription}</b>
 
-messages: Have {messages} free messages.
+Messages: Have {messages} free messages.
 <b>Left {left_messages} messages</b>
 
-Groups: Can have {groups} groups.
-<b>Left {left_groups} groups</b>
+Price on 1 message: {price_of_message}
 
 Groups: {name_of_groups}
 
-Memory: Can have {temp_memory_limit} messages maximum.
-<b>Established: {temp_memory}</b>
-
 Dynamic generation {dyn_gen_per}
 
-Voice output {voice_out_per}
+Voice of Johnny is {voice_out_per}
 
-Settings of Johnny's answers {set_up_per}
+Setting up sphere of converstion: {set_up_per}
 
 <i> /subs_list to know more</i>

@@ -13,3 +13,5 @@ def img_prompt_reply_handler(inner_message):
     )
     bot.send_chat_action(inner_message.chat.id, "upload_photo")
     generate_image_and_send(bot, inner_message.chat.id, enhanced_prompt)
+
+    groups[inner_message].total_spent_messages += 1

@@ -722,7 +722,7 @@ def take_info_about_sub(subscription):
         },
         "Pro": {
             "messages_limit": 500,
-            "price_of_message": 10,
+            "price_of_message": 5,
             "sphere_permission": True,
             "dynamic_gen_permission": True,
             "pro_voice_output": True,

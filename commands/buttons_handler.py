@@ -145,27 +145,6 @@ def keyboard_buttons_handler(call):
                 )
 
         case "voice_out":
-            if (
-                groups[call.message.chat.id].characteristics_of_sub[
-                    groups[call.message.chat.id].subscription
-                ]["pro_voice_output"]
-                == False
-            ):
-                markup = types.InlineKeyboardMarkup()
-                back_button = types.InlineKeyboardButton(
-                    text="<<<",
-                    callback_data="settings",
-                )
-                markup.add(back_button)
-                bot.edit_message_text(
-                    templates[previous_language_code]["no_rights.txt"],
-                    call.message.chat.id,
-                    call.message.message_id,
-                    reply_markup=markup,
-                    parse_mode="HTML",
-                )
-                return
-
             if groups[call.message.chat.id].dynamic_gen == True:
                 groups[call.message.chat.id].dynamic_gen = False
 
