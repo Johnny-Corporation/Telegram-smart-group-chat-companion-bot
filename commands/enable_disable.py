@@ -2,21 +2,8 @@ from __main__ import *
 
 
 # --- Enable ---
-@bot.message_handler(commands=["enable"], func=time_filter)
-@error_handler
 def enable(message):
     language_code = groups[message.chat.id].lang_code
-
-    groups[message.chat.id].enabled = True
-    groups[message.chat.id].trigger_probability = 0.8
-
-    markup_commands = load_buttons(
-        types,
-        groups,
-        message.chat.id,
-        language_code,
-        owner_id=groups[message.chat.id].owner_id,
-    )
 
     if message.chat.type == "private":
         groups[message.chat.id].trigger_probability = 1
@@ -55,6 +42,9 @@ def enable(message):
 # --- Auto mode Enable ---
 @error_handler
 def auto_enable(message):
+
+    groups[message.chat.id].enabled = True
+
     language_code = groups[message.chat.id].lang_code
 
     markup_commands = load_buttons(
@@ -82,6 +72,8 @@ def auto_enable(message):
 # --- Dialog mode enable ---
 @error_handler
 def dialog_enable(message):
+
+    groups[message.chat.id].enabled = True
     language_code = groups[message.chat.id].lang_code
 
     markup_commands = load_buttons(
@@ -106,6 +98,7 @@ def dialog_enable(message):
 # --- Manual mode enable ---
 @error_handler
 def manual_enable(message):
+    groups[message.chat.id].enabled = True
     language_code = groups[message.chat.id].lang_code
 
     markup_commands = load_buttons(

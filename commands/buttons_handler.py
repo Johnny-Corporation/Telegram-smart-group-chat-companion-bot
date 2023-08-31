@@ -14,6 +14,9 @@ def keyboard_buttons_handler(call):
     # if "group_permission" in call.data:
     #     call_data
 
+    print(f"CALL DATA:     {call_data}")
+    print(f"LNGUAGE SET: {groups[call.message.chat.id].lang_code}")
+
     match call_data:
         case "menu":
             menu(message=call.message, back_from=True)
@@ -185,6 +188,8 @@ def keyboard_buttons_handler(call):
             button_text, button_id = call.data.split("-")
             lang = check_language(button_text)
 
+            print("QQQQQQQQQQ         ",lang[0])
+
             groups[call.message.chat.id].lang_code = lang[0]
 
             language_code = lang[0]
@@ -202,6 +207,7 @@ def keyboard_buttons_handler(call):
                     translate_text(lang[1], f"Language changed to {lang[1]} "),
                     reply_markup=markup,
                 )
+                previous_language_code = groups[call.message.chat.id].lang_code
             except:
                 None
 
@@ -316,5 +322,5 @@ def keyboard_buttons_handler(call):
                 groups[call.message.chat.id].lang_code,
             )
             bot.send_message(
-                call.message.chat.id, "Activate bot below", reply_markup=markup
+                call.message.chat.id, templates[previous_language_code]["Activate_bot_below.txt"], reply_markup=markup
             )
