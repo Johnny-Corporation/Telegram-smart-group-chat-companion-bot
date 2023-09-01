@@ -11,6 +11,8 @@ import openpyxl
 import docx2txt
 import PyPDF2
 
+from pydub import AudioSegment
+
 from utils import sber_auth
 from gtts import gTTS
 from langdetect import detect
@@ -585,7 +587,10 @@ def generate_voice_message_premium(message, text, language, reply_to=None):
     return f"output\\voice_out\\voice_out_premium_{message.message_id}.wav"
 
 
-def video_note_to_audio(bot, message, reply_to=None):
+def video_note_to_text(bot, message, reply_to=None):
+
+    makedirs("output\\video_notes", exist_ok=True)
+
     video_file_path = f"output\\video_notes\\video_note_{message.message_id}.mp4"
     audio_file_path = f"output\\video_notes\\audio_{message.message_id}.mp3"
 
@@ -595,8 +600,8 @@ def video_note_to_audio(bot, message, reply_to=None):
     with open(video_file_path, "wb") as new_file:
         new_file.write(downloaded_file)
 
-    video = VideoFileClip(video_file_path)
-    video.audio.write_audiofile(audio_file_path)
+    audio = AudioSegment.from_file(video_file_path, format="mp4")
+    audio.export(audio_file_path, format="mp3")
 
     text = gpt.speech_to_text(audio_file_path)
 
