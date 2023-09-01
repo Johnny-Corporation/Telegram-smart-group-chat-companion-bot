@@ -84,19 +84,26 @@ file_list = listdir("output/clients_info")
 for filename in file_list:
     file_path = path.join("output/clients_info", filename)
     with open(file_path, "r", encoding="utf-8") as file:
-        bot.send_message(json.load(file)["id"], "Bot is working!", reply_markup=markup)
-
+        try:  # If this user blocked bot
+            bot.send_message(
+                json.load(file)["id"], "Bot is working!", reply_markup=markup
+            )
+        except:
+            pass
 file_list = listdir("output/groups_info")
 for filename in file_list:
     file_path = path.join("output/groups_info", filename)
     with open(file_path, "r", encoding="utf-8") as file:
         content = file.read()
         chat_id = int(content[6 : content.index(",")])
-        bot.send_message(
-            chat_id,
-            "Bot is working!",
-            reply_markup=markup,
-        )
+        try:  # If this user blocked bot
+            bot.send_message(
+                chat_id,
+                "Bot is working!",
+                reply_markup=markup,
+            )
+        except:
+            pass
 
 
 def delete_pending_messages():
@@ -437,6 +444,7 @@ from commands.reply_handlers.settings_change_owner import *
 from commands.reply_handlers.gen_img_prompt import *
 
 # Commands
+from commands.get_chat_id import *
 from commands.about import *
 from commands.account import *
 from commands.bot_on_view_mode import *
@@ -524,8 +532,8 @@ def main_messages_handler(message: types.Message):
         if groups[message.chat.id].activated == False:
             print("fvovnfivronvsnsnsnsnvpsnvpsnp")
             return
-        
-        print(f'ENBLED:    {groups[message.chat.id].enabled}')
+
+        print(f"ENBLED:    {groups[message.chat.id].enabled}")
 
         new_thread = threading.Thread(
             target=groups[message.chat.id].new_message, args=(message, groups)

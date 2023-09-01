@@ -50,7 +50,6 @@ def enable(message):
 # --- Auto mode Enable ---
 @error_handler
 def auto_enable(message):
-
     groups[message.chat.id].enabled = True
 
     language_code = groups[message.chat.id].lang_code
@@ -63,7 +62,7 @@ def auto_enable(message):
         owner_id=groups[message.chat.id].owner_id,
     )
 
-    bot.delete_message(message.chat.id,message.message_id)
+    bot.delete_message(message.chat.id, message.message_id)
 
     groups[message.chat.id].trigger_probability = 1
 
@@ -80,7 +79,6 @@ def auto_enable(message):
 # --- Dialog mode enable ---
 @error_handler
 def dialog_enable(message):
-
     groups[message.chat.id].enabled = True
     language_code = groups[message.chat.id].lang_code
 
@@ -92,7 +90,7 @@ def dialog_enable(message):
         owner_id=groups[message.chat.id].owner_id,
     )
 
-    bot.delete_message(message.chat.id,message.message_id)
+    bot.delete_message(message.chat.id, message.message_id)
 
     groups[message.chat.id].trigger_probability = 1
 
@@ -117,7 +115,7 @@ def manual_enable(message):
         owner_id=groups[message.chat.id].owner_id,
     )
 
-    bot.delete_message(message.chat.id,message.message_id)
+    bot.delete_message(message.chat.id, message.message_id)
 
     groups[message.chat.id].trigger_probability = 0
 
@@ -143,6 +141,4 @@ def disable(message):
         owner_id=groups[message.chat.id].owner_id,
     )
 
-    bot.send_message(
-        message.chat.id, '😴', reply_markup=markup
-    )
+    bot.send_message(message.chat.id, "😴", reply_markup=markup)

@@ -1,4 +1,0 @@
-Sie kaufen ein Abonnement PRO.
-Kosten: {cost} Rubel.
-
-Zum Kaufen den Knopf drücken:

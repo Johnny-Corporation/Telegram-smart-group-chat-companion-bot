@@ -1,1 +1,0 @@
-Die Größe des temporären Speichers hat sich nicht geändert.

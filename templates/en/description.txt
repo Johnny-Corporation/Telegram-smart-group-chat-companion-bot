@@ -9,17 +9,18 @@ I can keep up the conversation in any format:
 🔸 files📄! (I can read top of xls, xlsx, docx, pdf, txt, and other files!)
 
 I am a powerful combination of neural text models🤖
-🔹 GPT-4 (https://openai.com/research/gpt-4)
-🔹 GPT-3.5-turbo (https://openai.com/blog/gpt-3-5-turbo-fine-tuning-and-api-updates)
-🔹 Llama (https://replicate.com/replicate/llama-2-70b-chat/)
-🔹 Vicuna (https://replicate.com/replicate/vicuna-13b)
+🔹 [GPT-4](https://openai.com/research/gpt-4)
+🔹 [GPT-3.5-turbo](https://openai.com/blog/gpt-3-5-turbo-fine-tuning-and-api-updates)
+🔹 [Llama](https://replicate.com/replicate/llama-2-70b-chat/)
+🔹 [Vicuna](https://replicate.com/replicate/vicuna-13b)
 
 Key features:
 🔹 whole internet until 2022🤓
 🔹 Search for fresh information on the Internet🌐
 🔹 Specially enhanced context understading and memory optimization
 🔹 Custom theme blocking (you can set only one specific theme and I will answer only related questions)
-🔹 Midjourney 5 (https://www.midjourney.com/) for image generation
+🔹 Dynamic generation - same as in ChatGPT
+🔹 [Midjourney 5 ](https://www.midjourney.com/) for image generation
 
 And our killer feature: 🥁🥁🥁
 ⚡⚡⚡  Inline interactions! ⚡⚡⚡

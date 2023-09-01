@@ -21,7 +21,7 @@ Puedes controlarme enviando estos comandos:
 
 
 <b>Personalización</b>
- /dynamic_generation: activa la generación dinámica. Bot imprime el mensaje frente a tus ojos.
+ /dynamic_generation: activa la generación dinámica. Bot imprime el mensaje frente a tus ojos
 
 
 <b>INFORMACIÓN</b>
@@ -31,7 +31,7 @@ Puedes controlarme enviando estos comandos:
 
 <b>Configuración de la cuenta</b>
  /mensajes_info - cuántos mensajes usaste
- /about - mensaje de introducción
+ /acerca de - mensaje de introducción
 
 
 <b>Asistencia</b>
