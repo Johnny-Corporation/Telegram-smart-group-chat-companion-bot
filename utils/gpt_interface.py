@@ -266,7 +266,7 @@ def improve_img_gen_prompt(start_prompt):
             }
         ],
         temperature=0,
-        max_tokens=50,
+        max_tokens=40,
     )
     logger.info(
         f"Image prompt improved from {start_prompt} to {extract_text(completion)}"

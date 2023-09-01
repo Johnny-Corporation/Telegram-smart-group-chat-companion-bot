@@ -10,6 +10,8 @@ import xlrd
 import openpyxl
 import docx2txt
 import PyPDF2
+from moviepy.video.io.VideoFileClip import VideoFileClip
+
 
 from pydub import AudioSegment
 
@@ -110,7 +112,7 @@ def download_and_save_image_from_link(link, filename):
     response = requests.get(link)
     if response.status_code == 200:
         with open(
-            "output\\files\\KANDINKSY\\" + clean_string(filename[:100]), "wb"
+            "output\\files\\KANDINKSY\\" + clean_string(filename[:100]) + ".png", "wb"
         ) as file:  # windows file length limit ~250 chars
             file.write(response.content)
             print("Image downloaded successfully.")
@@ -605,9 +607,11 @@ def video_note_to_text(bot, message, reply_to=None):
     with open(video_file_path, "wb") as new_file:
         new_file.write(downloaded_file)
 
-    # audio = AudioSegment.from_file(video_file_path, format="mp4")
-    audio = AudioSegment.from_file(, format="mp4")
-    audio.export(audio_file_path, format="mp3")
+    video_clip = VideoFileClip(video_file_path)
+    audio_clip = video_clip.audio
+    audio_file_path = video_file_path + "sound.mp3"
+    audio_clip.write_audiofile(audio_file_path)
+    audio_clip.close()
 
     text = gpt.speech_to_text(audio_file_path)
 

@@ -1,0 +1,1 @@
+Escriba el nombre de usuario del nuevo propietario en el formato: <b>@Nombre de usuario</b>

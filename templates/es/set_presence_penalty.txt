@@ -1,0 +1,4 @@
+Introduzca el valor <b>de 0</b> (más directo) <b>a 2</b> (más creativo) <b> en respuesta al mensaje</b>.
+El parámetro determina la probabilidad de que un modelo hable sobre nuevos temas.
+
+<i>Configurar {presence_penalty} ahora</i>

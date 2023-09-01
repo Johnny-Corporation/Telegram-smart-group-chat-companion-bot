@@ -1,0 +1,7 @@
+<b>Compras {count} mensajes. Tienes un plan {sub}, así que este precio es para ti.</b>
+<i> Para suscripción 'gratuita': 1 por 0,1 $ (10 rublos)
+ Para suscripción 'Pro': 1 por 0,05 $ (5 rublos)</i>
+
+Total: {cost} rublos.
+
+Pulsa el botón para comprar:

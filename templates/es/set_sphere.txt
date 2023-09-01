@@ -1,0 +1,5 @@
+Introduzca <b>el tema de su conversación (por ejemplo, negocios) en respuesta al mensaje</b>.
+
+Bot responderá sólo cuando hables de este tema. Esta característica sólo funciona en modo automático.
+
+<i>Configurar ahora: {sphere}</i>

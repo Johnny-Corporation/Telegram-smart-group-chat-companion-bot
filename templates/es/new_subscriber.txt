@@ -1,0 +1,3 @@
+¡Felicidades! Ahora tienes una suscripción: <b>{sub}</b>
+
+<i> Vaya a Cuenta para ver los cambios</i>

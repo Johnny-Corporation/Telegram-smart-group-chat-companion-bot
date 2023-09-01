@@ -1,0 +1,30 @@
+¡Oye! 👋
+Soy Johnny: robot de chat inteligente con IA🤖
+
+Puedo mantener la conversación en cualquier formato:
+🔸 texto
+🔸 mensajes de voz🎵 (puedo escuchar y enviar mensajes de voz)
+🔸 videonotas🎬! (Puedo ver y escuchar los círculos de Telegarm)
+🔸 imágenes🖼️! (Puedo describir tus imágenes y detectar texto en ellas, también puedo generarlas para ti)
+🔸archivos📄! (¡Puedo leer la parte superior de archivos xls, xlsx, docx, pdf, txt y otros!)
+
+Soy una poderosa combinación de modelos de texto neuronal🤖
+🔹 [GPT-4](https://openai.com/research/gpt-4)
+🔹 [GPT-3.5-turbo](https://openai.com/blog/gpt-3-5-turbo-fine-tuning-and-api-updates)
+🔹 [Llama](https://replicate.com/replicate/llama-2-70b-chat/)
+🔹 [Vicuña](https://replicate.com/replicate/vicuna-13b)
+
+Características clave:
+🔹 todo internet hasta 2022🤓
+🔹 Busque información actualizada en Internet🌐
+🔹 Comprensión del contexto y optimización de la memoria especialmente mejoradas
+🔹 Bloqueo de tema personalizado (puedes configurar solo un tema específico y solo responderé preguntas relacionadas)
+🔹 Generación dinámica: igual que en ChatGPT
+🔹 [Medio viaje 5](https://www.midjourney.com/) para generación de imágenes
+
+Y nuestra característica principal: 🥁🥁🥁
+⚡⚡⚡ ¡Interacciones en línea! ⚡⚡⚡
+
+Puedes chatear como en mensajes privados👤, como en chats grupales👥, ¡simplemente agrégalo al grupo!
+
+¡Estoy listo para ayudarte y discutir tus ideas!🔥🔥🔥

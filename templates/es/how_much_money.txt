@@ -1,0 +1,3 @@
+¿Cuánto dinero quieres donar?
+
+<i>*Ingrese un valor en respuesta al mensaje*</i>
