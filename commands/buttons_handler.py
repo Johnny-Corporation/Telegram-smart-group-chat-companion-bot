@@ -190,7 +190,7 @@ def keyboard_buttons_handler(call):
             button_text, button_id = call.data.split("-")
             lang = check_language(button_text)
 
-            print("QQQQQQQQQQ         ",lang[0])
+            print("QQQQQQQQQQ         ", lang[0])
 
             groups[call.message.chat.id].lang_code = lang[0]
 
