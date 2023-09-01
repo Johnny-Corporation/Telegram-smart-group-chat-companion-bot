@@ -141,11 +141,11 @@ def create_chat_completion(
     except openai.error.APIError as e:
         logger.error(f"OpenAI API returned an API Error: {e}")
         functions.send_to_developers(
-            "❗❗Server error occurred, trying to wait 5 seconds and clean cut memory to 3 last message...❗❗",
+            "❗❗Server error occurred❗❗",
             johnny.bot,
             environ["DEVELOPER_CHAT_IDS"].split(","),
         )
-        johnny.messages_history = johnny.messages_history[-3:]
+        # johnny.messages_history = johnny.messages_history[-3:]
         previous_messages = [
             {
                 "role": "system",
@@ -166,10 +166,10 @@ def create_chat_completion(
             "frequency_penalty": frequency_penalty,
             "presence_penalty": presence_penalty,
         }
-        if use_functions:
-            chat_completion_arguments["functions"] = gpt_functions_description
-            chat_completion_arguments["function_call"] = "auto"
-        sleep(5)
+        # if use_functions:
+        #     chat_completion_arguments["functions"] = gpt_functions_description
+        #     chat_completion_arguments["function_call"] = "auto"
+        # sleep(5)
         completion = openai.ChatCompletion.create(**chat_completion_arguments)
 
     except openai.error.APIConnectionError as e:

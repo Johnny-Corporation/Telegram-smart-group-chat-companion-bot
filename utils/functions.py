@@ -132,12 +132,18 @@ def send_to_developers(
     for id in developer_chat_IDs:
         if id:
             if file:
-                send_file(msg, id, bot)
+                try:  # If Nekit hasn't written anything to new johnny, bot wont see his chat id
+                    send_file(msg, id, bot)
+                except:
+                    pass
             else:
-                bot.send_message(
-                    id,
-                    msg,
-                )
+                try:  # If Nekit hasn't written anything to new johnny, bot wont see his chat id
+                    bot.send_message(
+                        id,
+                        msg,
+                    )
+                except:
+                    pass
 
 
 def convert_to_json(s: str) -> str:
@@ -588,7 +594,6 @@ def generate_voice_message_premium(message, text, language, reply_to=None):
 
 
 def video_note_to_text(bot, message, reply_to=None):
-
     makedirs("output\\video_notes", exist_ok=True)
 
     video_file_path = f"output\\video_notes\\video_note_{message.message_id}.mp4"
@@ -600,7 +605,8 @@ def video_note_to_text(bot, message, reply_to=None):
     with open(video_file_path, "wb") as new_file:
         new_file.write(downloaded_file)
 
-    audio = AudioSegment.from_file(video_file_path, format="mp4")
+    # audio = AudioSegment.from_file(video_file_path, format="mp4")
+    audio = AudioSegment.from_file(, format="mp4")
     audio.export(audio_file_path, format="mp3")
 
     text = gpt.speech_to_text(audio_file_path)
