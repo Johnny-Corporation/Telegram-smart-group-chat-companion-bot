@@ -29,6 +29,8 @@ def keyboard_buttons_handler(call):
             request_feature(message=call.message)
         case "about":
             about(message=call.message, back_from=True)
+        case "close_message":
+            bot.delete_message(call.message.chat.id, call.message.message_id)
 
         # ---FOR MATVEY---
         case "generate_image":
@@ -207,7 +209,6 @@ def keyboard_buttons_handler(call):
                     translate_text(lang[1], f"Language changed to {lang[1]} "),
                     reply_markup=markup,
                 )
-                previous_language_code = groups[call.message.chat.id].lang_code
             except:
                 None
 
@@ -320,7 +321,4 @@ def keyboard_buttons_handler(call):
                 groups,
                 call.message.chat.id,
                 groups[call.message.chat.id].lang_code,
-            )
-            bot.send_message(
-                call.message.chat.id, templates[previous_language_code]["Activate_bot_below.txt"], reply_markup=markup
             )

@@ -30,7 +30,7 @@ from utils.functions import (
     generate_voice_message,
     generate_voice_message_premium,
     to_text,
-    video_note_to_audio,
+    video_note_to_text,
     take_info_about_sub,
 )
 from utils.text_to_voice import *
@@ -233,7 +233,7 @@ class Johnny:
             case "voice":
                 text = to_text(self.bot, message)
             case "video_note":
-                text = video_note_to_audio(self.bot, message)
+                text = video_note_to_text(self.bot, message)
             case _:
                 return  # unsupported event type
 

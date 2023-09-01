@@ -155,6 +155,11 @@ def set_presence_penalty(message):
         callback_data="settings_bot_answers",
     )
     markup.add(back_button)
+    button2 = types.InlineKeyboardButton(
+        text=templates[language_code]["button_close.txt"],
+        callback_data="close_message",
+    )
+    markup.add(button2)
 
     bot_reply = bot.edit_message_text(
         templates[language_code]["set_presence_penalty.txt"].format(
@@ -191,12 +196,18 @@ def set_length_answer(message):
         text="<<<",
         callback_data="settings_bot_answers",
     )
+    button2 = types.InlineKeyboardButton(
+        text=templates[language_code]["button_close.txt"],
+        callback_data="close_message",
+    )
+    
 
     length_markup.add(long_button)
     length_markup.add(medium_button)
     length_markup.add(short_button)
     length_markup.add(any_button)
     length_markup.add(back_button)
+    markup.add(button2)
 
     bot.edit_message_text(
         templates[language_code]["set_length_answer.txt"],
@@ -219,6 +230,11 @@ def set_sphere_command(message):
         callback_data="settings",
     )
     markup.add(back_button)
+    button2 = types.InlineKeyboardButton(
+        text=templates[language_code]["button_close.txt"],
+        callback_data="close_message",
+    )
+    markup.add(button2)
 
     if groups[message.chat.id].sphere == "":
         sphere_in = "Not set"

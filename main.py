@@ -380,10 +380,10 @@ def handle_new_chat_members(message):
 
 @bot.message_handler(content_types=["migrate_to_chat_id"], func=time_filter)
 def handle_migrate_group_to_supergroup(message):
-    lang_code = groups[message.chat.id].lang_code
+    language_code = groups[message.chat.id].lang_code
     bot.send_message(
         message.chat.id,
-        templates[lang_code]["group_upgraded_to_super_group.txt"],
+        templates[language_code]["group_upgraded_to_super_group.txt"],
         parse_mode="Markdown",
     )
 
@@ -522,7 +522,10 @@ def main_messages_handler(message: types.Message):
 
         # Checks the registration of user
         if groups[message.chat.id].activated == False:
+            print("fvovnfivronvsnsnsnsnvpsnvpsnp")
             return
+        
+        print(f'ENBLED:    {groups[message.chat.id].enabled}')
 
         new_thread = threading.Thread(
             target=groups[message.chat.id].new_message, args=(message, groups)
