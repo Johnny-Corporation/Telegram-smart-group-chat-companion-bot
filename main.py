@@ -380,6 +380,7 @@ def handle_new_chat_members(message):
 
 @bot.message_handler(content_types=["migrate_to_chat_id"], func=time_filter)
 def handle_migrate_group_to_supergroup(message):
+    lang_code = groups[message.chat.id].lang_code
     bot.send_message(
         message.chat.id,
         templates[lang_code]["group_upgraded_to_super_group.txt"],

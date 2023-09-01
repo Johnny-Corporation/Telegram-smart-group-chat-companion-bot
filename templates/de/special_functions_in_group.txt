@@ -1,7 +1,0 @@
-<b>Anpassung</b>
-
-Die dynamische Generierung ist {dynamic_gen_en}.
-
-Die Sprachausgabe ist {voice_out}
-
-Unter <i>Einstellungen/Sondermöglichkeiten</i> können Sie es ändern

@@ -1,1 +1,0 @@
-Sie haben {spent_messages} Nachrichten ausgegeben. es beträgt ungefähr {dollars}$

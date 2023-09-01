@@ -1,1 +1,0 @@
-Benutzer {first_name} ist nicht registriert.

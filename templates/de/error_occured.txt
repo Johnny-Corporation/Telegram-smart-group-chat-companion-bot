@@ -1,5 +1,0 @@
-Leider ist ein unerwarteter Fehler aufgetreten. Bitte versuchen Sie, den Speicher zurückzusetzen, oder warten Sie ein paar Sekunden und wiederholen Sie die Anfrage. Dies hilft normalerweise.
-
-Bot läuft noch!
-
-Sie können uns helfen, indem Sie unten den Befehl <i> /report_bug </i> verwenden und einige Details angeben.
