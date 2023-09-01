@@ -29,6 +29,8 @@ def keyboard_buttons_handler(call):
             request_feature(message=call.message)
         case "about":
             about(message=call.message, back_from=True)
+        case "close_message":
+            bot.delete_message(call.message.chat.id, call.message.message_id)
 
         # ---FOR MATVEY---
         case "generate_image":

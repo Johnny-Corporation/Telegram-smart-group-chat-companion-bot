@@ -56,6 +56,11 @@ def menu(message, back_from=False):
         callback_data="about",
     )
     markup.add(button2)
+    button2 = types.InlineKeyboardButton(
+        text=templates[language_code]["button_close.txt"],
+        callback_data="close_message",
+    )
+    markup.add(button2)
 
     if back_from:
         bot.edit_message_text(
@@ -67,18 +72,9 @@ def menu(message, back_from=False):
         )
         return
 
-    target_message = bot.send_message(
+    bot.send_message(
         message.chat.id,
         templates[language_code]["menu.txt"],
         reply_markup=markup,
         parse_mode="HTML",
     )
-
-    event_timer = threading.Timer(
-        30, bot.delete_message, args=(target_message.chat.id, target_message.message_id)
-    )
-    event_timer.start()
-    event_timer_user_msg = threading.Timer(
-        30, bot.delete_message, args=(message.chat.id, message.message_id)
-    )
-    event_timer_user_msg.start()

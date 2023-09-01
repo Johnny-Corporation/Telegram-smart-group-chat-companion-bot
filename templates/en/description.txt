@@ -1,15 +1,28 @@
 Hey!👋
-I am Johnny – smart AI bot🤖 
+I am Johnny – smart AI chat bot🤖 
 
 I can keep up the conversation in any format: 
-🔸 in text🔤
-🔸 in voice messages🎵
-🔸 in video notes🎬! 
+🔸 text
+🔸 voice messages🎵 (I can listen and send voice messages)
+🔸 video notes🎬! (I can view and listen telegarm circles)
+🔸 images🖼️! (I can describe your images and detect text from them, I also can generate them for you)
+🔸 files📄! (I can read top of xls, xlsx, docx, pdf, txt, and other files!)
 
-I am a skillful combination of neural models🤖
-🔹 whole internet until 2021🤓
-🔹 search for fresh information on the Internet🌐
-🔹 photo generation🏞 and more!
+I am a powerful combination of neural text models🤖
+🔹 GPT-4 (https://openai.com/research/gpt-4)
+🔹 GPT-3.5-turbo (https://openai.com/blog/gpt-3-5-turbo-fine-tuning-and-api-updates)
+🔹 Llama (https://replicate.com/replicate/llama-2-70b-chat/)
+🔹 Vicuna (https://replicate.com/replicate/vicuna-13b)
+
+Key features:
+🔹 whole internet until 2022🤓
+🔹 Search for fresh information on the Internet🌐
+🔹 Specially enhanced context understading and memory optimization
+🔹 Custom theme blocking (you can set only one specific theme and I will answer only related questions)
+🔹 Midjourney 5 (https://www.midjourney.com/) for image generation
+
+And our killer feature: 🥁🥁🥁
+⚡⚡⚡  Inline interactions! ⚡⚡⚡
 
 You can chat as in private messages👤, as in group chats👥 – just add it to group!
 
