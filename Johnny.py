@@ -260,6 +260,7 @@ class Johnny:
 
         # --- checks on enabling of Bot ---
         if not self.enabled:
+            print('WWWWWWWWWWWWWWWWWWWW')
             return
 
         # --- If user reach some value to messages, suggest buy a subscription ----
@@ -300,6 +301,8 @@ class Johnny:
                 self.subscription
             ]["messages_limit"]
             return
+        
+        print('!!!!!!!!!!!!!!!!!!11')
 
         if (
             ("@" + self.bot_username in text)

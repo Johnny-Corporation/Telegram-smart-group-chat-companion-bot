@@ -629,7 +629,10 @@ def main_messages_handler(message: types.Message):
 
         # Checks the registration of user
         if groups[message.chat.id].activated == False:
+            print("fvovnfivronvsnsnsnsnvpsnvpsnp")
             return
+        
+        print(f'ENBLED:    {groups[message.chat.id].enabled}')
 
         new_thread = threading.Thread(
             target=groups[message.chat.id].new_message, args=(message, groups)

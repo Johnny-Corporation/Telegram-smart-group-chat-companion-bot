@@ -6,6 +6,14 @@ def enable(message):
     language_code = groups[message.chat.id].lang_code
 
     if message.chat.type == "private":
+        groups[message.chat.id].enabled = True
+        markup_commands = load_buttons(
+            types,
+            groups,
+            message.chat.id,
+            language_code,
+            owner_id=groups[message.chat.id].owner_id,
+        )
         groups[message.chat.id].trigger_probability = 1
         bot.reply_to(
             message,
