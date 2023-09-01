@@ -15,31 +15,21 @@ def generate_code(size=8, chars=chars):
     return code
 
 # ------- Promocodes --------
-big_business_promocode = generate_code()
-small_business_promocode = generate_code()
-user_promocode = generate_code()
-promocode_100000 = generate_code()
+sub_pro_promocode = generate_code()
+promocode_100 = generate_code()
 
 def get_exist_code():
-    global big_business_promocode, small_business_promocode, user_promocode, promocode_100000
-    big_business_promocode = generate_code()
-    small_business_promocode = generate_code()
-    user_promocode = generate_code()
-    promocode_100000 = generate_code()
+    global sub_pro_promocode, promocode_100
+    sub_pro_promocode = generate_code()
+    promocode_100 = generate_code()
 
 def check_code(promocode_in):
-    global big_business_promocode, small_business_promocode, user_promocode, promocode_100000
+    global sub_pro_promocode, promocode_100
 
-    if promocode_in == big_business_promocode:
-        return ['BIG BUSINESS', 1000]
+    if promocode_in == sub_pro_promocode:
+        return ['Pro', 100]
 
-    elif promocode_in == small_business_promocode:
-        return ['SMALL BUSINESS', 700]
-
-    elif promocode_in == user_promocode:
-        return ['USER', 300]
-
-    elif promocode_in == promocode_100000:
+    elif promocode_in == promocode_100:
         return [100]
 
     else:
