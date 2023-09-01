@@ -207,7 +207,6 @@ def keyboard_buttons_handler(call):
                     translate_text(lang[1], f"Language changed to {lang[1]} "),
                     reply_markup=markup,
                 )
-                previous_language_code = groups[call.message.chat.id].lang_code
             except:
                 None
 
@@ -320,7 +319,4 @@ def keyboard_buttons_handler(call):
                 groups,
                 call.message.chat.id,
                 groups[call.message.chat.id].lang_code,
-            )
-            bot.send_message(
-                call.message.chat.id, templates[previous_language_code]["Activate_bot_below.txt"], reply_markup=markup
             )
