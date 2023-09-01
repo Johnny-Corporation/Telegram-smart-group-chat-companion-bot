@@ -46,7 +46,7 @@ def accept_payment(message, cost, type_of_own="update", messages=0):
                 message.chat.id,
                 templates[language_code]["info_about_buy_of_messages.txt"].format(
                     count=messages,
-                    sub=groups[inner_message.chat.id].subscription,
+                    sub=groups[message.chat.id].subscription,
                     cost=cost
                 ),
                 reply_markup=markup,
