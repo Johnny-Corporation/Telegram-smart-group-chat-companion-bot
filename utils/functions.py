@@ -625,7 +625,7 @@ def take_info_about_sub(subscription):
             "pro_voice_output": False,
         },
         "Pro": {
-            "messages_limit": 500,
+            "messages_limit": 50,
             "price_of_message": 5,
             "sphere_permission": True,
             "dynamic_gen_permission": True,
