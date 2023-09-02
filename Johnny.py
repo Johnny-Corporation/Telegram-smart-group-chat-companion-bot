@@ -72,6 +72,7 @@ class Johnny:
     sphere: str = ""
     system_content: str = ""
     allow_functions: bool = True
+    inline_mode: str = "GPT"
 
     def __post_init__(self):
         # list of lists, where each list follows format: [senders_name, text]

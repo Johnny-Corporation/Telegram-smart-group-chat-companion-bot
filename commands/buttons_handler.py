@@ -31,8 +31,8 @@ def keyboard_buttons_handler(call):
             about(message=call.message, back_from=True)
         case "close_message":
             bot.delete_message(call.message.chat.id, call.message.message_id)
-
-        # ---FOR MATVEY---
+        case "choose_inline_mode":
+            inline_mode_settings(message=call.message)
         case "generate_image":
             ask_gen_image_prompt(call.message)
 
@@ -44,6 +44,20 @@ def keyboard_buttons_handler(call):
             dialog_enable(message=call.message)
         case "manual_mode":
             manual_enable(message=call.message)
+
+
+        # Inline mode
+
+        case "inline_mode_model":
+            groups[call.message.chat.id].inline_mode = "GPT"
+            inline_mode_settings(message=call.message)
+        case "inline_mode_google":
+            groups[call.message.chat.id].inline_mode = "Google"
+            inline_mode_settings(message=call.message)
+        case "inline_mode_youtube":
+            groups[call.message.chat.id].inline_mode = "Youtube"
+            inline_mode_settings(message=call.message)
+
 
         # Account info
 

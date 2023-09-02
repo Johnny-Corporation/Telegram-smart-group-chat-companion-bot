@@ -484,6 +484,7 @@ from commands.subs_list import *
 from commands.tranzzo import *
 from commands.menu import *
 from commands.ask_gen_image_prompt import *
+from commands.choose_inline_mode import *
 
 # Buttons handler
 from commands.buttons_handler import *
