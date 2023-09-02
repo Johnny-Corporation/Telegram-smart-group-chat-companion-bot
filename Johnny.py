@@ -63,7 +63,7 @@ class Johnny:
     temporary_memory_size: int = 7
     language_code: str = "eng"
     trigger_probability: float = 0.8
-    model = "gpt-3.5-turbo"
+    model = "gpt-3.5-turbo"  # "lama" "gpt-3.5-turbo" "gpt-4" "vicuna"
     tokens_limit: int = 3950  # Leave gap for functions
     temperature: float = 0.5
     frequency_penalty: float = 0.2
@@ -101,7 +101,7 @@ class Johnny:
                 "price_of_message": 10,
                 "sphere_permission": False,
                 "dynamic_gen_permission": False,
-                "pro_voice_output": False
+                "pro_voice_output": False,
             }
         }
 
@@ -133,6 +133,7 @@ class Johnny:
             self,
             self.messages_history,
             reply=bool(self.message.reply_to_message),
+            lang=self.lang_code,
             answer_length=self.answer_length,
             model=self.model,
             temperature=self.temperature,
@@ -319,11 +320,11 @@ class Johnny:
             or (random() < self.trigger_probability)
         ):
             # --- GPT answer generation ---
-            
+
             if self.voice_out_enabled:
-                self.bot.send_chat_action(self.message.chat.id, 'record_audio')
+                self.bot.send_chat_action(self.message.chat.id, "record_audio")
             else:
-                self.bot.send_chat_action(self.message.chat.id, 'typing')
+                self.bot.send_chat_action(self.message.chat.id, "typing")
 
             self.response = self.get_completion()
 
@@ -359,7 +360,11 @@ class Johnny:
         """Takes completion object and returns text answer. Handles message in telegram"""
 
         # Check function call
-        response_message = completion["choices"][0]["message"]
+        response_message = (
+            completion["choices"][0]["message"]
+            if hasattr(completion, "choices")
+            else {}
+        )
 
         if response_message.get("function_call"):
             function_name = response_message["function_call"]["name"]
@@ -422,7 +427,6 @@ class Johnny:
             return None
 
         if self.voice_out_enabled == True:
-            
             text_to_voice(
                 self.bot,
                 self.message,
@@ -432,14 +436,17 @@ class Johnny:
             )
             return text_answer
 
-        self.bot.send_message(
-            self.message.chat.id, text_answer, parse_mode="Markdown"
-        )
+        self.bot.send_message(self.message.chat.id, text_answer, parse_mode="Markdown")
 
         return text_answer
 
     def dynamic_generation(self, completion):
         """Takes completion object and returns text answer. Handles message in telegram"""
+
+        if hasattr(completion, "choices"):
+            lama = False
+        else:
+            lama = True
 
         if self.last_function_request is None:
             self.thinking_message = self.bot.send_message(
@@ -453,15 +460,17 @@ class Johnny:
             "name": None,
             "arguments": "",
         }
-
         for res in completion:
-            delta = res.choices[0].delta
+            if not lama:
+                delta = res.choices[0].delta
+            else:
+                delta = res
             if "function_call" in delta:
                 if "name" in delta.function_call:
                     func_call["name"] = delta.function_call["name"]
                 if "arguments" in delta.function_call:
                     func_call["arguments"] += delta.function_call["arguments"]
-            if res.choices[0].finish_reason == "function_call":
+            if (not lama) and (res.choices[0].finish_reason == "function_call"):
                 # Handling function call
 
                 function_name = func_call["name"]
@@ -510,10 +519,24 @@ class Johnny:
                 return self.dynamic_generation(self.get_completion())
                 # End of handling function call
 
-            if ("content" in res["choices"][0]["delta"]) and (
-                text_chunk := res["choices"][0]["delta"]["content"]
+            if (
+                (not lama)
+                and ("content" in res["choices"][0]["delta"])
+                and (text_chunk := res["choices"][0]["delta"]["content"])
             ):
                 text_answer += text_chunk
+                update_count += 1
+
+                if update_count == self.dynamic_gen_chunks_frequency:
+                    update_count = 0
+                    self.delete_pending_messages()
+                    self.bot.edit_message_text(
+                        chat_id=self.message.chat.id,
+                        message_id=self.thinking_message.message_id,
+                        text=text_answer,
+                    )
+            if lama and delta:
+                text_answer += delta
                 update_count += 1
 
                 if update_count == self.dynamic_gen_chunks_frequency:

@@ -8,11 +8,16 @@ def settings(message):
 
     markup = types.InlineKeyboardMarkup()
 
+    button0 = types.InlineKeyboardButton(
+        text=templates[language_code]["button_change_model.txt"],
+        callback_data="change_model",
+    )
+
     button1 = types.InlineKeyboardButton(
         text=templates[language_code]["button_set_up.txt"],
         callback_data="bot_answers",
     )
-    #sphere of conservation
+    # sphere of conservation
     sphere_button = types.InlineKeyboardButton(
         text=templates[language_code]["button_set_sphere.txt"],
         callback_data="sphere",
@@ -27,6 +32,7 @@ def settings(message):
     )
 
     # Adding buttons to keyboard
+    markup.add(button0)
     markup.add(button1)
     markup.add(sphere_button)
     markup.add(button2)
@@ -52,15 +58,13 @@ def settings(message):
     )
     markup.add(back_button)
 
-
-    #Initialize buttons
-
+    # Initialize buttons
 
     bot.edit_message_text(
-        templates[language_code]["change_bot_settings.txt"], 
-        message.chat.id, 
-        message.message_id, 
+        templates[language_code]["change_bot_settings.txt"],
+        message.chat.id,
+        message.message_id,
         reply_markup=markup,
-        parse_mode="HTML"
+        parse_mode="HTML",
     )
     return
