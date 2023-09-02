@@ -241,7 +241,7 @@ def create_chat_completion(
         )
         return "[WAIT]"
     else:
-        logger.info("GPT answered, success 🎉🎉🎉")
+        logger.info("success 🎉🎉🎉")
 
     logger.info(f"API completion object: {completion}")
 

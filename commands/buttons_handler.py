@@ -85,7 +85,18 @@ def keyboard_buttons_handler(call):
             johnny = groups[call.message.chat.id]
             call.message.model = "gpt-4"
             if johnny.model != "gpt-4":
-                switch_model(call.message)
+                if johnny.subscription != "Pro":
+                    target = bot.send_message(
+                        call.message.chat.id,
+                        templates[johnny.lang_code]["GPT-4FORBIDDEN.txt"],
+                    )
+                    threading.Timer(
+                        5,
+                        bot.delete_message,
+                        args=(call.message.chat.id, target.message_id),
+                    ).start()
+                else:
+                    switch_model(call.message)
         case "switch_to_gpt35turbo":
             johnny = groups[call.message.chat.id]
             call.message.model = "gpt-3.5-turbo"
