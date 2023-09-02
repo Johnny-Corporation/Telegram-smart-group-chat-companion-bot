@@ -1,3 +1,0 @@
-El modo de diálogo estaba habilitado. Johnny listo para charlar contigo.
-
- /disable_dialog - para salir de este modo

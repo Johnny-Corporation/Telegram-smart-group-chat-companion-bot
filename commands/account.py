@@ -30,6 +30,11 @@ def account(message):
         callback_data="about_sub",
     )
     markup.add(button2)
+    button2 = types.InlineKeyboardButton(
+        text=templates[language_code]["button_referral.txt"],
+        callback_data="referral",
+    )
+    markup.add(button2)
     back_button = types.InlineKeyboardButton(
         text="<<<",
         callback_data="menu",

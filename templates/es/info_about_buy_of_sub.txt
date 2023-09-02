@@ -1,4 +1,0 @@
-Compras una suscripción PRO.
-Costo: {cost} rublos.
-
-Pulsa el botón para comprar:

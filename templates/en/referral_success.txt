@@ -1,0 +1,3 @@
+User {invited_user} went the registration, used your link.
+
+You got a discount 5% on messages/subscription!

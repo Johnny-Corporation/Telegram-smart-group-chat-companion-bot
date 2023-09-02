@@ -104,6 +104,14 @@ class Johnny:
             }
         }
 
+        #Referral
+        self.invited = False
+        self.referrer_id = None
+
+        #Discounts (in %)
+        self.discount_subscription = {"total sum": 1}
+        self.discount_message = {"total sum": 1}
+
         self.last_downloaded_file_path = None
 
         # User

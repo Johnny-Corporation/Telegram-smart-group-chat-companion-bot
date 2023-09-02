@@ -1,1 +1,0 @@
-Tu grupo se actualizó a supergrupo, no te preocupes, es una función principal de Telegram. ¡Reinicialice el bot eliminándolo y agregándolo al grupo!

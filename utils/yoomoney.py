@@ -33,26 +33,43 @@ def accept_payment(message, cost, type_of_own="update", messages=0):
         )
         markup.add(temp_button)
         if type_of_own == 'update' or type_of_own == 'extend':
+
+            for name in groups[message.chat.id].discount_subscription.keys():
+                value = groups[message.chat.id].discount_subscription[name]
+                if not name == "total_sum":
+                    discounts = discounts + f'{translate_text(language_code, name)}: {(value)*100}%\n'
+
             bot.send_message(
                 message.chat.id,
                 templates[language_code]["info_about_buy_of_sub.txt"].format(
-                    cost=cost
+                    cost=cost,
+                    discounts=discounts
                 ),
                 reply_markup=markup,
                 parse_mode="HTML",
             )
+            groups[message.chat.id].discount_subscription["total sum"] = 1
+
         elif type_of_own == 'more_messages':
+
+            discounts = ' '
+            for name in groups[message.chat.id].discount_subscription.keys():
+                value = groups[message.chat.id].discount_subscription[name]
+                if not name == "total sum":
+                    discounts = discounts + f'{translate_text(language_code, name)}- {(1-value)*100}%\n'
+
             bot.send_message(
                 message.chat.id,
                 templates[language_code]["info_about_buy_of_messages.txt"].format(
                     count=messages,
                     sub=groups[message.chat.id].subscription,
-                    cost=cost
+                    cost=cost,
+                    discounts=discounts
                 ),
                 reply_markup=markup,
                 parse_mode="HTML",
             )
-
+            groups[inner_message.chat.id].discount_message["total sum"] = 1
         start_time = time.time()
 
         # Запускаем таймеры, пока не истечет общее время ожидания
@@ -66,6 +83,12 @@ def accept_payment(message, cost, type_of_own="update", messages=0):
 
         if result[0]:
             if type_of_own == "update":
+
+                #Referral check
+                if groups[message.chat.id].invited:
+                    groups[groups[message.chat.id].referrer_id].discount_subscription["referral discount"] = 0.70
+                    groups[message.chat.id].invited = False
+
                 groups[message.chat.id].add_new_user(
                     message.chat.id,
                     message.from_user.first_name,

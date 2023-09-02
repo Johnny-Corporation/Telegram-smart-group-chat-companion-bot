@@ -13,8 +13,12 @@ def enter_new_messages_reply_handler(inner_message):
         )
         return
     
-
     
+    #apply discounts
+    for discount in groups[inner_message.chat.id].discount_message.values():
+        val = val * discount
+    
+
 
     if groups[inner_message.chat.id].subscription == "Free":
 

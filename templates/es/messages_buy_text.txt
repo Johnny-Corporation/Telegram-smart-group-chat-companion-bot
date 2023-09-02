@@ -1,1 +1,0 @@
-Compras nuevos {val} mensajes. Tienes un plan {sub}, por lo que este precio es más bajo.

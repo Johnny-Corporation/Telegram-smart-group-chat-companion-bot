@@ -1,4 +1,6 @@
 You buy a subscription PRO.
 Cost: {cost} rubles.
 
+Current discounts:
+{discounts}
 Press button to buy:

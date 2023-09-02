@@ -51,6 +51,8 @@ def keyboard_buttons_handler(call):
             purchase(message=call.message)
         case "about_sub":
             sub_info(message=call.message)
+        case "referral":
+            referral(message=call.message)
         case "account":
             account(message=call.message)
 

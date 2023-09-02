@@ -1,1 +1,0 @@
-El tamaño de la memoria temporal no cambió.

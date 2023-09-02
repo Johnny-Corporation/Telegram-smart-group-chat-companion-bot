@@ -1,1 +1,0 @@
-Se habilitó el envío de respuestas de voz. En cualquier momento, puedes desactivarlo en la configuración.
