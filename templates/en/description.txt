@@ -11,8 +11,8 @@ I can keep up the conversation in any format:
 I am a powerful combination of neural text models🤖
 🔹 [GPT-4](https://openai.com/research/gpt-4)
 🔹 [GPT-3.5-turbo](https://openai.com/blog/gpt-3-5-turbo-fine-tuning-and-api-updates)
-🔹 [Llama](https://replicate.com/replicate/llama-2-70b-chat/)
-🔹 [Vicuna](https://replicate.com/replicate/vicuna-13b)
+🔹 [Llama](https://ai.meta.com/llama/)
+🔹 [Vicuna](https://lmsys.org/blog/2023-03-30-vicuna/)
 
 Key features:
 🔹 whole internet until 2022🤓
@@ -23,7 +23,7 @@ Key features:
 🔹 [Midjourney 5 ](https://www.midjourney.com/) for image generation
 
 And our killer feature: 🥁🥁🥁
-⚡⚡⚡  Inline interactions! ⚡⚡⚡
+⚡  Inline interactions! ⚡
 
 You can chat as in private messages👤, as in group chats👥 – just add it to group!
 

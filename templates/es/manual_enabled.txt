@@ -1,5 +1,0 @@
-El modo manual está habilitado.
-
-Ahora Bot responde cuando lo <b>etiquetas</b> o <b>respondes a su mensaje</b>.
-
- /disable_manual para salir de este modo.

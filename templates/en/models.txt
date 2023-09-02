@@ -1,0 +1,22 @@
+Here you can select model.
+
+❗ GPT-4 is only avalaible for PRO users
+❗ Llama is currently can't be used as primary model, but used as reserve model by default
+❗ When GPT is under high demand Lama and Vicuna are used
+❗ Vicuna can be set as primary model, but it is not recommended
+
+GPT-3:
+🟢 Internet access
+🟢 High response speed
+🔴 Worse context understarnding than GPT-4
+
+GPT-4:
+🟢 Internet access
+🟢 The best model in the world for now
+🔴 Slower than GPT-3
+🔴 Avalaible only for PRO
+
+Vicuna:
+🔴 No internet access
+🔴 Bad context understading
+🟡 Not recommended as primary model

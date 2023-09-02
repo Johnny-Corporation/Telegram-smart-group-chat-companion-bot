@@ -1,1 +1,0 @@
-AutoMode: el bit responde automáticamente

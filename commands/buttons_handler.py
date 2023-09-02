@@ -69,12 +69,36 @@ def keyboard_buttons_handler(call):
 
         case "settings":
             settings(message=call.message)
+        case "change_model":
+            models_switcher(call.message)
         case "bot_answers":
             bot_answers_settings(call.message)
         case "special_features":
             special_features_settings(call.message)
         case "permissions_of_group":
             change_permission_settings(call.message)
+
+        # Model switching
+        case "switch_to_gpt_4":
+            johnny = groups[call.message.chat.id]
+            call.message.model = "gpt-4"
+            if johnny.model != "gpt-4":
+                switch_model(call.message)
+        case "switch_to_gpt35turbo":
+            johnny = groups[call.message.chat.id]
+            call.message.model = "gpt-3.5-turbo"
+            if johnny.model != "gpt-3.5-turbo":
+                switch_model(call.message)
+        case "switch_to_lama":
+            johnny = groups[call.message.chat.id]
+            call.message.model = "lama"
+            if johnny.model != "lama":
+                switch_model(call.message)
+        case "switch_to_vicuna":
+            johnny = groups[call.message.chat.id]
+            call.message.model = "vicuna"
+            if johnny.model != "vicuna":
+                switch_model(call.message)
 
         # Set up funcs
 

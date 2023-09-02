@@ -39,7 +39,13 @@ openai.api_key = openAI_api_key
 
 def extract_text(completion: openai.ChatCompletion) -> str:
     """Extracts text from OpenAI API response"""
-    return completion.choices[0].message.content
+    if hasattr(completion, "choices"):
+        return completion.choices[0].message.content
+    else:
+        result = ""
+        for i in completion:
+            result += i
+        return result
 
 
 def check_function_call(completion: openai.ChatCompletion) -> bool:
@@ -72,6 +78,18 @@ def get_messages_in_official_format(messages):
     return previous_messages
 
 
+def build_prompt_for_lama(messages):
+    lama_prompt = ""
+    for m in messages:
+        if m[0] == "$BOT$":
+            lama_prompt += f"LAMA: {m[1]}"
+        else:
+            lama_prompt += f"{m[0]}: {m[1]}"
+        lama_prompt += "\n"
+    lama_prompt += "LAMA: "
+    return lama_prompt
+
+
 def generate_image_dalle(prompt, n, size):
     """Returns links to image"""
     response = openai.Image.create(prompt=prompt, n=n, size=size)
@@ -79,6 +97,27 @@ def generate_image_dalle(prompt, n, size):
     for i in response["data"]:
         links.append(i["url"])
     return links
+
+
+def get_lama_answer(
+    prompt,
+    system_prompt="You are a helpful assistant.",
+    temperature=0.9,
+    top_p=0.5,
+    max_tokens=1024,
+):
+    output = replicate.run(
+        "replicate/llama-2-70b-chat:2796ee9483c3fd7aa2e171d38f4ca12251a30609463dcfd4cd76703f22e96cdf",
+        input={
+            "prompt": prompt,
+            "system_prompt": system_prompt,
+            "temperature": temperature,
+            "top_p": top_p,
+            "max_new_tokens": max_tokens,
+        },
+    )
+
+    return output
 
 
 def create_chat_completion(
@@ -91,7 +130,7 @@ def create_chat_completion(
     reply: bool = False,  # SYS
     model: str = "gpt-3.5-turbo",
     temperature: int = 0.5,
-    top_p: float = 0.5,
+    top_p: float = 1,
     n: int = 1,
     stream: bool = False,
     stop: str = None,
@@ -136,41 +175,59 @@ def create_chat_completion(
         chat_completion_arguments["function_call"] = "auto"
 
     try:
-        logger.info("Requesting gpt...")
-        completion = openai.ChatCompletion.create(**chat_completion_arguments)
+        if (model == "lama") or (model == "vicuna"):
+            lama_prompt = build_prompt_for_lama(messages)
+            completion = get_lama_answer(
+                lama_prompt,
+                system_prompt=system_content,
+                temperature=temperature,
+                top_p=top_p,
+            )
+            logger.info(f"Lama response:{completion}")
+        else:
+            logger.info("Requesting gpt...")
+            completion = openai.ChatCompletion.create(**chat_completion_arguments)
     except openai.error.APIError as e:
         logger.error(f"OpenAI API returned an API Error: {e}")
         functions.send_to_developers(
-            "❗❗Server error occurred❗❗",
+            "❗❗Server error occurred❗❗ Using Lama without functions",
             johnny.bot,
             environ["DEVELOPER_CHAT_IDS"].split(","),
         )
         # johnny.messages_history = johnny.messages_history[-3:]
-        previous_messages = [
-            {
-                "role": "system",
-                "content": system_content,
-            }
-        ]
-        previous_messages.extend(
-            get_messages_in_official_format(johnny.messages_history)
-        )
-        chat_completion_arguments = {
-            "model": model,
-            "messages": previous_messages,
-            "temperature": temperature,
-            "top_p": top_p,
-            "n": n,
-            "stream": stream,
-            "stop": stop,
-            "frequency_penalty": frequency_penalty,
-            "presence_penalty": presence_penalty,
-        }
+        # previous_messages = [
+        #     {
+        #         "role": "system",
+        #         "content": system_content,
+        #     }
+        # ]
+        # previous_messages.extend(
+        #     get_messages_in_official_format(johnny.messages_history)
+        # )
+        # chat_completion_arguments = {
+        #     "model": model,
+        #     "messages": previous_messages,
+        #     "temperature": temperature,
+        #     "top_p": top_p,
+        #     "n": n,
+        #     "stream": stream,
+        #     "stop": stop,
+        #     "frequency_penalty": frequency_penalty,
+        #     "presence_penalty": presence_penalty,
+        # }
         # if use_functions:
         #     chat_completion_arguments["functions"] = gpt_functions_description
         #     chat_completion_arguments["function_call"] = "auto"
         # sleep(5)
-        completion = openai.ChatCompletion.create(**chat_completion_arguments)
+
+        lama_prompt = build_prompt_for_lama(messages)
+        completion = get_lama_answer(
+            lama_prompt,
+            system_prompt=system_content,
+            temperature=temperature,
+            top_p=top_p,
+        )
+        logger.info(f"Lama response:{completion}")
 
     except openai.error.APIConnectionError as e:
         logger.error(f"Failed to connect to OpenAI API: {e}")

@@ -12,9 +12,6 @@ import docx2txt
 import PyPDF2
 from moviepy.video.io.VideoFileClip import VideoFileClip
 
-
-from pydub import AudioSegment
-
 from utils import sber_auth
 from gtts import gTTS
 from langdetect import detect
