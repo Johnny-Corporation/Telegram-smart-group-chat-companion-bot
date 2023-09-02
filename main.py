@@ -296,7 +296,7 @@ def send_welcome_text_and_load_data(
         # If there isn't data, registries new user
         if not sub_exist:
             new_user = True
-            groups[chat_id].add_new_user(chat_id, " ", " ", " ", "Free", 20)
+            groups[chat_id].add_new_user(chat_id, " ", " ", " ", "Free", 10)
             groups[chat_id].load_subscription(chat_id)
 
         else:
@@ -395,7 +395,7 @@ def handle_migrate_group_to_supergroup(message):
     )
 
 
-def init_new_group(chat_id):
+def init_new_group(chat_id, inviting=False, referrer_id=None):
     if chat_id in groups:
         return  # Lang code not set
     else:
@@ -420,6 +420,12 @@ def init_new_group(chat_id):
 
         groups[chat_id] = Johnny(bot, chat_id, str(bot_username))
         groups[chat_id].templates = load_templates("templates\\")
+
+        if inviting:
+            #Bonuses to invited men
+            groups[chat_id].referrer_id = referrer_id
+            groups[chat_id].invited = True
+            groups[chat_id].discount_subscription["Referral discount"] = 0.80
 
         blacklist[chat_id] = []
         reply_blacklist[chat_id] = []
@@ -448,6 +454,7 @@ from commands.view_model import *
 from commands.models_switcher import *
 from commands.get_chat_id import *
 from commands.about import *
+from commands.account_referral import *
 from commands.account import *
 from commands.bot_on_view_mode import *
 from commands.bot_on_change_mode_command import *
@@ -532,7 +539,6 @@ def main_messages_handler(message: types.Message):
 
         # Checks the registration of user
         if groups[message.chat.id].activated == False:
-            print("fvovnfivronvsnsnsnsnvpsnvpsnp")
             return
 
         print(f"ENBLED:    {groups[message.chat.id].enabled}")

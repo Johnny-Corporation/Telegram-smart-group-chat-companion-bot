@@ -100,5 +100,5 @@ def get_group_info_reply_handler(inner_message):
 def get_promocodes(inner_message):
     bot.send_message(
         inner_message.chat.id,
-        f"Subscription 'Pro': {sub_pro_promocode}\nGet 100 messages: {promocode_100}",
+        f"Subscription 'Pro': {sub_pro_promocode}\nDiscount 50% ob buying the sub: {discount_on_sub_50}\nGet 100 messages: {promocode_100}",
     )

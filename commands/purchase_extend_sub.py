@@ -7,4 +7,9 @@ def extend_sub(message):
 
     language_code = groups[message.chat.id].lang_code
 
-    accept_payment(message, 999, 'extend')
+    #create price with all allowed discounts
+    price = 999
+    for discount in groups[message.chat.id].discount_subscription.values():
+        price = price * discount
+
+    accept_payment(message, price, 'extend')

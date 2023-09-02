@@ -22,9 +22,16 @@ def enter_promocode_reply_handler(inner_message):
     
     
     if len(code_back) == 1:
-        groups[inner_message.chat.id].add_purchase_of_messages(inner_message.chat.id, code_back[0])
 
-        bot.send_message(inner_message.chat.id, templates[language_code]["more_100000_messages.txt"].format(messages=groups[inner_message.chat.id].messages_limit))
+        if code_back[0]>=1:
+            groups[inner_message.chat.id].add_purchase_of_messages(inner_message.chat.id, code_back[0])
+
+            bot.send_message(inner_message.chat.id, templates[language_code]["more_100000_messages.txt"].format(messages=groups[inner_message.chat.id].messages_limit))
+        elif code_back[0]<1:
+            groups[inner_message.chat.id].discount_subscription["Promocode discount"] = 0.50
+
+            bot.send_message(inner_message.chat.id, templates[language_code]["promocode_discount_50.txt"])
+
 
     elif len(code_back) == 2:
         groups[inner_message.chat.id].add_new_user(inner_message.chat.id, inner_message.from_user.first_name, inner_message.from_user.last_name, inner_message.from_user.username, code_back[0], code_back[1])

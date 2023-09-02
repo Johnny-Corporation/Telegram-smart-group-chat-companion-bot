@@ -9,11 +9,10 @@ def rus_payment(message, type_of_sub):
 
     type_of_sub == "pro"
 
+    #create price with all allowed discounts
     price = 999
-
-    # --- Discount ---
-    if groups[message.chat.id].total_spent_messages <= 15 and groups[message.chat.id].subscription == "Free":
-        bot.send_message(message.chat.id, templates[language_code]["discount_yes.txt"])
-        price = price * 0.8
+    for discount in groups[message.chat.id].discount_subscription.values():
+        price = price * discount
+    
 
     accept_payment(message, price)

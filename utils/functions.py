@@ -618,7 +618,7 @@ def video_note_to_text(bot, message, reply_to=None):
 def take_info_about_sub(subscription):
     subscriptions = {
         "Free": {  # {type_of_sub: {point: value_of_point}}
-            "messages_limit": 20,
+            "messages_limit": 10,
             "price_of_message": 10,
             "sphere_permission": False,
             "dynamic_gen_permission": False,
