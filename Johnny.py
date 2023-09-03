@@ -72,7 +72,7 @@ class Johnny:
     sphere: str = ""
     system_content: str = ""
     allow_functions: bool = True
-    inline_mode: str = "GPT"
+    inline_mode: str = "Google"
 
     def __post_init__(self):
         # list of lists, where each list follows format: [senders_name, text]
@@ -105,11 +105,11 @@ class Johnny:
             }
         }
 
-        #Referral
+        # Referral
         self.invited = False
         self.referrer_id = None
 
-        #Discounts (in %)
+        # Discounts (in %)
         self.discount_subscription = {"total sum": 1}
         self.discount_message = {"total sum": 1}
 

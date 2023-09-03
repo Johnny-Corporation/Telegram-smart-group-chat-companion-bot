@@ -1,1 +1,10 @@
 Here you can choose the suggestions in inline mode!
+
+💡 How to effectively use inline:
+
+1️⃣ Ask question assuming multiple answers
+Example: Gift idea  
+
+2️⃣ Be as short as possible
+❌ Wrong: Suggest me cool ideas for tasty deserts!
+✅ Right: tasty deserts

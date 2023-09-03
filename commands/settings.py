@@ -30,6 +30,10 @@ def settings(message):
         text=templates[language_code]["button_customization.txt"],
         callback_data="special_features",
     )
+    button4 = types.InlineKeyboardButton(
+        text=templates[language_code]["button_choose_inline_mode.txt"],
+        callback_data="choose_inline_mode",
+    )
 
     # Adding buttons to keyboard
     markup.add(button0)
@@ -37,6 +41,7 @@ def settings(message):
     markup.add(sphere_button)
     markup.add(button2)
     markup.add(button3)
+    markup.add(button4)
 
     if message.chat.id < 0:
         owner_button = types.InlineKeyboardButton(

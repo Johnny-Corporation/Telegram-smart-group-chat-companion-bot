@@ -19,11 +19,6 @@ def menu(message, back_from=False):
         callback_data="generate_image",
     )
     markup.add(button1)
-    button1 = types.InlineKeyboardButton(
-        text=templates[language_code]["button_choose_inline_mode.txt"],
-        callback_data="choose_inline_mode",
-    )
-    markup.add(button1)
     if message.chat.id < 0:
         button1 = types.InlineKeyboardButton(
             text=templates[language_code]["button_menu_group.txt"],
