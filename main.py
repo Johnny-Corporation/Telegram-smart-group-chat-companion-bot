@@ -33,7 +33,8 @@ skip_old_messages = True  # True until message older than bot start time receive
 ignored_messages = 0  # count number of ignored messages when bot was offline for logs
 
 
-bot_token = environ.get("BOT_API_TOKEN_OFFICIAL")
+bot_token = environ.get("BOT_API_TOKEN")
+bot_token = '6338457969:AAHwxoMJyk_-u1hVq9Jwry5LKYXAha1RSro'
 
 yoomoney_token = environ.get("PAYMENT_RUS_TOKEN")
 
@@ -278,7 +279,12 @@ def send_welcome_text_and_load_data(
     message, chat_id: int, owner_id: int, language_code: str = "en"
 ) -> None:
     if owner_id not in groups:
-        bot.send_message(chat_id, f"Register in @{bot_username}")
+        bot.send_message(chat_id, templates[language_code]["register_in_bot.txt"].format(bot_username=bot_username))
+        return
+    
+    chat_member = bot.get_chat_member(chat_id, bot_id)
+    if chat_member.status != 'administrator':
+        bot.send_message(chat_id, templates[language_code]["group_admin_rights.txt"])
         return
 
     groups[chat_id].activated = True

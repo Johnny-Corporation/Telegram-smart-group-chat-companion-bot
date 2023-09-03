@@ -2,6 +2,9 @@
 <i> For 'Free' subscription - 1 for 0.1$ (10 rubles)
  For 'Pro' subscription - 1 for 0.05$ (5 rubles)</i>
 
+Current discounts:
+{discounts}
+
 Total: {cost} rubles.
 
 Press button to buy:

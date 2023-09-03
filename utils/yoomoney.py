@@ -36,6 +36,7 @@ def accept_payment(message, cost, type_of_own="update", messages=0):
 
             for name in groups[message.chat.id].discount_subscription.keys():
                 value = groups[message.chat.id].discount_subscription[name]
+                discounts = ''
                 if not name == "total_sum":
                     discounts = discounts + f'{translate_text(language_code, name)}: {(value)*100}%\n'
 
@@ -55,8 +56,9 @@ def accept_payment(message, cost, type_of_own="update", messages=0):
             discounts = ' '
             for name in groups[message.chat.id].discount_subscription.keys():
                 value = groups[message.chat.id].discount_subscription[name]
+                discounts = ''
                 if not name == "total sum":
-                    discounts = discounts + f'{translate_text(language_code, name)}- {(1-value)*100}%\n'
+                    discounts = discounts + f'{translate_text(language_code, name)}: {(1-value)*100}%\n'
 
             bot.send_message(
                 message.chat.id,
@@ -69,7 +71,7 @@ def accept_payment(message, cost, type_of_own="update", messages=0):
                 reply_markup=markup,
                 parse_mode="HTML",
             )
-            groups[inner_message.chat.id].discount_message["total sum"] = 1
+            groups[message.chat.id].discount_message["total sum"] = 1
         start_time = time.time()
 
         # Запускаем таймеры, пока не истечет общее время ожидания

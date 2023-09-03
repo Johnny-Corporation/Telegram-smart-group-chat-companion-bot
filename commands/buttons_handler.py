@@ -259,24 +259,21 @@ def keyboard_buttons_handler(call):
             groups[call.message.chat.id].lang_code = lang[0]
 
             language_code = lang[0]
+            
+            markup = load_buttons(
+                types,
+                groups,
+                call.message.chat.id,
+                language_code,
+                owner_id=groups[call.message.chat.id].owner_id,
+            )
+            bot.send_message(
+                call.message.chat.id,
+                translate_text(lang[1], f"Language changed to {lang[1]} "),
+                reply_markup=markup,
+            )
+            return
 
-            try:
-                markup = load_buttons(
-                    types,
-                    groups,
-                    call.message.chat.id,
-                    language_code,
-                    owner_id=groups[call.message.chat.id].owner_id,
-                )
-                bot.send_message(
-                    call.message.chat.id,
-                    translate_text(lang[1], f"Language changed to {lang[1]} "),
-                    reply_markup=markup,
-                )
-            except:
-                None
-
-            bot.delete_message(call.message.chat.id, call.message.message_id)
         # DEV TOOLS
 
         case "get_cur_out":
@@ -379,10 +376,12 @@ def keyboard_buttons_handler(call):
                 call.from_user.id,
                 groups[call.message.chat.id].lang_code,
             )
-        elif call.message.chat.id < 0:
-            markup = load_buttons(
-                types,
-                groups,
-                call.message.chat.id,
-                groups[call.message.chat.id].lang_code,
-            )
+        # elif call.message.chat.id < 0:
+        #     markup = load_buttons(
+        #         types,
+        #         groups,
+        #         call.message.chat.id,
+        #         groups[call.message.chat.id].lang_code,
+        #     )
+        #     # bot.send_message(call.message.chat.id, 'ㅤ', reply_markup=markup)
+
