@@ -33,7 +33,7 @@ skip_old_messages = True  # True until message older than bot start time receive
 ignored_messages = 0  # count number of ignored messages when bot was offline for logs
 
 
-bot_token = environ.get("BOT_API_TOKEN")
+bot_token = environ.get("BOT_API_TOKEN_OFFICIAL")
 
 yoomoney_token = environ.get("PAYMENT_RUS_TOKEN")
 
@@ -422,7 +422,7 @@ def init_new_group(chat_id, inviting=False, referrer_id=None):
         groups[chat_id].templates = load_templates("templates\\")
 
         if inviting:
-            #Bonuses to invited men
+            # Bonuses to invited men
             groups[chat_id].referrer_id = referrer_id
             groups[chat_id].invited = True
             groups[chat_id].discount_subscription["Referral discount"] = 0.80
@@ -450,6 +450,7 @@ from commands.reply_handlers.settings_change_owner import *
 from commands.reply_handlers.gen_img_prompt import *
 
 # Commands
+from commands.inline_handler import *
 from commands.view_model import *
 from commands.models_switcher import *
 from commands.get_chat_id import *

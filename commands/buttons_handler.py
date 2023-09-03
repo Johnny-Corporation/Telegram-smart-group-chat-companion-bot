@@ -45,19 +45,32 @@ def keyboard_buttons_handler(call):
         case "manual_mode":
             manual_enable(message=call.message)
 
-
         # Inline mode
 
         case "inline_mode_model":
-            groups[call.message.chat.id].inline_mode = "GPT"
-            inline_mode_settings(message=call.message)
+            johnny = groups[call.message.chat.id]
+            if groups[call.message.chat.id].inline_mode != "GPT":
+                if johnny.subscription != "Pro":
+                    target = bot.send_message(
+                        call.message.chat.id,
+                        templates[johnny.lang_code]["only_for_pro.txt"],
+                    )
+                    threading.Timer(
+                        5,
+                        bot.delete_message,
+                        args=(call.message.chat.id, target.message_id),
+                    ).start()
+                else:
+                    groups[call.message.chat.id].inline_mode = "GPT"
+                    inline_mode_settings(message=call.message)
         case "inline_mode_google":
-            groups[call.message.chat.id].inline_mode = "Google"
-            inline_mode_settings(message=call.message)
+            if groups[call.message.chat.id].inline_mode != "Google":
+                groups[call.message.chat.id].inline_mode = "Google"
+                inline_mode_settings(message=call.message)
         case "inline_mode_youtube":
-            groups[call.message.chat.id].inline_mode = "Youtube"
-            inline_mode_settings(message=call.message)
-
+            if groups[call.message.chat.id].inline_mode != "Youtube":
+                groups[call.message.chat.id].inline_mode = "Youtube"
+                inline_mode_settings(message=call.message)
 
         # Account info
 

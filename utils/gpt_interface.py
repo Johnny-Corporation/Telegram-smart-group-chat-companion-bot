@@ -296,6 +296,24 @@ def check_context_understanding(answer):
     return extract_text(completion) == "No"
 
 
+def get_gpt_inline_suggestions(query):
+    completion = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {
+                "role": "user",
+                "content": "Generate one short suggestion. Format: '{Title}|{FewWordsDescription}|{Body}'. Answer only in this format, no additional chars, no quotes. User query: "
+                + query,
+            }
+        ],
+        temperature=1,
+    )
+    logger.info(
+        f"Generating suggestions for inline query. Query:{query}; Suggestion:{extract_text(completion)}"
+    )
+    return extract_text(completion)
+
+
 def check_theme_context(answer, theme):
     """Returns bool - True is answer is related to theme, False if not"""
     completion = openai.ChatCompletion.create(
