@@ -292,7 +292,6 @@ def keyboard_buttons_handler(call):
                 translate_text(lang[1], f"Language changed to {lang[1]} "),
                 reply_markup=markup,
             )
-            return
 
         # DEV TOOLS
 

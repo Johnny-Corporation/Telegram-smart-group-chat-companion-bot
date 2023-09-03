@@ -282,7 +282,7 @@ def send_welcome_text_and_load_data(
         return
     
     chat_member = bot.get_chat_member(chat_id, bot_id)
-    if chat_member.status != 'administrator':
+    if chat_member.status != 'administrator' and chat_id<0:
         bot.send_message(chat_id, templates[language_code]["group_admin_rights.txt"])
         return
 
