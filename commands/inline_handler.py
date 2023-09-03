@@ -58,7 +58,7 @@ def inline_search(query):
             case "Google":
                 results = get_google_results(search_query)
             case "GPT":
-                results = get_gpt_results(search_query)
+                results = get_gpt_results(search_query,num_results=groups[chat_id].num_inline_gpt_suggestions)
             case "Youtube":
                 results = get_youtube_results(search_query)
 

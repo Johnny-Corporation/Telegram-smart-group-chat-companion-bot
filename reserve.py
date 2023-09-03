@@ -16,7 +16,7 @@ load_dotenv(".env")
 
 crash_message = "Apologies, bot down for maintenance"
 
-bot_token = environ.get("BOT_API_TOKEN")
+bot_token = environ.get("BOT_API_TOKEN_OFFICIAL")
 
 bot = TeleBot(bot_token)
 

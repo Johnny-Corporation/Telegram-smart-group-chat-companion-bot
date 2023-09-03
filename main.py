@@ -34,7 +34,6 @@ ignored_messages = 0  # count number of ignored messages when bot was offline fo
 
 
 bot_token = environ.get("BOT_API_TOKEN")
-bot_token = '6338457969:AAHwxoMJyk_-u1hVq9Jwry5LKYXAha1RSro'
 
 yoomoney_token = environ.get("PAYMENT_RUS_TOKEN")
 
@@ -456,6 +455,7 @@ from commands.reply_handlers.settings_change_owner import *
 from commands.reply_handlers.gen_img_prompt import *
 
 # Commands
+from commands.inline_additional_settings import *
 from commands.inline_handler import *
 from commands.view_model import *
 from commands.models_switcher import *

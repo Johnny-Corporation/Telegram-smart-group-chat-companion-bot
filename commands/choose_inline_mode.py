@@ -10,9 +10,16 @@ def inline_mode_settings(message):
     customization_markup = types.InlineKeyboardMarkup()
 
     # --- Buttons ---
+    gpt_answers_additional_settings_button = types.InlineKeyboardButton(
+        text=templates[language_code]["button_inline_mode_model_additional_settings.txt"], callback_data="inline_mode_model_additional_settings"
+    )
+    
+    
     smile='❌'
+    show_gpt_inline_answers_additional_settings = False
     if groups[message.chat.id].inline_mode == "GPT":
         smile='✅'
+        show_gpt_inline_answers_additional_settings = True
     gpt_answers_button = types.InlineKeyboardButton(
         text=templates[language_code]["button_inline_mode_model.txt"].format(smile=smile), callback_data="inline_mode_model"
     )
@@ -35,6 +42,8 @@ def inline_mode_settings(message):
     )
 
     # Adding buttons to keyboard
+    if show_gpt_inline_answers_additional_settings:
+        customization_markup.add(gpt_answers_additional_settings_button)
     customization_markup.add(gpt_answers_button)
     customization_markup.add(google_button)
     customization_markup.add(youtube_button)

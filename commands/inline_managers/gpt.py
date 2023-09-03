@@ -1,13 +1,20 @@
 from utils.gpt_interface import get_gpt_inline_suggestions
 
 
-def get_gpt_results(query):
+def get_gpt_results(query, num_results=2):
     results = []
+    
+    verbose = num_results == 1
 
-    for i in range(3):
-        suggestion = get_gpt_inline_suggestions(query)
+    for i in range(num_results):
+        suggestion = get_gpt_inline_suggestions(query,verbose=verbose)
         try:
-            title, description, body = suggestion.split("|")
+            if not verbose:
+                title, description, body = suggestion.split("|")
+            else:
+                title = "✅"
+                description = suggestion
+                body = suggestion
         except:
             continue
         results.append(

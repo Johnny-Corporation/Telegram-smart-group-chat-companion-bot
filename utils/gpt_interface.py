@@ -296,17 +296,29 @@ def check_context_understanding(answer):
     return extract_text(completion) == "No"
 
 
-def get_gpt_inline_suggestions(query):
-    completion = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[
+def get_gpt_inline_suggestions(query, verbose=False):
+    
+    if verbose:
+        prepared_messages = [
+            {"role":"system","content":"Be verbose but short, about 5-7 short sentences"},
             {
                 "role": "user",
-                "content": "Generate one short suggestion. Format: '{Title}|{FewWordsDescription}|{Body}'. Answer only in this format, no additional chars, no quotes. User query: "
-                + query,
+                "content": query,
             }
-        ],
+        ]
+    else:
+        prepared_messages = [
+                {
+                    "role": "user",
+                    "content": "Generate one short suggestion. Format: '{Title}|{FewWordsDescription}|{Body}'. Answer only in this format, no additional chars, no quotes. User query: "
+                    + query,
+                }
+            ]
+    completion = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=prepared_messages,
         temperature=1,
+        max_tokens=220 # Approx estimation
     )
     logger.info(
         f"Generating suggestions for inline query. Query:{query}; Suggestion:{extract_text(completion)}"

@@ -1,0 +1,2 @@
+Number of suggestions by GPT, bigger = slower.
+When set to 1, suggestion is verbose and detail.
