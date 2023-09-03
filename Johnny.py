@@ -13,6 +13,7 @@ import json
 from os import environ, makedirs
 import threading
 import tiktoken
+from openai import openai_object
 
 from utils.functions import (
     describe_image,
@@ -444,7 +445,7 @@ class Johnny:
     def dynamic_generation(self, completion):
         """Takes completion object and returns text answer. Handles message in telegram"""
 
-        if hasattr(completion, "choices"):
+        if isinstance(completion,openai_object):
             lama = False
         else:
             lama = True

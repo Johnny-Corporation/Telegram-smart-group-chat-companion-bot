@@ -16,7 +16,7 @@ load_dotenv(".env")
 
 crash_message = "Apologies, bot down for maintenance"
 
-bot_token = environ.get("BOT_API_TOKEN_OFFICIAL")
+bot_token = environ.get("BOT_API_TOKEN")
 
 bot = TeleBot(bot_token)
 
@@ -81,6 +81,91 @@ for filename in file_list:
             crash_message,
             reply_markup=markup,
         )
+        
+        
+controller = Controller()
+# ----------------------- Functions for devtools -----------------------
+
+
+def get_user_info(message):
+    users_list = listdir("output\\clients_info")
+    users = "\n".join([f"{i}  -- {users_list[i]} " for i in range(len(users_list))])
+    bot_reply = bot.reply_to(
+        message,
+        "Choose and reply " + f"\n {users}",
+    )
+    bot.register_for_reply(bot_reply, get_user_info_reply_handler)
+
+
+def get_user_info_reply_handler(inner_message):
+    path = (
+        "output\\clients_info\\"
+        + listdir("output\\clients_info")[int(inner_message.text)]
+    )
+    send_file(
+        path,
+        inner_message.chat.id,
+        bot,
+    )
+    with open(path, "r", encoding="utf-8") as f:
+        content = f.read()
+        # between : and ,
+        group_id = int(content.split(",")[0].replace('{"id":', ""))
+    with open("temp\\messages_history_client.txt", "w", encoding="utf-8") as f:
+        f.write("[START]\n")
+        for i in controller.get_last_n_messages_from_chat(
+            n=999999999, chat_id=group_id
+        )[::-1]:
+            print(i)
+            f.write(f"{i[0]}  = = = {i[1]}" + "\n")
+        f.write("[END]")
+
+    send_file(
+        "temp\\messages_history_client.txt",
+        inner_message.chat.id,
+        bot,
+    )
+
+
+def get_group_info(message):
+    users_list = listdir("output\\groups_info")
+    users = "\n".join([f"{i}  -- {users_list[i]} " for i in range(len(users_list))])
+    bot_reply = bot.reply_to(
+        message,
+        "Choose and reply" + f"\n {users}",
+    )
+    bot.register_for_reply(bot_reply, get_group_info_reply_handler)
+
+
+def get_group_info_reply_handler(inner_message):
+    path = (
+        "output\\groups_info\\"
+        + listdir("output\\groups_info")[int(inner_message.text)]
+    )
+    send_file(
+        path,
+        inner_message.chat.id,
+        bot,
+    )
+    with open(path, "r", encoding="utf-8") as f:
+        content = f.read()
+        # between : and ,
+        group_id = int(content.split(",")[0].replace('{"id":', ""))
+    with open("temp\\messages_history_group.txt", "w", encoding="utf-8") as f:
+        f.write("[START]\n")
+        for i in controller.get_last_n_messages_from_chat(
+            n=999999999, chat_id=group_id
+        )[::-1]:
+            print(i)
+            f.write(f"{i[0]}  = = = {i[1]}" + "\n")
+        f.write("[END]")
+
+    send_file(
+        "temp\\messages_history_group.txt",
+        inner_message.chat.id,
+        bot,
+    )
+
 
 
 @bot.message_handler(commands=["dev_tools"])
@@ -207,7 +292,7 @@ def main_messages_handler(message: types.Message):
             reply_markup=markup,
         )
         return
-    if message.chat.type == "private":
+    if message.chat.type == "private" and (message.reply_to_message is None):
         if str(message.chat.id) in developer_chat_ids:
             bot.reply_to(
                 message,
@@ -225,86 +310,3 @@ def main_messages_handler(message: types.Message):
 
 bot.polling()
 
-
-controller = Controller()
-# ----------------------- Functions for devtools -----------------------
-
-
-def get_user_info(message):
-    users_list = listdir("output\\clients_info")
-    users = "\n".join([f"{i}  -- {users_list[i]} " for i in range(len(users_list))])
-    bot_reply = bot.reply_to(
-        message,
-        "Choose and reply " + f"\n {users}",
-    )
-    bot.register_for_reply(bot_reply, get_user_info_reply_handler)
-
-
-def get_user_info_reply_handler(inner_message):
-    path = (
-        "output\\clients_info\\"
-        + listdir("output\\clients_info")[int(inner_message.text)]
-    )
-    send_file(
-        path,
-        inner_message.chat.id,
-        bot,
-    )
-    with open(path, "r", encoding="utf-8") as f:
-        content = f.read()
-        # between : and ,
-        group_id = int(content.split(",")[0].replace('{"id":', ""))
-    with open("temp\\messages_history_client.txt", "w", encoding="utf-8") as f:
-        f.write("[START]\n")
-        for i in controller.get_last_n_messages_from_chat(
-            n=999999999, chat_id=group_id
-        )[::-1]:
-            print(i)
-            f.write(f"{i[0]}  = = = {i[1]}" + "\n")
-        f.write("[END]")
-
-    send_file(
-        "temp\\messages_history_client.txt",
-        inner_message.chat.id,
-        bot,
-    )
-
-
-def get_group_info(message):
-    users_list = listdir("output\\groups_info")
-    users = "\n".join([f"{i}  -- {users_list[i]} " for i in range(len(users_list))])
-    bot_reply = bot.reply_to(
-        message,
-        "Choose and reply" + f"\n {users}",
-    )
-    bot.register_for_reply(bot_reply, get_group_info_reply_handler)
-
-
-def get_group_info_reply_handler(inner_message):
-    path = (
-        "output\\groups_info\\"
-        + listdir("output\\groups_info")[int(inner_message.text)]
-    )
-    send_file(
-        path,
-        inner_message.chat.id,
-        bot,
-    )
-    with open(path, "r", encoding="utf-8") as f:
-        content = f.read()
-        # between : and ,
-        group_id = int(content.split(",")[0].replace('{"id":', ""))
-    with open("temp\\messages_history_group.txt", "w", encoding="utf-8") as f:
-        f.write("[START]\n")
-        for i in controller.get_last_n_messages_from_chat(
-            n=999999999, chat_id=group_id
-        )[::-1]:
-            print(i)
-            f.write(f"{i[0]}  = = = {i[1]}" + "\n")
-        f.write("[END]")
-
-    send_file(
-        "temp\\messages_history_group.txt",
-        inner_message.chat.id,
-        bot,
-    )
