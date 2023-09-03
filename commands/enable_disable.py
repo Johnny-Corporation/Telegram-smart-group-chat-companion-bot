@@ -98,6 +98,7 @@ def dialog_enable(message):
         message.chat.id,
         templates[language_code]["enabled_dialog.txt"],
         reply_markup=markup_commands,
+        parse_mode="HTML",
     )
 
 
