@@ -21,3 +21,6 @@ outputs_archive.zip
 outputs_archive/
 temp/
 server/
+templates/ru/
+templates/de/
+templates/es/
