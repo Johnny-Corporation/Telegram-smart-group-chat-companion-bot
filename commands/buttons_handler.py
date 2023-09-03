@@ -72,6 +72,24 @@ def keyboard_buttons_handler(call):
                 groups[call.message.chat.id].inline_mode = "Youtube"
                 inline_mode_settings(message=call.message)
 
+        # GPT inline additional settings
+        case "change_inline_gpt_suggestions_num_1":
+            if groups[call.message.chat.id].num_inline_gpt_suggestions != 1:
+                groups[call.message.chat.id].num_inline_gpt_suggestions = 1
+                inline_mode_additional_settings(message=call.message)
+        case "change_inline_gpt_suggestions_num_2":
+            if groups[call.message.chat.id].num_inline_gpt_suggestions != 2:
+                groups[call.message.chat.id].num_inline_gpt_suggestions = 2
+                inline_mode_additional_settings(message=call.message)
+        case "change_inline_gpt_suggestions_num_3":
+            if groups[call.message.chat.id].num_inline_gpt_suggestions != 3:
+                groups[call.message.chat.id].num_inline_gpt_suggestions = 3
+                inline_mode_additional_settings(message=call.message)
+        case "change_inline_gpt_suggestions_num_4":
+            if groups[call.message.chat.id].num_inline_gpt_suggestions != 4:
+                groups[call.message.chat.id].num_inline_gpt_suggestions = 4
+                inline_mode_additional_settings(message=call.message)
+
         # Account info
 
         case "purchase":
@@ -106,6 +124,8 @@ def keyboard_buttons_handler(call):
             special_features_settings(call.message)
         case "permissions_of_group":
             change_permission_settings(call.message)
+        case "inline_mode_model_additional_settings":
+            inline_mode_additional_settings(message=call.message)
 
         # Model switching
         case "switch_to_gpt_4":
