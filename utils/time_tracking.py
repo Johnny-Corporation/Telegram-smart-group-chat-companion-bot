@@ -16,14 +16,14 @@ def generate_code(size=8, chars=chars):
 
 # ------- Promocodes --------
 sub_pro_promocode = generate_code()
-discount_on_sub_50 = generate_code()
+discount_on_sub_50 ='PATDESATS'
 promocode_100 = generate_code()
 
 
 def get_exist_code():
     global sub_pro_promocode, promocode_100, discount_on_sub_50
     sub_pro_promocode = generate_code()
-    discount_on_sub_50 = generate_code()
+    discount_on_sub_50 = 'PATDESATS'
     promocode_100 = generate_code()
 
 def check_code(promocode_in):
