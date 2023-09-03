@@ -64,7 +64,7 @@ def auto_enable(message):
 
     bot.delete_message(message.chat.id, message.message_id)
 
-    groups[message.chat.id].trigger_probability = 1
+    groups[message.chat.id].trigger_probability = 0.7
 
     bot.send_message(
         message.chat.id,
@@ -119,8 +119,8 @@ def manual_enable(message):
 
     groups[message.chat.id].trigger_probability = 0
 
-    bot.send_messge(
-        message,
+    bot.send_message(
+        message.chat.id,
         templates[language_code]["enabled_manual.txt"],
         reply_markup=markup_commands,
         parse_mode="HTML",
