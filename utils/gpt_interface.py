@@ -219,7 +219,7 @@ def create_chat_completion(
         #     chat_completion_arguments["functions"] = gpt_functions_description
         #     chat_completion_arguments["function_call"] = "auto"
         # sleep(5)
-
+        johnny.messages_history = []
         lama_prompt = build_prompt_for_lama(messages)
         completion = get_lama_answer(
             lama_prompt,
