@@ -134,6 +134,8 @@ def disable(message):
     language_code = groups[message.chat.id].lang_code
     groups[message.chat.id].enabled = False
 
+    groups[message.chat.id].messages_history = []
+
     markup = load_buttons(
         types,
         groups,
