@@ -24,16 +24,16 @@ def group(message):
 
     # --- Buttons ---
     markup = types.InlineKeyboardMarkup()
-    button1 = types.InlineKeyboardButton(
-        text=templates[language_code]["button_see_settings_of_bot_answers.txt"],
-        callback_data="see_settings_of_bot_answers",
-    )
-    markup.add(button1)
-    button2 = types.InlineKeyboardButton(
-        text=templates[language_code]["button_see_settings_of_special_functions.txt"],
-        callback_data="see_settings_of_special_functions",
-    )
-    markup.add(button2)
+    # button1 = types.InlineKeyboardButton(
+    #     text=templates[language_code]["button_see_settings_of_bot_answers.txt"],
+    #     callback_data="see_settings_of_bot_answers",
+    # )
+    # markup.add(button1)
+    # button2 = types.InlineKeyboardButton(
+    #     text=templates[language_code]["button_see_settings_of_special_functions.txt"],
+    #     callback_data="see_settings_of_special_functions",
+    # )
+    # markup.add(button2)
     back_button = types.InlineKeyboardButton(
         text="<<<",
         callback_data="menu",
@@ -81,7 +81,7 @@ def see_settings_of_special_functions(message):
     markup = types.InlineKeyboardMarkup()
     back_button = types.InlineKeyboardButton(
         text="<<<",
-        callback_data="back_to_group",
+        callback_data="group",
     )
     markup.add(back_button)
 
@@ -116,7 +116,7 @@ def see_settings_of_bot_answers(message):
     markup = types.InlineKeyboardMarkup()
     back_button = types.InlineKeyboardButton(
         text="<<<",
-        callback_data="back_to_group",
+        callback_data="group",
     )
     markup.add(back_button)
 

@@ -557,7 +557,7 @@ class Johnny:
             if lama and delta:
                 text_answer += delta
                 update_count += 1
-                text_answer.replace("LAMA:","")
+                text_answer = text_answer.replace("LAMA:","")
                 if update_count == self.dynamic_gen_chunks_frequency:
                     update_count = 0
                     self.delete_pending_messages()
