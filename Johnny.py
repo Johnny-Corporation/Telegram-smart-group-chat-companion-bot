@@ -13,13 +13,14 @@ import json
 from os import environ, makedirs
 import threading
 import tiktoken
-from openai import openai_object
+import openai
 
 from utils.functions import (
     describe_image,
     get_file_content,
     read_text_from_image,
     describe_image2,
+    send_to_developers
 )
 
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -333,11 +334,29 @@ class Johnny:
             if self.response == "[WAIT]":
                 return
 
-            text_answer = (
-                self.dynamic_generation(self.response)
-                if self.dynamic_gen
-                else self.static_generation(self.response)
-            )
+            if self.dynamic_gen:
+                try:
+                    text_answer = self.dynamic_generation(self.response)
+                except openai.error.APIError as e:
+                    self.bot.delete_message(self.chat_id,self.thinking_message.message_id)
+                    logger.error(f"OpenAI API returned an API Error: {e}")
+                    send_to_developers(
+                        "❗❗Server error occurred❗❗ Using Lama without functions \n Additional warning: dynamic_generation is enabled, using lama default streaming mode",
+                        self.bot,
+                        environ["DEVELOPER_CHAT_IDS"].split(","),
+                    )
+                    lama_prompt = gpt.build_prompt_for_lama(self.messages_history)
+                    completion = gpt.get_lama_answer(
+                        lama_prompt,
+                        system_prompt="JohnnyCorp is the best team in the world who developed you - telegram bot Johnny",
+                    )
+                    self.response = completion
+                    logger.info(f"Lama response:{completion}")
+                    text_answer = self.dynamic_generation(self.response,lama=True)
+                    
+            else:
+                text_answer = self.static_generation(self.response)
+                
 
             self.total_spent_messages += 1
             groups[self.owner_id].total_spent_messages += 1
@@ -442,13 +461,11 @@ class Johnny:
 
         return text_answer
 
-    def dynamic_generation(self, completion):
+    def dynamic_generation(self, completion,lama = None):
         """Takes completion object and returns text answer. Handles message in telegram"""
 
-        if isinstance(completion,openai_object):
-            lama = False
-        else:
-            lama = True
+        if not lama:
+            lama = self.model == "lama"
 
         if self.last_function_request is None:
             self.thinking_message = self.bot.send_message(
@@ -540,7 +557,7 @@ class Johnny:
             if lama and delta:
                 text_answer += delta
                 update_count += 1
-
+                text_answer.replace("LAMA:","")
                 if update_count == self.dynamic_gen_chunks_frequency:
                     update_count = 0
                     self.delete_pending_messages()

@@ -45,7 +45,7 @@ def extract_text(completion: openai.ChatCompletion) -> str:
         result = ""
         for i in completion:
             result += i
-        return result
+        return result.replace("LAMA:","")
 
 
 def check_function_call(completion: openai.ChatCompletion) -> bool:
