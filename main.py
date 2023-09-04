@@ -538,18 +538,17 @@ def main_messages_handler(message: types.Message):
             groups[message.chat.id].button_commands[-1]
         except:
             return
+        
         # Checks the command of ReplyButtons
-        button_on = reply_keyboard_buttons_handler(
-            message, groups[message.chat.id].button_commands
-        )
-        if button_on:
+        if message.text in groups[message.chat.id].button_commands:
+            button_on = reply_keyboard_buttons_handler(
+                message, groups[message.chat.id].button_commands
+            )
             return
 
         # Checks the registration of user
         if groups[message.chat.id].activated == False:
             return
-
-        print(f"ENBLED:    {groups[message.chat.id].enabled}")
 
         new_thread = threading.Thread(
             target=groups[message.chat.id].new_message, args=(message, groups)
