@@ -6,7 +6,7 @@ import json
 from utils.internet_access import *
 from time import sleep
 import replicate
-
+import asyncio
 
 # Cant import from functions because og the cycle imports
 def load_templates(dir: str) -> dict:
@@ -296,7 +296,7 @@ def check_context_understanding(answer):
     return extract_text(completion) == "No"
 
 
-def get_gpt_inline_suggestions(query, verbose=False):
+async def generate_suggestion_for_inline(query,verbose=False):
     
     if verbose:
         prepared_messages = [
@@ -314,17 +314,17 @@ def get_gpt_inline_suggestions(query, verbose=False):
                     + query,
                 }
             ]
-    completion = openai.ChatCompletion.create(
+    logger.info("Starting asynchronous request to openAI...")
+    completion = await openai.ChatCompletion.acreate(
         model="gpt-3.5-turbo",
         messages=prepared_messages,
         temperature=1,
         max_tokens=220 # Approx estimation
     )
     logger.info(
-        f"Generating suggestions for inline query. Query:{query}; Suggestion:{extract_text(completion)}"
+        f"Generated suggestion for inline query. Query:{query}; Suggestion:{extract_text(completion)}"
     )
     return extract_text(completion)
-
 
 def check_theme_context(answer, theme):
     """Returns bool - True is answer is related to theme, False if not"""

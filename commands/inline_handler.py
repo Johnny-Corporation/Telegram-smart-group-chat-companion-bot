@@ -7,6 +7,9 @@ from commands.inline_managers.gpt import *
 from commands.inline_managers.youtube import *
 
 
+from telebot.apihelper import ApiTelegramException
+import asyncio
+
 @bot.inline_handler(lambda query: True)
 def inline_search(query):
     chat_id = query.from_user.id
@@ -58,7 +61,7 @@ def inline_search(query):
             case "Google":
                 results = get_google_results(search_query)
             case "GPT":
-                results = get_gpt_results(search_query,num_results=groups[chat_id].num_inline_gpt_suggestions)
+                results = asyncio.run( get_gpt_results(search_query,num_results=groups[chat_id].num_inline_gpt_suggestions))
             case "Youtube":
                 results = get_youtube_results(search_query)
 
@@ -89,7 +92,14 @@ def inline_search(query):
         article = types.InlineQueryResultArticle(**kwargs)
         articles.append(article)
 
-    bot.answer_inline_query(query.id, articles, cache_time=1)
+    try:
+        bot.answer_inline_query(query.id, articles, cache_time=1)
+    except ApiTelegramException as e:
+        if e.error_code == 400:
+            pass
+        else: 
+            raise e
+        
 
 
 # Works only after enabling sending inline feedback via BotFather
