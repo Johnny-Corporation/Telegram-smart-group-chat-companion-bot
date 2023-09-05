@@ -1,2 +1,2 @@
-Number of suggestions by GPT, bigger = slower.
+Number of suggestions by GPT, does not affect generation time
 When set to 1, suggestion is verbose and detail.
