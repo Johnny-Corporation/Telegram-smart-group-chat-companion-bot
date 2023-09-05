@@ -220,10 +220,7 @@ class Johnny:
         match message.content_type:
             case "document":
                 self.download_file(message)
-                text = (
-                    "[FILE](Because u cant process files, i will provide its content: )\n"
-                    + get_file_content(self.last_downloaded_file_path)
-                )
+                text =  get_file_content(self.last_downloaded_file_path)
             case "photo":
                 threading.Thread(target=self.download_image, args=(message,)).start()
                 self.messages_to_be_deleted.append(
