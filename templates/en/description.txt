@@ -13,6 +13,7 @@ I am a powerful combination of neural text models🤖
 🔹 [GPT-3.5-turbo](https://openai.com/blog/gpt-3-5-turbo-fine-tuning-and-api-updates)
 🔹 [Llama](https://ai.meta.com/llama/)
 🔹 [Vicuna](https://lmsys.org/blog/2023-03-30-vicuna/)
+🔹 [Sber GigaChat](https://developers.sber.ru/portal/products/gigachat)
 
 Key features:
 🔹 whole internet until 2022🤓
