@@ -125,6 +125,7 @@ def error_handler(args):
     def wrapper(message: types.Message):
         try:
             args(message)
+            if (hasattr(message,"text")) and message.text == "ERROR":0/0
         except KeyError:
             if (message.chat.id in groups) and (
                 groups[message.chat.id].lang_code is None
@@ -137,10 +138,17 @@ def error_handler(args):
                 else message.message.chat.id
             )
             logger.error(f"Unexpected error: {traceback.format_exc()}")
+            close_btn_markup = types.InlineKeyboardMarkup()
+            button1 = types.InlineKeyboardButton(
+                text=templates[groups[message.chat.id].lang_code]["button_close.txt"],
+                callback_data="close_message",
+            )
+            close_btn_markup.add(button1)
             bot.send_message(
                 chat_id,
                 templates[groups[message.chat.id].lang_code]["error_occured.txt"],
                 parse_mode="html",
+                reply_markup=close_btn_markup
             )
             send_to_developers(
                 f"Error occurred: \n ❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️\n {traceback.format_exc()}\n ❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️",
@@ -164,10 +172,6 @@ def error_handler(args):
             elif message.content_type == "video_note":
                 logger.info(
                     f"Video note executed in chat with id {message.chat.id} by user with id {message.from_user.id}"
-                )
-            elif message.text[0] == "/":  # command
-                logger.info(
-                    f'Command "{message.text}" executed in chat with id {message.chat.id} by user with id {message.from_user.id}'
                 )
             else:
                 logger.info(
@@ -521,6 +525,7 @@ from utils.text_to_voice import *
     and blacklist_filter(message)
     and time_filter(message),
 )
+@error_handler
 def main_messages_handler(message: types.Message):
     """Handles all messages"""
 

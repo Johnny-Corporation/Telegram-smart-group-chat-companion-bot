@@ -1,20 +1,26 @@
-from utils.gpt_interface import get_gpt_inline_suggestions
+from utils.gpt_interface import generate_suggestion_for_inline
+import asyncio
+from aiohttp import ClientSession
+import openai
 
-
-def get_gpt_results(query, num_results=2):
+async def get_gpt_results(query, num_results=2):
     results = []
     
     verbose = num_results == 1
 
-    for i in range(num_results):
-        suggestion = get_gpt_inline_suggestions(query,verbose=verbose)
+    openai.aiosession.set(ClientSession())
+    tasks = [generate_suggestion_for_inline(query,verbose) for _ in range(num_results)]
+    suggestions = await asyncio.gather(*tasks)
+    await openai.aiosession.get().close()
+    
+    for sug in suggestions:
         try:
             if not verbose:
-                title, description, body = suggestion.split("|")
+                title, description, body = sug.split("|")
             else:
                 title = "✅"
-                description = suggestion
-                body = suggestion
+                description = sug
+                body = sug
         except:
             continue
         results.append(

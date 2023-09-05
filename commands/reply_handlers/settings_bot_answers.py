@@ -61,7 +61,7 @@ def set_presence_penalty_reply_handler(inner_message):
 
     language_code = groups[inner_message.chat.id].lang_code
     try:
-        val = int(inner_message.text)
+        val = float(inner_message.text)
     except ValueError:
         bot.reply_to(inner_message, "❌")
         bot.send_message(
@@ -90,7 +90,7 @@ def set_frequency_penalty_reply_handler(inner_message):
 
     language_code = groups[inner_message.chat.id].lang_code
     try:
-        val = int(inner_message.text)
+        val = float(inner_message.text)
     except ValueError:
         bot.reply_to(inner_message, "❌")
         bot.send_message(
