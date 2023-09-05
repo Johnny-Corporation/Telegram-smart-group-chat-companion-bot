@@ -14,9 +14,6 @@ def keyboard_buttons_handler(call):
     # if "group_permission" in call.data:
     #     call_data
 
-    print(f"CALL DATA:     {call_data}")
-    print(f"LNGUAGE SET: {groups[call.message.chat.id].lang_code}")
-
     match call_data:
         case "menu":
             menu(message=call.message, back_from=True)
@@ -116,9 +113,23 @@ def keyboard_buttons_handler(call):
 
         case "settings":
             settings(message=call.message)
+        case "settings_from_reply":
+            try:
+                reply_blacklist[call.message.chat.id].remove(call.message.message_id)
+            except:
+                None
+            bot.clear_reply_handlers_by_message_id(call.message.message_id)
+            settings(message=call.message)
         case "change_model":
             models_switcher(call.message)
         case "bot_answers":
+            bot_answers_settings(call.message)
+        case "bot_answers_from_reply":
+            try:
+                reply_blacklist[call.message.chat.id].remove(call.message.message_id)
+            except:
+                None
+            bot.clear_reply_handlers_by_message_id(call.message.message_id)
             bot_answers_settings(call.message)
         case "special_features":
             special_features_settings(call.message)

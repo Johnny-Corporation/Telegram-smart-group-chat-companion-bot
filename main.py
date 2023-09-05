@@ -450,7 +450,6 @@ from commands.reply_handlers.purchase_enter_promocode import *
 from commands.reply_handlers.purchase_support_us import *
 from commands.reply_handlers.question_to_bot import *
 from commands.reply_handlers.settings_bot_answers import *
-from commands.reply_handlers.settings_change_language import *
 from commands.reply_handlers.settings_change_owner import *
 from commands.reply_handlers.gen_img_prompt import *
 

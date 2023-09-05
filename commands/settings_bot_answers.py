@@ -104,7 +104,7 @@ def set_temperature(message):
     markup = types.InlineKeyboardMarkup()
     back_button = types.InlineKeyboardButton(
         text="<<<",
-        callback_data="settings_bot_answers",
+        callback_data="bot_answers_from_reply",
     )
     markup.add(back_button)
 
@@ -117,6 +117,7 @@ def set_temperature(message):
         reply_markup = markup,
         parse_mode="HTML",
     )
+    reply_blacklist[message.chat.id].append(bot_reply.message_id)
     bot.register_for_reply(bot_reply, set_temp_reply_handler)
 
 # --- Set frequency penalty (variety of answers) ---
@@ -127,7 +128,7 @@ def set_frequency_penalty(message):
     markup = types.InlineKeyboardMarkup()
     back_button = types.InlineKeyboardButton(
         text="<<<",
-        callback_data="settings_bot_answers",
+        callback_data="bot_answers_from_reply",
     )
     markup.add(back_button)
 
@@ -152,14 +153,9 @@ def set_presence_penalty(message):
     markup = types.InlineKeyboardMarkup()
     back_button = types.InlineKeyboardButton(
         text="<<<",
-        callback_data="settings_bot_answers",
+        callback_data="bot_answers_from_reply",
     )
     markup.add(back_button)
-    button2 = types.InlineKeyboardButton(
-        text=templates[language_code]["button_close.txt"],
-        callback_data="close_message",
-    )
-    markup.add(button2)
 
     bot_reply = bot.edit_message_text(
         templates[language_code]["set_presence_penalty.txt"].format(
@@ -196,10 +192,6 @@ def set_length_answer(message):
         text="<<<",
         callback_data="settings_bot_answers",
     )
-    button2 = types.InlineKeyboardButton(
-        text=templates[language_code]["button_close.txt"],
-        callback_data="close_message",
-    )
     
 
     length_markup.add(long_button)
@@ -207,7 +199,6 @@ def set_length_answer(message):
     length_markup.add(short_button)
     length_markup.add(any_button)
     length_markup.add(back_button)
-    markup.add(button2)
 
     bot.edit_message_text(
         templates[language_code]["set_length_answer.txt"],
@@ -227,14 +218,9 @@ def set_sphere_command(message):
     markup = types.InlineKeyboardMarkup()
     back_button = types.InlineKeyboardButton(
         text="<<<",
-        callback_data="settings",
+        callback_data="settings_from_reply",
     )
     markup.add(back_button)
-    button2 = types.InlineKeyboardButton(
-        text=templates[language_code]["button_close.txt"],
-        callback_data="close_message",
-    )
-    markup.add(button2)
 
     if groups[message.chat.id].sphere == "":
         sphere_in = "Not set"

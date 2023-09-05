@@ -4,6 +4,10 @@ from __main__ import *
 # --- reply handler for enter promocode
 @error_handler
 def enter_promocode_reply_handler(inner_message):
+
+    reply_blacklist[inner_message.chat.id].remove(inner_message.reply_to_message.message_id)
+    bot.clear_reply_handlers_by_message_id(inner_message.reply_to_message.message_id)
+
     language_code = groups[inner_message.chat.id].lang_code
     
     try:

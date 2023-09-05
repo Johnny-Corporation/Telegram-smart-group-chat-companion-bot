@@ -3,6 +3,7 @@ from utils.yoomoney import *
 
 # --- reply handler for set sphere
 def enter_new_messages_reply_handler(inner_message):
+    reply_blacklist[inner_message.chat.id].remove(inner_message.reply_to_message.message_id)
     language_code = groups[inner_message.chat.id].lang_code
     try:
         val = int(inner_message.text)

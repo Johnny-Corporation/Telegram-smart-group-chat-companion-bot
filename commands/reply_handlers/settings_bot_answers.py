@@ -4,6 +4,10 @@ from __main__ import *
 # --- reply handler for set probability
 @error_handler
 def set_probability_reply_handler(inner_message):
+
+    reply_blacklist[inner_message.chat.id].remove(inner_message.reply_to_message.message_id)
+    bot.clear_reply_handlers_by_message_id(inner_message.reply_to_message.message_id)
+
     language_code = groups[inner_message.chat.id].lang_code
     try:
         val = float(inner_message.text)
@@ -28,6 +32,10 @@ def set_probability_reply_handler(inner_message):
 # --- reply handler for set sphere
 @error_handler
 def set_sphere_reply_handler(inner_message):
+
+    reply_blacklist[inner_message.chat.id].remove(inner_message.reply_to_message.message_id)
+    bot.clear_reply_handlers_by_message_id(inner_message.reply_to_message.message_id)
+
     language_code = groups[inner_message.chat.id].lang_code
     try:
         val = str(inner_message.text)
@@ -45,6 +53,12 @@ def set_sphere_reply_handler(inner_message):
 # --- reply handler for set presense penalty
 @error_handler
 def set_presence_penalty_reply_handler(inner_message):
+
+    reply_blacklist[inner_message.chat.id].remove(inner_message.reply_to_message.message_id)
+    bot.clear_reply_handlers_by_message_id(inner_message.reply_to_message.message_id)
+
+    print(reply_blacklist)
+
     language_code = groups[inner_message.chat.id].lang_code
     try:
         val = int(inner_message.text)
@@ -63,13 +77,17 @@ def set_presence_penalty_reply_handler(inner_message):
         )
         return
 
-    groups[inner_message.chat.id].presense_penalty = val
+    groups[inner_message.chat.id].presence_penalty = val
     bot.reply_to(inner_message, "✅")
 
 
 # --- reply handler for set frequency penalty
 @error_handler
 def set_frequency_penalty_reply_handler(inner_message):
+
+    reply_blacklist[inner_message.chat.id].remove(inner_message.reply_to_message.message_id)
+    bot.clear_reply_handlers_by_message_id(inner_message.reply_to_message.message_id)
+
     language_code = groups[inner_message.chat.id].lang_code
     try:
         val = int(inner_message.text)
@@ -93,6 +111,10 @@ def set_frequency_penalty_reply_handler(inner_message):
 # --- reply handler for set temp memory size
 @error_handler
 def set_memory_size_reply_handler(inner_message):
+
+    reply_blacklist[inner_message.chat.id].remove(inner_message.reply_to_message.message_id)
+    bot.clear_reply_handlers_by_message_id(inner_message.reply_to_message.message_id)
+
     language_code = groups[inner_message.chat.id].lang_code
     try:
         val = int(inner_message.text)
