@@ -173,10 +173,6 @@ def error_handler(args):
                 logger.info(
                     f"Video note executed in chat with id {message.chat.id} by user with id {message.from_user.id}"
                 )
-            elif message.text[0] == "/":  # command
-                logger.info(
-                    f'Command "{message.text}" executed in chat with id {message.chat.id} by user with id {message.from_user.id}'
-                )
             else:
                 logger.info(
                     f'Message "{message.text}" sent in chat with id {message.chat.id} by user with id {message.from_user.id}'
