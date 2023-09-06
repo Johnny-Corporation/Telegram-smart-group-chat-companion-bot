@@ -567,4 +567,4 @@ def main_messages_handler(message: types.Message):
 # --------------- Running ---------------
 
 logger.info(" ---->>>> BOT STARTED <<<<---- ")
-bot.infinity_polling(timeout=30)
+bot.infinity_polling(timeout=500)
