@@ -145,6 +145,8 @@ def create_chat_completion(
     # --- Building system content ---
     # system_content = ""
     system_content = f"You are a telegram bot named Johnny, developed by JohnnyCorp team. Your answers should be {answer_length}, use emojis."
+    if model == "gigachat":
+        system_content+=" You are working on GigaChat, new text model developed by Sber russian company"
 
     previous_messages = [
         {
@@ -184,8 +186,14 @@ def create_chat_completion(
                 top_p=top_p,
             )
             logger.info(f"Lama response:{completion}")
-        else:
+        elif ("gpt" in model):
             logger.info("Requesting gpt...")
+            completion = openai.ChatCompletion.create(**chat_completion_arguments)
+        elif  (model=="gigachat"):
+            logger.info("Requesting gpt... (GigaChat)")
+            chat_completion_arguments["model"] = "gpt-3.5-turbo"
+            del chat_completion_arguments["function_call"]
+            del chat_completion_arguments["functions"]
             completion = openai.ChatCompletion.create(**chat_completion_arguments)
     except openai.error.APIError as e:
         logger.error(f"OpenAI API returned an API Error: {e}")

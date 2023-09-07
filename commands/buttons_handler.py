@@ -170,6 +170,11 @@ def keyboard_buttons_handler(call):
             call.message.model = "vicuna"
             if johnny.model != "vicuna":
                 switch_model(call.message)
+        case "switch_to_gigachat":
+            johnny = groups[call.message.chat.id]
+            call.message.model = "gigachat"
+            if johnny.model != "gigachat":
+                switch_model(call.message)
 
         # Set up funcs
 
