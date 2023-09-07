@@ -33,6 +33,16 @@ def google(question: str) -> str:
     return result_string
 
 
+def remove_scripts_and_styles(html):
+    return re.sub(r'<(script|style).*?>.*?</\1>', '', html, flags=re.DOTALL)
+
+def extract_text(input_string):
+    result = ""
+    for i in re.findall(r'>\s*(.*?)(?:<|$)', input_string):
+        if i:
+            result += i + "|"
+    return result
+
 def read_from_link(link: str) -> str:
     logger.info(f'read_from_link function called, requested link: "{link}"')
 
@@ -40,11 +50,8 @@ def read_from_link(link: str) -> str:
         response = requests.get(link, timeout=5, headers=headers)
     except requests.exceptions.RequestException:
         return "Sever is not responding, cant read link"
-
-    soup = BeautifulSoup(response.content, "html.parser")
-    texts = soup.stripped_strings
-    # all_text = re.sub(r"[^a-zA-Z0-9\s]", "", " ".join(texts))[:4000]
-    all_text = " ".join(texts)[:4000]
+    all_visible_text = extract_text(remove_scripts_and_styles(response.content.decode()))
+    all_text = all_visible_text[:5000]
 
     logger.info(f"Text parsed form link {link}:{all_text}")
 

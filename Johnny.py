@@ -262,7 +262,7 @@ class Johnny:
         self.messages_history.append(
             [
                 message.from_user.first_name,
-                text.replace("@SmartGroupParticipant_bot", ""),
+                text.replace("@JohnnyAIBot", ""),
             ]
         )
         if len(self.messages_history) == self.temporary_memory_size:
@@ -399,6 +399,17 @@ class Johnny:
                     disable_web_page_preview=True,
                 )
             )
+            db_controller.add_message_event(
+                self.chat_id,
+                templates[self.lang_code][
+                        functions_waiting_messages[function_name]
+                    ].format(argument),
+                datetime.now(),
+                "$BOT$",
+                "$BOT$",
+                self.bot_username,
+                self.total_spent_messages,
+            )
 
             # If this response is same as previous, do not allow function call in next request and notify user
             if self.last_function_request == (function_name, function_args):
@@ -409,8 +420,17 @@ class Johnny:
                             function_name
                         ),
                         parse_mode="html",
-                    )
+                    ))
+                db_controller.add_message_event(
+                    self.chat_id,
+                    f"Function call failed {function_name}",
+                    datetime.now(),
+                    "$BOT$",
+                    "$BOT$",
+                    self.bot_username,
+                    self.total_spent_messages,
                 )
+                
                 self.last_function_request = None
                 return self.static_generation(
                     self.get_completion(allow_function_call=False)
@@ -422,15 +442,25 @@ class Johnny:
             additional_args = {}
 
             # Saving function result to history
+            function_response = gpt.get_official_function_response(
+                function_name,
+                function_args=function_args,
+                additional_args=additional_args,
+            )
             self.messages_history.append(
                 [
                     "$FUNCTION$",
-                    gpt.get_official_function_response(
-                        function_name,
-                        function_args=function_args,
-                        additional_args=additional_args,
-                    ),
+                    function_response,
                 ]
+            )
+            db_controller.add_message_event(
+                self.chat_id,
+                f"Called function: {function_name}. Result: {function_response['content']}",
+                datetime.now(),
+                "$FUNCTION$",
+                "$FUNCTION$",
+                self.bot_username,
+                self.total_spent_messages,
             )
 
             return self.static_generation(self.get_completion())
@@ -503,6 +533,17 @@ class Johnny:
                         parse_mode="html",
                     )
                 )
+                db_controller.add_message_event(
+                    self.chat_id,
+                    templates[self.lang_code][
+                            functions_waiting_messages[function_name]
+                        ].format(argument),
+                    datetime.now(),
+                    "$BOT$",
+                    "$BOT$",
+                    self.bot_username,
+                    self.total_spent_messages,
+                )
 
                 # If previous function call was the same as current
                 if self.last_function_request == (function_name, function_args):
@@ -511,6 +552,15 @@ class Johnny:
                             self.message.chat.id,
                             templates[self.lang_code]["func_call_failed.txt"],
                         )
+                    )
+                    db_controller.add_message_event(
+                        self.chat_id,
+                        f"Function call failed {function_name}",
+                        datetime.now(),
+                        "$BOT$",
+                        "$BOT$",
+                        self.bot_username,
+                        self.total_spent_messages,
                     )
                     return self.dynamic_generation(
                         self.get_completion(allow_function_call=False)
@@ -521,15 +571,25 @@ class Johnny:
                 # Additional arguments
                 additional_args = {}
 
-                self.messages_history.append(
-                    [
-                        "$FUNCTION$",
-                        gpt.get_official_function_response(
+                function_response = gpt.get_official_function_response(
                             function_name,
                             function_args=function_args,
                             additional_args=additional_args,
-                        ),
+                        )
+                self.messages_history.append(
+                    [
+                        "$FUNCTION$",
+                        function_response,
                     ]
+                )
+                db_controller.add_message_event(
+                    self.chat_id,
+                    f"Called function: {function_name}. Result: {function_response['content']}",
+                    datetime.now(),
+                    "$FUNCTION$",
+                    "$FUNCTION$",
+                    self.bot_username,
+                    self.total_spent_messages,
                 )
 
                 return self.dynamic_generation(self.get_completion())
