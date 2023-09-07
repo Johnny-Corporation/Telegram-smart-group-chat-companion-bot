@@ -305,6 +305,14 @@ def keyboard_buttons_handler(call):
             )
             if call.message.chat.id > 0:
                 bot.delete_message(call.message.chat.id,call.message.message_id)
+                
+            if str(call.message.chat.id) in remembered_chats_ids:
+                bot.send_message(
+                    call.message.chat.id,
+                    translate_text(lang[1], f"Loading your data... Done! Bot remembered you!"),
+                    reply_markup=markup,
+                )
+                remembered_chats_ids.remove(str(call.message.chat.id))
 
         # DEV TOOLS
 
