@@ -80,30 +80,34 @@ run_button = types.KeyboardButton("Start")
 markup.add(run_button)
 
 
-file_list = listdir("output/clients_info")
-for filename in file_list:
-    file_path = path.join("output/clients_info", filename)
-    with open(file_path, "r", encoding="utf-8") as file:
-        try:  # If this user blocked bot
-            bot.send_message(
-                json.load(file)["id"], "Bot is working!", reply_markup=markup
-            )
-        except:
-            pass
-file_list = listdir("output/groups_info")
-for filename in file_list:
-    file_path = path.join("output/groups_info", filename)
-    with open(file_path, "r", encoding="utf-8") as file:
-        content = file.read()
-        chat_id = int(content[6 : content.index(",")])
-        try:  # If this user blocked bot
-            bot.send_message(
-                chat_id,
-                "Bot is working!",
-                reply_markup=markup,
-            )
-        except:
-            pass
+first_message = input("Enter message to send users who were using bot, if Johnny notified them that he fall, its better to send something to notify them that it is working now, press Enter to do not send anything: ")
+
+
+if first_message:
+    file_list = listdir("output/clients_info")
+    for filename in file_list:
+        file_path = path.join("output/clients_info", filename)
+        with open(file_path, "r", encoding="utf-8") as file:
+            try:  # If this user blocked bot
+                bot.send_message(
+                    json.load(file)["id"], first_message, reply_markup=markup
+                )
+            except:
+                pass
+    file_list = listdir("output/groups_info")
+    for filename in file_list:
+        file_path = path.join("output/groups_info", filename)
+        with open(file_path, "r", encoding="utf-8") as file:
+            content = file.read()
+            chat_id = int(content[6 : content.index(",")])
+            try:  # If this user blocked bot
+                bot.send_message(
+                    chat_id,
+                    first_message,
+                    reply_markup=markup,
+                )
+            except:
+                pass
 
 
 def delete_pending_messages():
