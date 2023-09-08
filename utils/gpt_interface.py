@@ -86,7 +86,7 @@ def build_prompt_for_lama(messages):
         else:
             lama_prompt += f"{m[0]}: {m[1]}"
         lama_prompt += "\n"
-    lama_prompt += "LAMA: "
+    lama_prompt += "Based on this conversation answer something as telegram bot group smart companion, do not name yourself"
     return lama_prompt
 
 
