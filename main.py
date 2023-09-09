@@ -80,7 +80,9 @@ run_button = types.KeyboardButton("Start")
 markup.add(run_button)
 
 
-first_message = input("Enter message to send users who were using bot, if Johnny notified them that he fall, its better to send something to notify them that it is working now, press Enter to do not send anything: ")
+first_message = input(
+    "Enter message to send users who were using bot, if Johnny notified them that he fall, its better to send something to notify them that it is working now, press Enter to do not send anything: "
+)
 
 remembered_chats_ids = []
 
@@ -92,9 +94,7 @@ for filename in file_list:
         try:  # If this user blocked bot
             id_ = json.load(file)["id"]
             if first_message:
-                bot.send_message(
-                    id_, first_message, reply_markup=markup
-                )
+                bot.send_message(id_, first_message, reply_markup=markup)
             remembered_chats_ids.append(str(id_))
         except:
             pass
@@ -135,7 +135,8 @@ def error_handler(args):
     def wrapper(message: types.Message):
         try:
             args(message)
-            if (hasattr(message,"text")) and message.text == "ERROR":0/0
+            if (hasattr(message, "text")) and message.text == "ERROR":
+                0 / 0
         except KeyError:
             if (message.chat.id in groups) and (
                 groups[message.chat.id].lang_code is None
@@ -158,7 +159,7 @@ def error_handler(args):
                 chat_id,
                 templates[groups[message.chat.id].lang_code]["error_occured.txt"],
                 parse_mode="html",
-                reply_markup=close_btn_markup
+                reply_markup=close_btn_markup,
             )
             send_to_developers(
                 f"Error occurred: \n ❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️\n {traceback.format_exc()}\n ❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️",
@@ -292,11 +293,16 @@ def send_welcome_text_and_load_data(
     message, chat_id: int, owner_id: int, language_code: str = "en"
 ) -> None:
     if owner_id not in groups:
-        bot.send_message(chat_id, templates[language_code]["register_in_bot.txt"].format(bot_username=bot_username))
+        bot.send_message(
+            chat_id,
+            templates[language_code]["register_in_bot.txt"].format(
+                bot_username=bot_username
+            ),
+        )
         return
-    
+
     chat_member = bot.get_chat_member(chat_id, bot_id)
-    if chat_member.status != 'administrator' and chat_id<0:
+    if chat_member.status != "administrator" and chat_id < 0:
         bot.send_message(chat_id, templates[language_code]["group_admin_rights.txt"])
         return
 
@@ -552,7 +558,7 @@ def main_messages_handler(message: types.Message):
             groups[message.chat.id].button_commands[-1]
         except:
             return
-        
+
         # Checks the command of ReplyButtons
         if message.text in groups[message.chat.id].button_commands:
             button_on = reply_keyboard_buttons_handler(
