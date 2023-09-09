@@ -14,6 +14,7 @@ I am a powerful combination of neural text models🤖
 🔹 [Llama](https://ai.meta.com/llama/)
 🔹 [Vicuna](https://lmsys.org/blog/2023-03-30-vicuna/)
 🔹 [Sber GigaChat](https://developers.sber.ru/portal/products/gigachat)
+🔹 [YandexGPT2](https://ya.ru/gpt/2)
 
 Key features:
 🔹 whole internet until 2022🤓
