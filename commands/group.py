@@ -48,7 +48,7 @@ def group(message):
             username=str(bot.get_chat(groups[message.chat.id].owner_id).username),
             subscription=groups[message.chat.id].subscription,
             spent_messages=groups[message.chat.id].total_spent_messages,
-            messages_left = groups[message.chat.id].characteristics_of_sub[groups[message.chat.id].subscription]["messages_limit"]-groups[message.chat.id].total_spent_messages,
+            messages_left = groups[groups[message.chat.id].owner_id].characteristics_of_sub[groups[message.chat.id].subscription]["messages_limit"]-groups[message.chat.id].total_spent_messages,
             language=language_code1,
         ),
         message.chat.id, 
