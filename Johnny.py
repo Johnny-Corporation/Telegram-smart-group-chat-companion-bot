@@ -66,7 +66,7 @@ class Johnny:
     language_code: str = "eng"
     num_inline_gpt_suggestions:int = 2
     trigger_probability: float = 0.8
-    model = "gpt-3.5-turbo"  # "lama" "gpt-3.5-turbo" "gpt-4" "vicuna" "gigachat"
+    model = "gpt-3.5-turbo"  # "lama" "gpt-3.5-turbo" "gpt-4" "vicuna" "gigachat" "yandexgpt"
     tokens_limit: int = 3950  # Leave gap for functions
     temperature: float = 0.5
     frequency_penalty: float = 0.2

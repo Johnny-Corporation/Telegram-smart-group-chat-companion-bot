@@ -42,6 +42,14 @@ def models_switcher(message):
         text=templates["en"]["button_vicuna.txt"].format(smile=smile),
         callback_data="switch_to_vicuna",
     )
+    
+    smile = "❌"
+    if groups[message.chat.id].model == "yandexgpt":
+        smile = "✅"
+    yandexgpt_button = types.InlineKeyboardButton(
+        text=f"{smile} YandexGPT",
+        callback_data="switch_to_yandexgpt",
+    )
 
     smile = "❌"
     if groups[message.chat.id].model == "lama":
@@ -59,6 +67,7 @@ def models_switcher(message):
     # Adding buttons to keyboard
     customization_markup.add(gpt_4_button)
     customization_markup.add(gigachat_button)
+    customization_markup.add(yandexgpt_button)
     customization_markup.add(gpt_35_turbo_button)
     customization_markup.add(vicuna_button)
     if str(message.chat.id) in developer_chat_IDs:
@@ -102,6 +111,14 @@ def switch_model(message):
         callback_data="switch_to_gigachat",
     )
     
+    smile = "❌"
+    if groups[message.chat.id].model == "yandexgpt":
+        smile = "✅"
+    yandexgpt_button = types.InlineKeyboardButton(
+        text="{smile} YandexGPT".format(smile=smile),
+        callback_data="switch_to_yandexgpt",
+    )
+    
 
     smile = "❌"
     if groups[message.chat.id].model == "gpt-3.5-turbo":
@@ -135,6 +152,7 @@ def switch_model(message):
     # Adding buttons to keyboard
     customization_markup.add(gpt_4_button)
     customization_markup.add(gigachat_button)
+    customization_markup.add(yandexgpt_button)
     customization_markup.add(gpt_35_turbo_button)
     customization_markup.add(vicuna_button)
     if str(message.chat.id) in developer_chat_IDs:

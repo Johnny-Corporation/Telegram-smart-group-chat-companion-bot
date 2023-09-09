@@ -175,6 +175,11 @@ def keyboard_buttons_handler(call):
             call.message.model = "gigachat"
             if johnny.model != "gigachat":
                 switch_model(call.message)
+        case "switch_to_yandexgpt":
+            johnny = groups[call.message.chat.id]
+            call.message.model = "yandexgpt"
+            if johnny.model != "yandexgpt":
+                switch_model(call.message)
 
         # Set up funcs
 
