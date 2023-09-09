@@ -25,6 +25,12 @@ def reply_keyboard_buttons_handler(message, commands):
         i = 1
         if groups[message.chat.id].enabled == True:
             i = 3
+            
+        if (message.text == "🔄️ Reset memory") and i == 3:
+            # FOR MISHA
+            groups[message.chat.id].messages_history.clear()
+            bot.delete_message(message.chat.id,message.message_id)
+            bot.send_message(message.chat.id,"✅")
 
         if message.text == commands[0]:
             if groups[message.chat.id].enabled == False:
@@ -33,11 +39,7 @@ def reply_keyboard_buttons_handler(message, commands):
                 clean_memory(message)
                 disable(message)
             return True
-
-        # elif message.text == commands[1]:
-        #     question_to_bot(message)
-        #     return True
-
+        
         elif message.text == commands[i]:
             menu(message)
             return True

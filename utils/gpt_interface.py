@@ -210,31 +210,6 @@ def create_chat_completion(
             johnny.bot,
             environ["DEVELOPER_CHAT_IDS"].split(","),
         )
-        # johnny.messages_history = johnny.messages_history[-3:]
-        # previous_messages = [
-        #     {
-        #         "role": "system",
-        #         "content": system_content,
-        #     }
-        # ]
-        # previous_messages.extend(
-        #     get_messages_in_official_format(johnny.messages_history)
-        # )
-        # chat_completion_arguments = {
-        #     "model": model,
-        #     "messages": previous_messages,
-        #     "temperature": temperature,
-        #     "top_p": top_p,
-        #     "n": n,
-        #     "stream": stream,
-        #     "stop": stop,
-        #     "frequency_penalty": frequency_penalty,
-        #     "presence_penalty": presence_penalty,
-        # }
-        # if use_functions:
-        #     chat_completion_arguments["functions"] = gpt_functions_description
-        #     chat_completion_arguments["function_call"] = "auto"
-        # sleep(5)
         johnny.messages_history = []
         lama_prompt = build_prompt_for_lama(messages)
         completion = get_lama_answer(
@@ -375,24 +350,6 @@ def improve_img_gen_prompt(start_prompt):
         f"Image prompt improved from {start_prompt} to {extract_text(completion)}"
     )
     return extract_text(completion)
-
-
-def get_messages_in_official_format(messages):
-    """Converts messages kept in Johnny to official format"""
-    previous_messages = []
-    for m in messages:
-        if m[0] == "$FUNCTION$":
-            previous_messages.append(m[1])
-            continue
-        previous_messages.append(
-            {
-                "role": ("assistant" if m[0] == "$BOT$" else "user"),
-                "content": m[1],
-                "name": functions.remove_utf8_chars(m[0]),
-            }
-        )
-    return previous_messages
-
 
 def speech_to_text(path):
     audio_file = open(path, "rb")

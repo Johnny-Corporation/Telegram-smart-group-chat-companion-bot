@@ -651,6 +651,8 @@ class Johnny:
             num_tokens += (
                 4  # every message follows <im_start>{role/name}\n{content}<im_end>\n
             )
+            if isinstance(message,str):# strange bug with long message
+                continue
             for key, value in message.items():
                 print("@@@", value)
                 num_tokens += len(encoding.encode(str(value)))
