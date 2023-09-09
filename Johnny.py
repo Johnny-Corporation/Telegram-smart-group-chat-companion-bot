@@ -78,10 +78,8 @@ class Johnny:
     inline_mode: str = "Google"
 
     def __post_init__(self):
-        # list of lists, where each list follows format: [senders_name, text]
-
         self.activated = False
-
+        self.busy = False # When bot is answering it is busy and just saves new messages to memory and db
         self.lang_code = None
         self.files_and_images_counter = 0  # needed to save images and files each with different name - its id (number)
 
@@ -269,7 +267,7 @@ class Johnny:
             self.messages_history.pop(0)
 
         # --- checks on enabling of Bot ---
-        if not self.enabled:
+        if (not self.enabled) or (self.busy):
             return
 
         # --- If user reach some value to messages, suggest buy a subscription ----
@@ -319,6 +317,7 @@ class Johnny:
             )
             or (random() < self.trigger_probability)
         ):
+            self.busy = True
             # --- GPT answer generation ---
 
             if self.voice_out_enabled:
@@ -485,7 +484,9 @@ class Johnny:
             return text_answer
 
         self.bot.send_message(self.message.chat.id, text_answer, parse_mode="Markdown")
-
+        
+        self.busy = False
+        
         return text_answer
 
     def dynamic_generation(self, completion,lama = None):
@@ -634,6 +635,9 @@ class Johnny:
         self.last_function_request = None
         self.delete_pending_messages()
         self.clean_memory()
+        
+        self.busy = False
+        
         return text_answer
 
     def get_num_tokens_from_messages(self):

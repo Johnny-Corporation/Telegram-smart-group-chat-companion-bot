@@ -72,6 +72,11 @@ def dev_tools(message, edit: bool = False):
         callback_data="copy_cur_out_to_archive",
     )
     dev_tools_markup.add(button)
+    button = types.InlineKeyboardButton(
+        text=translate_text(groups[chat_id].lang_code, "💀Close dev tools"),
+        callback_data="close_message",
+    )
+    dev_tools_markup.add(button)
     # Sending keyboard
     bot.send_message(
         chat_id,
@@ -79,3 +84,4 @@ def dev_tools(message, edit: bool = False):
         reply_markup=dev_tools_markup,
         parse_mode="HTML",
     )
+    bot.delete_message(message.chat.id, message.message_id)
