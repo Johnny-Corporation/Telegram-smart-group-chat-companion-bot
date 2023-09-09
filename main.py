@@ -80,14 +80,22 @@ run_button = types.KeyboardButton("Start")
 markup.add(run_button)
 
 
+first_message = input("Enter message to send users who were using bot, if Johnny notified them that he fall, its better to send something to notify them that it is working now, press Enter to do not send anything: ")
+
+remembered_chats_ids = []
+
+
 file_list = listdir("output/clients_info")
 for filename in file_list:
     file_path = path.join("output/clients_info", filename)
     with open(file_path, "r", encoding="utf-8") as file:
         try:  # If this user blocked bot
-            bot.send_message(
-                json.load(file)["id"], "Bot is working!", reply_markup=markup
-            )
+            id_ = json.load(file)["id"]
+            if first_message:
+                bot.send_message(
+                    id_, first_message, reply_markup=markup
+                )
+            remembered_chats_ids.append(str(id_))
         except:
             pass
 file_list = listdir("output/groups_info")
@@ -97,11 +105,13 @@ for filename in file_list:
         content = file.read()
         chat_id = int(content[6 : content.index(",")])
         try:  # If this user blocked bot
-            bot.send_message(
-                chat_id,
-                "Bot is working!",
-                reply_markup=markup,
-            )
+            if first_message:
+                bot.send_message(
+                    chat_id,
+                    first_message,
+                    reply_markup=markup,
+                )
+            remembered_chats_ids.append(str(chat_id))
         except:
             pass
 
@@ -567,4 +577,4 @@ def main_messages_handler(message: types.Message):
 # --------------- Running ---------------
 
 logger.info(" ---->>>> BOT STARTED <<<<---- ")
-bot.polling()
+bot.infinity_polling(timeout=500)

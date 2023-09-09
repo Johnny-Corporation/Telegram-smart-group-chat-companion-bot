@@ -15,7 +15,7 @@ def models_switcher(message):
     if groups[message.chat.id].model == "gpt-4":
         smile = "✅"
     gpt_4_button = types.InlineKeyboardButton(
-        text=templates[language_code]["button_gpt_4.txt"].format(smile=smile),
+        text="{smile} GPT-4".format(smile=smile),
         callback_data="switch_to_gpt_4",
     )
 
@@ -23,23 +23,39 @@ def models_switcher(message):
     if groups[message.chat.id].model == "gpt-3.5-turbo":
         smile = "✅"
     gpt_35_turbo_button = types.InlineKeyboardButton(
-        text=templates[language_code]["button_gpt35turbo.txt"].format(smile=smile),
+        text=templates["en"]["button_gpt35turbo.txt"].format(smile=smile),
         callback_data="switch_to_gpt35turbo",
+    )
+    
+    smile = "❌"
+    if groups[message.chat.id].model == "gigachat":
+        smile = "✅"
+    gigachat_button = types.InlineKeyboardButton(
+        text="{smile} Sber GigaChat".format(smile=smile),
+        callback_data="switch_to_gigachat",
     )
 
     smile = "❌"
     if groups[message.chat.id].model == "vicuna":
         smile = "✅"
     vicuna_button = types.InlineKeyboardButton(
-        text=templates[language_code]["button_vicuna.txt"].format(smile=smile),
+        text=templates["en"]["button_vicuna.txt"].format(smile=smile),
         callback_data="switch_to_vicuna",
+    )
+    
+    smile = "❌"
+    if groups[message.chat.id].model == "yandexgpt":
+        smile = "✅"
+    yandexgpt_button = types.InlineKeyboardButton(
+        text=f"{smile} YandexGPT",
+        callback_data="switch_to_yandexgpt",
     )
 
     smile = "❌"
     if groups[message.chat.id].model == "lama":
         smile = "✅"
     lama_button = types.InlineKeyboardButton(
-        text=templates[language_code]["button_lama.txt"].format(smile=smile),
+        text=templates["en"]["button_lama.txt"].format(smile=smile),
         callback_data="switch_to_lama",
     )
 
@@ -50,6 +66,8 @@ def models_switcher(message):
 
     # Adding buttons to keyboard
     customization_markup.add(gpt_4_button)
+    customization_markup.add(gigachat_button)
+    customization_markup.add(yandexgpt_button)
     customization_markup.add(gpt_35_turbo_button)
     customization_markup.add(vicuna_button)
     if str(message.chat.id) in developer_chat_IDs:
@@ -84,6 +102,23 @@ def switch_model(message):
         text=templates[language_code]["button_gpt_4.txt"].format(smile=smile),
         callback_data="switch_to_gpt_4",
     )
+    
+    smile = "❌"
+    if groups[message.chat.id].model == "gigachat":
+        smile = "✅"
+    gigachat_button = types.InlineKeyboardButton(
+        text="{smile} Sber GigaChat".format(smile=smile),
+        callback_data="switch_to_gigachat",
+    )
+    
+    smile = "❌"
+    if groups[message.chat.id].model == "yandexgpt":
+        smile = "✅"
+    yandexgpt_button = types.InlineKeyboardButton(
+        text="{smile} YandexGPT".format(smile=smile),
+        callback_data="switch_to_yandexgpt",
+    )
+    
 
     smile = "❌"
     if groups[message.chat.id].model == "gpt-3.5-turbo":
@@ -116,6 +151,8 @@ def switch_model(message):
 
     # Adding buttons to keyboard
     customization_markup.add(gpt_4_button)
+    customization_markup.add(gigachat_button)
+    customization_markup.add(yandexgpt_button)
     customization_markup.add(gpt_35_turbo_button)
     customization_markup.add(vicuna_button)
     if str(message.chat.id) in developer_chat_IDs:

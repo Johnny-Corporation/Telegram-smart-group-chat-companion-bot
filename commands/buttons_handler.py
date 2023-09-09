@@ -170,6 +170,16 @@ def keyboard_buttons_handler(call):
             call.message.model = "vicuna"
             if johnny.model != "vicuna":
                 switch_model(call.message)
+        case "switch_to_gigachat":
+            johnny = groups[call.message.chat.id]
+            call.message.model = "gigachat"
+            if johnny.model != "gigachat":
+                switch_model(call.message)
+        case "switch_to_yandexgpt":
+            johnny = groups[call.message.chat.id]
+            call.message.model = "yandexgpt"
+            if johnny.model != "yandexgpt":
+                switch_model(call.message)
 
         # Set up funcs
 
@@ -305,6 +315,14 @@ def keyboard_buttons_handler(call):
             )
             if call.message.chat.id > 0:
                 bot.delete_message(call.message.chat.id,call.message.message_id)
+                
+            if str(call.message.chat.id) in remembered_chats_ids:
+                bot.send_message(
+                    call.message.chat.id,
+                    translate_text(lang[1], f"Loading your data... Done! Bot remembered you!"),
+                    reply_markup=markup,
+                )
+                remembered_chats_ids.remove(str(call.message.chat.id))
 
         # DEV TOOLS
 

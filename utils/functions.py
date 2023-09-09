@@ -393,34 +393,11 @@ def load_buttons(types, groups, chat_id, language_code, owner_id=None):
         text1 = translate_text(language_code, "ㅤ📲 Menuㅤ")
         itembtn2 = types.KeyboardButton(text1)
 
-        # text1 = translate_text(language_code, "ㅤAsk a question without contextㅤ")
-        # itembtn2 = types.KeyboardButton(text1)
-
-        # text5 = translate_text(language_code, "ㅤAccountㅤ")
-        # itembtn4 = types.KeyboardButton(text5)
-
-        # text6 = translate_text(language_code, "ㅤSettingsㅤ")
-        # itembtn5 = types.KeyboardButton(text6)
-
-        # text8 = translate_text(language_code, "ㅤReport bugㅤ")
-        # itembtn6 = types.KeyboardButton(text8)
-
-        # text9 = translate_text(language_code, "ㅤSuggest an ideaㅤ")
-        # itembtn7 = types.KeyboardButton(text9)
-
         groups[chat_id].button_commands.append(text2)
         groups[chat_id].button_commands.append(text1)
 
         markup.add(itembtn1)
         markup.add(itembtn2)
-        # markup.add(itembtn4)
-        # markup.add(itembtn5)
-        # markup.add(itembtn6, itembtn7)
-
-        # groups[chat_id].button_commands.append(text5)
-        # groups[chat_id].button_commands.append(text6)
-        # groups[chat_id].button_commands.append(text8)
-        # groups[chat_id].button_commands.append(text9)
 
     elif chat_id < 0:
         print("GROUP CONDITION")
@@ -440,29 +417,16 @@ def load_buttons(types, groups, chat_id, language_code, owner_id=None):
 
         print(groups[chat_id].enabled)
         if groups[chat_id].enabled == True:
-            print("ENABLED")
             text1 = translate_text(language_code, "ㅤ🔒 Stop conversationㅤ")
             itembtn1 = types.KeyboardButton(text1)
-
+            print("ENABLED")
+            textreset = translate_text(language_code, "🔄️ Reset memory")
+            itembtnreset = types.KeyboardButton(textreset)
+            markup.add(itembtnreset)
+            
         elif groups[chat_id].enabled == False:
             text1 = translate_text(language_code, "ㅤ🗣 Start a conversationㅤ")
             itembtn1 = types.KeyboardButton(text1)
-
-        # text5 = translate_text(language_code, "ㅤGroupㅤ")
-        # itembtn5 = types.KeyboardButton(text5)
-
-        # text6 = translate_text(language_code, "ㅤSettingsㅤ")
-        # itembtn6 = types.KeyboardButton(text6)
-
-        # text7 = translate_text(language_code, "ㅤReport bugㅤ")
-        # itembtn7 = types.KeyboardButton(text7)
-
-        # text8 = translate_text(language_code, "ㅤSuggest an ideaㅤ")
-        # itembtn8 = types.KeyboardButton(text8)
-
-        # text10 = translate_text(language_code,'ㅤSupport usㅤ')
-        # itembtn10 = types.KeyboardButton(text10)
-        # groups[chat_id].button_commands.append(text10)
 
         groups[chat_id].button_commands.append(text1)
 
@@ -486,18 +450,6 @@ def load_buttons(types, groups, chat_id, language_code, owner_id=None):
         itembtn2 = types.KeyboardButton(text2)
         groups[chat_id].button_commands.append(text2)
         markup.add(itembtn2)
-
-        # markup.add(itembtn5)
-        # markup.add(itembtn6)
-        # markup.add(itembtn7, itembtn8)
-        # markup.add(itembtn10)
-
-        # groups[chat_id].button_commands.append(text5)
-        # groups[chat_id].button_commands.append(text6)
-        # groups[chat_id].button_commands.append(text7)
-        # groups[chat_id].button_commands.append(text8)
-
-        print(f"TEXTS OF BUTTONS : {groups[chat_id].button_commands}")
 
         return markup
 

@@ -35,20 +35,25 @@ def get_user_info_reply_handler(inner_message):
         content = f.read()
         # between : and ,
         group_id = int(content.split(",")[0].replace('{"id":', ""))
-    with open("temp\\messages_history_client.txt", "w", encoding="utf-8") as f:
-        f.write("[START]\n")
-        for i in controller.get_last_n_messages_from_chat(
-            n=999999999, chat_id=group_id
-        )[::-1]:
-            print(i)
-            f.write(f"{i[0]}  = = = {i[1]}" + "\n")
-        f.write("[END]")
-
-    send_file(
-        "temp\\messages_history_client.txt",
-        inner_message.chat.id,
-        bot,
-    )
+    content_to_write = ""
+    empty_history = True
+    content_to_write = ""
+    for i in controller.get_last_n_messages_from_chat(
+        n=999999999, chat_id=group_id
+    )[::-1]:
+        print(i)
+        content_to_write += f"{i[0]}  = = = {i[1]}" + "\n"
+        empty_history = False
+    if not empty_history:
+        with open("temp\\messages_history_client.txt", "w", encoding="utf-8") as f:
+            f.write(content_to_write)
+        send_file(
+            "temp\\messages_history_client.txt",
+            inner_message.chat.id,
+            bot,
+        )
+    else:
+        bot.send_message(inner_message.chat.id,"History is empty")
 
 
 def get_group_info(message):
@@ -80,20 +85,25 @@ def get_group_info_reply_handler(inner_message):
         content = f.read()
         # between : and ,
         group_id = int(content.split(",")[0].replace('{"id":', ""))
-    with open("temp\\messages_history_group.txt", "w", encoding="utf-8") as f:
-        f.write("[START]\n")
-        for i in controller.get_last_n_messages_from_chat(
-            n=999999999, chat_id=group_id
-        )[::-1]:
-            print(i)
-            f.write(f"{i[0]}  = = = {i[1]}" + "\n")
-        f.write("[END]")
-
-    send_file(
-        "temp\\messages_history_group.txt",
-        inner_message.chat.id,
-        bot,
-    )
+    content_to_write = ""
+    empty_history = True
+    content_to_write = ""
+    for i in controller.get_last_n_messages_from_chat(
+        n=999999999, chat_id=group_id
+    )[::-1]:
+        print(i)
+        content_to_write += f"{i[0]}  = = = {i[1]}" + "\n"
+        empty_history = False
+    if not empty_history:
+        with open("temp\\messages_history_group.txt", "w", encoding="utf-8") as f:
+            f.write(content_to_write)
+        send_file(
+            "temp\\messages_history_group.txt",
+            inner_message.chat.id,
+            bot,
+        )
+    else:
+        bot.send_message(inner_message.chat.id,"History is empty")
 
 
 @error_handler

@@ -33,11 +33,7 @@ def reply_keyboard_buttons_handler(message, commands):
                 clean_memory(message)
                 disable(message)
             return True
-
-        # elif message.text == commands[1]:
-        #     question_to_bot(message)
-        #     return True
-
+        
         elif message.text == commands[i]:
             menu(message)
             return True
@@ -50,8 +46,10 @@ def reply_keyboard_buttons_handler(message, commands):
             change_mode(message)
             return True
         elif message.text == commands[3] and i == 4:
-            clean_memory(message)
-            return True
+            groups[message.chat.id].messages_history.clear()
+            bot.delete_message(message.chat.id,message.message_id)
+            bot.send_message(message.chat.id,"✅")
+
         
         # elif message.text == commands[i]:
         #     group(message)
