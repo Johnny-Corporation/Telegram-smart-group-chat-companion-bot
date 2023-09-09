@@ -332,9 +332,9 @@ def send_welcome_text_and_load_data(
 
         groups[chat_id].subscription = groups[owner_id].subscription
 
-        characteristics_of_sub = take_info_about_sub(groups[chat_id].subscription)
+        characteristics_of_sub = take_info_about_sub(groups[owner_id].subscription)
         groups[chat_id].characteristics_of_sub[
-            groups[chat_id].subscription
+            groups[owner_id].subscription
         ] = characteristics_of_sub
 
         groups[chat_id].owner_id = owner_id

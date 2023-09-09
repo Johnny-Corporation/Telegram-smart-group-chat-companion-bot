@@ -285,24 +285,13 @@ class Johnny:
 
         # --- Checks on messages ---
         if (
-            self.total_spent_messages
-            >= self.characteristics_of_sub[self.subscription]["messages_limit"]
-        ):
-            self.bot.send_message(
-                message.chat.id,
-                templates[self.lang_code]["exceed_limit_on_messages.txt"],
-            )
-            self.total_spent_messages = self.characteristics_of_sub[self.subscription][
-                "messages_limit"
-            ]
-            return
-        elif (
             groups[self.owner_id].total_spent_messages
-            >= self.characteristics_of_sub[self.subscription]["messages_limit"]
+            >= groups[self.owner_id].characteristics_of_sub[groups[self.owner_id].subscription]["messages_limit"]
         ):
             self.bot.send_message(
                 message.chat.id,
                 templates[self.lang_code]["exceed_limit_on_messages.txt"],
+                parse_mode='HTML'
             )
             groups[self.owner_id].total_spent_messages = self.characteristics_of_sub[
                 self.subscription
