@@ -289,12 +289,14 @@ class Johnny:
         # --- Checks on messages ---
         if (
             groups[self.owner_id].total_spent_messages
-            >= groups[self.owner_id].characteristics_of_sub[groups[self.owner_id].subscription]["messages_limit"]
+            >= groups[self.owner_id].characteristics_of_sub[
+                groups[self.owner_id].subscription
+            ]["messages_limit"]
         ):
             self.bot.send_message(
                 message.chat.id,
                 templates[self.lang_code]["exceed_limit_on_messages.txt"],
-                parse_mode='HTML'
+                parse_mode="HTML",
             )
             groups[self.owner_id].total_spent_messages = self.characteristics_of_sub[
                 self.subscription
@@ -893,9 +895,9 @@ class Johnny:
         )
         if not recent_events:
             return
-        self.messages_history = db_controller.get_last_n_messages_from_chat(
-            chat_id=self.chat_id, n=self.temporary_memory_size
-        )[::-1]
+        # self.messages_history = db_controller.get_last_n_messages_from_chat(
+        #     chat_id=self.chat_id, n=self.temporary_memory_size
+        # )[::-1]
         for i in recent_events:
             if i[5] == "JOHNNYBOT":
                 self.total_spent_messages = i
