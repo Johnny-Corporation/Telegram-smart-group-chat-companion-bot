@@ -419,11 +419,7 @@ def load_buttons(types, groups, chat_id, language_code, owner_id=None):
         if groups[chat_id].enabled == True:
             text1 = translate_text(language_code, "ㅤ🔒 Stop conversationㅤ")
             itembtn1 = types.KeyboardButton(text1)
-            print("ENABLED")
-            textreset = translate_text(language_code, "🔄️ Reset memory")
-            itembtnreset = types.KeyboardButton(textreset)
-            markup.add(itembtnreset)
-            
+
         elif groups[chat_id].enabled == False:
             text1 = translate_text(language_code, "ㅤ🗣 Start a conversationㅤ")
             itembtn1 = types.KeyboardButton(text1)
@@ -441,7 +437,7 @@ def load_buttons(types, groups, chat_id, language_code, owner_id=None):
             itembtn4 = types.KeyboardButton(text4)
             groups[chat_id].button_commands.append(text4)
             markup.add(itembtn4)
-            text5 = translate_text(language_code, "ㅤStart a conversation from scratchㅤ")
+            text5 = translate_text(language_code, "ㅤ🔄️ Reset memoryㅤ")
             itembtn5 = types.KeyboardButton(text5)
             groups[chat_id].button_commands.append(text5)
             markup.add(itembtn5)
