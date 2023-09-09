@@ -463,6 +463,7 @@ def init_new_group(chat_id, inviting=False, referrer_id=None):
 # --------------- Commands ---------------
 
 # Reply handlers (important to import them before commands, because commands are using them)
+from commands.reply_handlers.settings_change_language import *
 from commands.reply_handlers.bug_report import *
 from commands.reply_handlers.feature_request import *
 from commands.reply_handlers.purchase_enter_new_messages import *
