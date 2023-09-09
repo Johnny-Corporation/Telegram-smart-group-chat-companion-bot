@@ -477,6 +477,10 @@ def load_buttons(types, groups, chat_id, language_code, owner_id=None):
             itembtn4 = types.KeyboardButton(text4)
             groups[chat_id].button_commands.append(text4)
             markup.add(itembtn4)
+            text5 = translate_text(language_code, "ㅤStart a conversation from scratchㅤ")
+            itembtn5 = types.KeyboardButton(text5)
+            groups[chat_id].button_commands.append(text5)
+            markup.add(itembtn5)
 
         text2 = translate_text(language_code, "ㅤ📲 Menuㅤ")
         itembtn2 = types.KeyboardButton(text2)

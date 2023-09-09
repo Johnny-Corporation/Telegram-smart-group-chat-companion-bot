@@ -57,8 +57,6 @@ def set_presence_penalty_reply_handler(inner_message):
     reply_blacklist[inner_message.chat.id].remove(inner_message.reply_to_message.message_id)
     bot.clear_reply_handlers_by_message_id(inner_message.reply_to_message.message_id)
 
-    print(reply_blacklist)
-
     language_code = groups[inner_message.chat.id].lang_code
     try:
         val = float(inner_message.text)

@@ -24,7 +24,7 @@ def reply_keyboard_buttons_handler(message, commands):
 
         i = 1
         if groups[message.chat.id].enabled == True:
-            i = 3
+            i = 4
 
         if message.text == commands[0]:
             if groups[message.chat.id].enabled == False:
@@ -42,12 +42,15 @@ def reply_keyboard_buttons_handler(message, commands):
             menu(message)
             return True
 
-        elif message.text == commands[1] and i == 3:
+        elif message.text == commands[1] and i == 4:
             view_mode(message)
             return True
 
-        elif message.text == commands[2] and i == 3:
+        elif message.text == commands[2] and i == 4:
             change_mode(message)
+            return True
+        elif message.text == commands[3] and i == 4:
+            clean_memory(message)
             return True
         
         # elif message.text == commands[i]:
