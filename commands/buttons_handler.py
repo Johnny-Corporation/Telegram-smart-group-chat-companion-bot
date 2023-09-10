@@ -17,6 +17,13 @@ def keyboard_buttons_handler(call):
     match call_data:
         case "menu":
             menu(message=call.message, back_from=True)
+        case "menu_from_reply":
+            try:
+                reply_blacklist[call.message.chat.id].remove(call.message.message_id)
+            except:
+                None
+            bot.clear_reply_handlers_by_message_id(call.message.message_id)
+            menu(message=call.message, back_from=True)
 
         case "question_to_bot":
             question_to_bot(message=call.message)

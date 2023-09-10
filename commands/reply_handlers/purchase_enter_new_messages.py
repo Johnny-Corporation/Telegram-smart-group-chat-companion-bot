@@ -12,6 +12,7 @@ def enter_new_messages_reply_handler(inner_message):
         bot.send_message(
             inner_message.chat.id, templates[language_code]["new_messages_calnceled.txt"]
         )
+        bot.clear_reply_handlers_by_message_id(inner_message.reply_to_message.message_id)
         return
     
     

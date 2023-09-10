@@ -5,9 +5,6 @@ from __main__ import *
 @error_handler
 def enter_promocode_reply_handler(inner_message):
 
-    reply_blacklist[inner_message.chat.id].remove(inner_message.reply_to_message.message_id)
-    bot.clear_reply_handlers_by_message_id(inner_message.reply_to_message.message_id)
-
     language_code = groups[inner_message.chat.id].lang_code
     
     try:
@@ -17,6 +14,7 @@ def enter_promocode_reply_handler(inner_message):
         bot.send_message(
             inner_message.chat.id, templates[language_code]["enter_promocode_canceled.txt"]
         )
+        bot.clear_reply_handlers_by_message_id(inner_message.reply_to_message.message_id)
         return
     
     code_back = check_code(inner_message.text)
@@ -53,7 +51,8 @@ def enter_promocode_reply_handler(inner_message):
         bot.send_message(
             inner_message.chat.id, templates[language_code]["promocode_incorrect.txt"]
         )
-        return
+
+    bot.clear_reply_handlers_by_message_id(inner_message.reply_to_message.message_id)
 
     
 

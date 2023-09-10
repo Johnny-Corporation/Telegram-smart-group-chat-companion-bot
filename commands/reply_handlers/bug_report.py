@@ -5,9 +5,6 @@ from __main__ import *
 @error_handler
 def bug_report_reply_handler(inner_message):
 
-    reply_blacklist[inner_message.chat.id].remove(inner_message.reply_to_message.message_id)
-    bot.clear_reply_handlers_by_message_id(inner_message.reply_to_message.message_id)
-
     language_code = groups[inner_message.chat.id].lang_code
     user = inner_message.from_user
     send_to_developers(
@@ -22,3 +19,5 @@ def bug_report_reply_handler(inner_message):
         inner_message,
         templates[language_code]["bug_report_thanks.txt"],
     )
+
+    bot.clear_reply_handlers_by_message_id(inner_message.reply_to_message.message_id)

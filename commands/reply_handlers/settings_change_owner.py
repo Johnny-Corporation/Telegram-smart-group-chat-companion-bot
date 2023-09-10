@@ -4,7 +4,6 @@ from __main__ import *
 # --- reply handler for enter promocode
 @error_handler
 def change_owner_reply_handler(inner_message):
-    reply_blacklist[inner_message.chat.id].remove(inner_message.reply_to_message.message_id)
     language_code = groups[inner_message.chat.id].lang_code
     
     try:
@@ -14,6 +13,7 @@ def change_owner_reply_handler(inner_message):
         bot.send_message(
             inner_message.chat.id, templates[language_code]["change_owner_of_group_caanceled.txt"],
         )
+        bot.clear_reply_handlers_by_message_id(inner_message.reply_to_message.message_id)
         return
     
     if "@" in val:
@@ -23,6 +23,7 @@ def change_owner_reply_handler(inner_message):
 
     if get_user == {}:
         bot.send_message(inner_message.chat.id, templates[language_code]["user_unregistrated.txt"])
+        bot.clear_reply_handlers_by_message_id(inner_message.reply_to_message.message_id)
         return
     
     prev_owner = groups[inner_message.chat.id].owner_id
@@ -36,3 +37,5 @@ def change_owner_reply_handler(inner_message):
     groups[inner_message.chat.id].owner_id = new_owner
 
     bot.send_message(inner_message.chat.id, templates[language_code]["owner_was_changed.txt"])
+
+    bot.clear_reply_handlers_by_message_id(inner_message.reply_to_message.message_id)

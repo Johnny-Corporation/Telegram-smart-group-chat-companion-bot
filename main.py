@@ -6,7 +6,7 @@ makedirs("output//", exist_ok=True)
 
 # Bot API
 from telebot import TeleBot, types
-from telebot.apihelper import ApiException
+from telebot.apihelper import ApiTelegramException
 
 # Local modules
 from Johnny import Johnny
