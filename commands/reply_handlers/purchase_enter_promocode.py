@@ -30,7 +30,7 @@ def enter_promocode_reply_handler(inner_message):
         if code_back[0]>=1:
             groups[inner_message.chat.id].add_purchase_of_messages(inner_message.chat.id, code_back[0])
 
-            bot.send_message(inner_message.chat.id, templates[language_code]["more_100000_messages.txt"].format(messages=groups[inner_message.chat.id].messages_limit))
+            bot.send_message(inner_message.chat.id, templates[language_code]["more_100000_messages.txt"].format(messages=groups[inner_message.chat.id].characteristics_of_sub[groups[inner_message.chat.id].subscription]["messages_limit"]))
         elif code_back[0]<1:
             groups[inner_message.chat.id].discount_subscription["Promocode discount"] = 0.50
 
