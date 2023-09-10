@@ -62,11 +62,11 @@ def dev_tools(message, edit: bool = False):
         callback_data="get_cur_out",
     )
     dev_tools_markup.add(button)
-    button = types.InlineKeyboardButton(
-        text=translate_text(groups[chat_id].lang_code, "Get all archived outputs"),
-        callback_data="get_all_outs",
-    )
-    dev_tools_markup.add(button)
+    # button = types.InlineKeyboardButton(
+    #     text=translate_text(groups[chat_id].lang_code, "Get all archived outputs"),
+    #     callback_data="get_all_outs",
+    # )
+    # dev_tools_markup.add(button)
     button = types.InlineKeyboardButton(
         text=translate_text(groups[chat_id].lang_code, "Add current output to archive"),
         callback_data="copy_cur_out_to_archive",
