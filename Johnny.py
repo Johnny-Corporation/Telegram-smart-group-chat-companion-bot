@@ -861,7 +861,7 @@ class Johnny:
         return new_user
 
     def add_purchase_of_messages(self, chat_id, num_of_new_messages):
-        new_total_messages = self.messages_limit + num_of_new_messages
+        new_total_messages = self.characteristics_of_sub[self.subscription]["messages_limit"] + num_of_new_messages
         db_controller.update_messages_of_user_with_sub(chat_id, new_total_messages)
 
     def change_memory_size(self, size):
