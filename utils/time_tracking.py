@@ -17,7 +17,7 @@ def generate_code(size=8, chars=chars):
 # ------- Promocodes --------
 sub_pro_promocode = generate_code()
 discount_on_sub_50 = generate_code()
-discount_for_pubic = 'JOHNNY'
+discount_for_public = 'JOHNNY'
 promocode_100 = generate_code()
 
 
@@ -28,15 +28,18 @@ def get_exist_code():
     promocode_100 = generate_code()
 
 def check_code(promocode_in):
-    global sub_pro_promocode, promocode_100, discount_on_sub_50, discount_for_pubic
+    global sub_pro_promocode, promocode_100, discount_on_sub_50, discount_for_public
 
     if promocode_in == sub_pro_promocode:
+        sub_pro_promocode = generate_code()
         return ['Pro', 100]
     elif promocode_in == discount_on_sub_50:
+        discount_on_sub_50 = generate_code()
         return [0.50]
-    elif promocode_in == discount_for_pubic:
+    elif promocode_in == discount_for_public:
         return [0.50]
     elif promocode_in == promocode_100:
+        promocode_100 = generate_code()
         return [100]
 
     else:
