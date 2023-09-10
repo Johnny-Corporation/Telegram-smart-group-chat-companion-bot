@@ -4,9 +4,8 @@ from utils.logger import logger  # needed for hidden logs, do not remove
 import utils.functions as functions
 import json
 from utils.internet_access import *
-from time import sleep
 import replicate
-import asyncio
+
 
 # Cant import from functions because og the cycle imports
 def load_templates(dir: str) -> dict:
@@ -45,7 +44,7 @@ def extract_text(completion: openai.ChatCompletion) -> str:
         result = ""
         for i in completion:
             result += i
-        return result.replace("LAMA:","")
+        return result.replace("LAMA:", "")
 
 
 def check_function_call(completion: openai.ChatCompletion) -> bool:
@@ -146,9 +145,9 @@ def create_chat_completion(
     # system_content = ""
     system_content = f"You are a telegram bot named Johnny, developed by JohnnyCorp team. Your answers should be {answer_length}, use emojis."
     if model == "gigachat":
-        system_content+=" You are working on GigaChat, new text model developed by Sber russian company"
+        system_content += " You are working on GigaChat, new text model developed by Sber russian company"
     if model == "yandexgpt":
-        system_content+=" You are working on YandexGPT, new text model developed by Yandex russian company"
+        system_content += " You are working on YandexGPT, new text model developed by Yandex russian company"
 
     previous_messages = [
         {
@@ -191,13 +190,13 @@ def create_chat_completion(
         elif ("gpt" in model) and ("yandex" not in model):
             logger.info("Requesting gpt...")
             completion = openai.ChatCompletion.create(**chat_completion_arguments)
-        elif  (model=="gigachat"):
+        elif model == "gigachat":
             logger.info("Requesting gpt... (GigaChat)")
             chat_completion_arguments["model"] = "gpt-3.5-turbo"
             del chat_completion_arguments["function_call"]
             del chat_completion_arguments["functions"]
             completion = openai.ChatCompletion.create(**chat_completion_arguments)
-        elif  (model=="yandexgpt"):
+        elif model == "yandexgpt":
             logger.info("Requesting gpt... (YandexGPT)")
             chat_completion_arguments["model"] = "gpt-3.5-turbo"
             del chat_completion_arguments["function_call"]
@@ -218,6 +217,7 @@ def create_chat_completion(
             temperature=temperature,
             top_p=top_p,
         )
+        johnny.translate_lama_answer = True
         logger.info(f"Lama response:{completion}")
 
     except openai.error.APIConnectionError as e:
@@ -287,35 +287,38 @@ def check_context_understanding(answer):
     return extract_text(completion) == "No"
 
 
-async def generate_suggestion_for_inline(query,verbose=False):
-    
+async def generate_suggestion_for_inline(query, verbose=False):
     if verbose:
         prepared_messages = [
-            {"role":"system","content":"Be verbose but short, about 5-7 short sentences"},
+            {
+                "role": "system",
+                "content": "Be verbose but short, about 5-7 short sentences",
+            },
             {
                 "role": "user",
                 "content": query,
-            }
+            },
         ]
     else:
         prepared_messages = [
-                {
-                    "role": "user",
-                    "content": "Generate one short suggestion. Format: '{Title}|{FewWordsDescription}|{Body}'. Answer only in this format, no additional chars, no quotes. User query: "
-                    + query,
-                }
-            ]
+            {
+                "role": "user",
+                "content": "Generate one short suggestion. Format: '{Title}|{FewWordsDescription}|{Body}'. Answer only in this format, no additional chars, no quotes. User query: "
+                + query,
+            }
+        ]
     logger.info("Starting asynchronous request to openAI...")
     completion = await openai.ChatCompletion.acreate(
         model="gpt-3.5-turbo",
         messages=prepared_messages,
         temperature=1,
-        max_tokens=220 # Approx estimation
+        max_tokens=220,  # Approx estimation
     )
     logger.info(
         f"Generated suggestion for inline query. Query:{query}; Suggestion:{extract_text(completion)}"
     )
     return extract_text(completion)
+
 
 def check_theme_context(answer, theme):
     """Returns bool - True is answer is related to theme, False if not"""
@@ -350,6 +353,7 @@ def improve_img_gen_prompt(start_prompt):
         f"Image prompt improved from {start_prompt} to {extract_text(completion)}"
     )
     return extract_text(completion)
+
 
 def speech_to_text(path):
     audio_file = open(path, "rb")
