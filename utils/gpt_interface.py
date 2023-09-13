@@ -100,7 +100,7 @@ def generate_image_dalle(prompt, n, size):
 
 def get_lama_answer(
     prompt,
-    system_prompt="You are a helpful assistant.",
+    system_prompt,
     temperature=0.9,
     top_p=0.5,
     max_tokens=1024,
@@ -143,7 +143,7 @@ def create_chat_completion(
 
     # --- Building system content ---
     # system_content = ""
-    system_content = f"You are a telegram bot named Johnny, developed by JohnnyCorp team. Your answers should be {answer_length}, use emojis."
+    system_content = f"You are a telegram bot named Johnny, developed by JohnnyCorp team. Your answers should be {answer_length}, use plenty emojis."
     if model == "gigachat":
         system_content += " You are working on GigaChat, new text model developed by Sber russian company"
     if model == "yandexgpt":

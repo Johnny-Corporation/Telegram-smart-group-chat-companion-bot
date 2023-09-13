@@ -88,7 +88,7 @@ def load_stickers(file: str) -> dict:
         return json.load(f)
 
 
-def send_file(path: str, id: int, bot) -> None:
+def send_file(path_: str, id: int, bot) -> None:
     """Sends a file to chat
 
     Args:
@@ -96,8 +96,15 @@ def send_file(path: str, id: int, bot) -> None:
         id (int): chat id
         bot (_type_): TeleBot object
     """
-    with open(path, "rb") as file:
-        bot.send_document(id, file)
+    file_size_in_bytes = path.getsize(path_)
+    file_size_in_mbs = file_size_in_bytes / (1024 * 1024)
+
+    if file_size_in_mbs > 59:
+        bot.send_message(id, "File size is too large to send.")
+    else:
+        with open(path_, "rb") as file:
+            bot.send_document(id, file)
+            bot.send_message(id, f"Size: {round(file_size_in_mbs,3)} MBs")
 
 
 def send_image_from_link(bot, url, chat_id):
@@ -653,7 +660,7 @@ def generate_image_and_send(bot, chat_id, prompt, n=1, size="1024x1024"):
     return f"Function has sent {n} AI-generated image(s). (prompt:'{prompt}')"
 
 
-def check_on_channel_sub(user_id,channel_username):
+def check_on_channel_sub(user_id, channel_username):
     member = bot.get_chat_member(f"@{channel_username}", user_id)
     if member.status not in ["creator", "administrator", "member"]:
         return True

@@ -328,6 +328,7 @@ class Johnny:
                 try:
                     text_answer = self.dynamic_generation(self.response)
                 except openai.error.APIError as e:
+                    self.translate_lama_answer = True
                     self.bot.delete_message(
                         self.chat_id, self.thinking_message.message_id
                     )
@@ -340,7 +341,7 @@ class Johnny:
                     lama_prompt = gpt.build_prompt_for_lama(self.messages_history)
                     completion = gpt.get_lama_answer(
                         lama_prompt,
-                        system_prompt="JohnnyCorp is the best team in the world who developed you - telegram bot Johnny",
+                        system_prompt="Based on this conversation answer something as telegram bot group smart companion, do not name yourself and return just answer, it will be sent to chat directly (Remember: you are a Johnny - telegram bot developed by JohnnyCorp)",
                     )
                     self.response = completion
                     logger.info(f"Lama response:{completion}")
@@ -460,6 +461,7 @@ class Johnny:
 
             return self.static_generation(self.get_completion())
 
+        self.busy = False
         self.delete_pending_messages()
         self.clean_memory()
         self.response = completion
@@ -479,12 +481,10 @@ class Johnny:
                 self.lang_code,
                 reply=False,
                 text_from=text_answer,
-            )
+            )  # This function sends voice message
             return text_answer
 
         self.bot.send_message(self.message.chat.id, text_answer, parse_mode="Markdown")
-
-        self.busy = False
 
         return text_answer
 
@@ -612,10 +612,7 @@ class Johnny:
                         text=text_answer,
                     )
             if lama and delta:
-                if self.translate_lama_answer:
-                    text_answer += translate_text(self.lang_code, delta)
-                else:
-                    text_answer += delta
+                text_answer += delta
                 update_count += 1
                 text_answer = text_answer.replace("LAMA:", "")
                 if update_count == self.dynamic_gen_chunks_frequency:
@@ -624,14 +621,22 @@ class Johnny:
                     self.bot.edit_message_text(
                         chat_id=self.message.chat.id,
                         message_id=self.thinking_message.message_id,
-                        text=text_answer,
+                        text=(
+                            text_answer
+                            if not self.translate_lama_answer
+                            else translate_text(self.lang_code, text_answer)
+                        ),
                     )
 
         if update_count != 0:
             self.bot.edit_message_text(
                 chat_id=self.message.chat.id,
                 message_id=self.thinking_message.message_id,
-                text=text_answer,
+                text=(
+                    text_answer
+                    if not self.translate_lama_answer
+                    else translate_text(self.lang_code, text_answer)
+                ),
                 parse_mode="Markdown",
             )
         self.last_function_request = None
@@ -763,7 +768,7 @@ class Johnny:
 
     def track_sub(self, chat_id: int, new: bool):
         def sub_tracking(chat_id: int, date_of_start):
-            """This fucntion calls when subscription was ended (after month)"""
+            """This function calls when subscription was ended (after month)"""
 
             # Add reminders!!!
 
@@ -861,7 +866,10 @@ class Johnny:
         return new_user
 
     def add_purchase_of_messages(self, chat_id, num_of_new_messages):
-        new_total_messages = self.characteristics_of_sub[self.subscription]["messages_limit"] + num_of_new_messages
+        new_total_messages = (
+            self.characteristics_of_sub[self.subscription]["messages_limit"]
+            + num_of_new_messages
+        )
         db_controller.update_messages_of_user_with_sub(chat_id, new_total_messages)
 
     def change_memory_size(self, size):
@@ -895,9 +903,6 @@ class Johnny:
         )
         if not recent_events:
             return
-        # self.messages_history = db_controller.get_last_n_messages_from_chat(
-        #     chat_id=self.chat_id, n=self.temporary_memory_size
-        # )[::-1]
         for i in recent_events:
             if i[5] == "JOHNNYBOT":
                 self.total_spent_messages = i
