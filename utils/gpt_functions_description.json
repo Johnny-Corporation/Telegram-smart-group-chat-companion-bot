@@ -1,7 +1,7 @@
 [
     {
         "name": "google",
-        "description": "Use only in cases, when u dont know the answer",
+        "description": "Use only when there is no way to avoid this, for example when user asks directly or asks some precise data which u dont know",
         "parameters": {
             "type": "object",
             "properties": {
