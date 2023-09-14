@@ -44,6 +44,9 @@ templates = load_templates("templates\\")
 
 load_dotenv(".env")
 
+
+db_controller = Controller()
+
 functions_waiting_messages = {
     "google": "googling_question.txt",
     "read_from_link": "reading_from_link.txt",
@@ -83,8 +86,6 @@ class Johnny:
 
         self.messages_history = []
         self.messages_count = 0  # incremented by one each message, think() function is called when hit trigger_messages_count
-
-        self.db_controller = Controller()
 
         self.translate_lama_answer = False
 
@@ -248,7 +249,7 @@ class Johnny:
                 return  # unsupported event type
 
         # --- Add message to database ---
-        self.db_controller.add_message_event(
+        db_controller.add_message_event(
             self.chat_id,
             text,
             datetime.now(),
@@ -353,7 +354,7 @@ class Johnny:
             groups[self.owner_id].total_spent_messages += 1
 
             # Adding GPT answer to db and messages_history
-            self.db_controller.add_message_event(
+            db_controller.add_message_event(
                 self.chat_id,
                 str(text_answer),
                 datetime.now(),
@@ -393,7 +394,7 @@ class Johnny:
                     disable_web_page_preview=True,
                 )
             )
-            self.db_controller.add_message_event(
+            db_controller.add_message_event(
                 self.chat_id,
                 templates[self.lang_code][
                     functions_waiting_messages[function_name]
@@ -416,7 +417,7 @@ class Johnny:
                         parse_mode="html",
                     )
                 )
-                self.db_controller.add_message_event(
+                db_controller.add_message_event(
                     self.chat_id,
                     f"Function call failed {function_name}",
                     datetime.now(),
@@ -448,7 +449,7 @@ class Johnny:
                     function_response,
                 ]
             )
-            self.db_controller.add_message_event(
+            db_controller.add_message_event(
                 self.chat_id,
                 f"Called function: {function_name}. Result: {function_response['content']}",
                 datetime.now(),
@@ -532,7 +533,7 @@ class Johnny:
                         parse_mode="html",
                     )
                 )
-                self.db_controller.add_message_event(
+                db_controller.add_message_event(
                     self.chat_id,
                     templates[self.lang_code][
                         functions_waiting_messages[function_name]
@@ -552,7 +553,7 @@ class Johnny:
                             templates[self.lang_code]["func_call_failed.txt"],
                         )
                     )
-                    self.db_controller.add_message_event(
+                    db_controller.add_message_event(
                         self.chat_id,
                         f"Function call failed {function_name}",
                         datetime.now(),
@@ -581,7 +582,7 @@ class Johnny:
                         function_response,
                     ]
                 )
-                self.db_controller.add_message_event(
+                db_controller.add_message_event(
                     self.chat_id,
                     f"Called function: {function_name}. Result: {function_response['content']}",
                     datetime.now(),
@@ -707,11 +708,11 @@ class Johnny:
         current_date = datetime.now().isoformat()
 
         # If the user already written in db, delete old vers
-        if self.db_controller.check_the_existing_of_user_with_sub(int(chat_id)):
-            self.db_controller.delete_the_existing_of_user_with_sub(int(chat_id))
+        if db_controller.check_the_existing_of_user_with_sub(int(chat_id)):
+            db_controller.delete_the_existing_of_user_with_sub(int(chat_id))
 
         # Add to db
-        self.db_controller.add_user_with_sub(
+        db_controller.add_user_with_sub(
             chat_id,
             type_of_subscription,
             current_date,
@@ -733,14 +734,14 @@ class Johnny:
 
     def extend_sub(self, chat_id, first_name, last_name, username):
         # Get start date of current sub and add a month for extendtion
-        date_of_start_txt = self.db_controller.get_last_date_of_start_of_user(chat_id)
+        date_of_start_txt = db_controller.get_last_date_of_start_of_user(chat_id)
         prev_date_of_start = datetime.fromisoformat(date_of_start_txt) + relativedelta(
             months=1
         )
         date_of_start = prev_date_of_start.isoformat()
 
         # Add copy of user but with extended date of user (The deleting of user with sub realized in sub_tracking)
-        self.db_controller.add_user_with_sub(
+        db_controller.add_user_with_sub(
             chat_id,
             self.subscription,
             date_of_start,
@@ -772,10 +773,10 @@ class Johnny:
             # Add reminders!!!
 
             # Add current user from db with subscription
-            self.db_controller.delete_the_existing_of_user_with_sub_by_date(date_of_start)
+            db_controller.delete_the_existing_of_user_with_sub_by_date(date_of_start)
 
             # check the extendtion of
-            check = self.db_controller.check_the_existing_of_user_with_sub(chat_id)
+            check = db_controller.check_the_existing_of_user_with_sub(chat_id)
 
             # if there aren't more subscriptions, put free sub
             if not check:
@@ -787,7 +788,7 @@ class Johnny:
 
                 current_date = datetime.now().isoformat()
 
-                self.db_controller.add_user_with_sub(
+                db_controller.add_user_with_sub(
                     chat_id, "Free", current_date, " ", " ", " ", 30
                 )
 
@@ -821,7 +822,7 @@ class Johnny:
 
         if self.subscription != "Free":
             if new:
-                start_date_txt = self.db_controller.get_last_date_of_start_of_user(chat_id)
+                start_date_txt = db_controller.get_last_date_of_start_of_user(chat_id)
                 start_date = datetime.fromisoformat(start_date_txt)
 
                 # create a scheduler
@@ -839,7 +840,7 @@ class Johnny:
                 # start the scheduler
                 sub_scheduler.start()
             else:
-                all_dates = self.db_controller.get_users_with_sub_by_chat_id(chat_id)
+                all_dates = db_controller.get_users_with_sub_by_chat_id(chat_id)
 
                 for date in all_dates:
                     start_date_txt = date[0]
@@ -861,7 +862,7 @@ class Johnny:
                     sub_scheduler.start()
 
     def change_owner_of_group(self, username):
-        new_user = self.db_controller.get_user_with_sub_by_username(username)
+        new_user = db_controller.get_user_with_sub_by_username(username)
         return new_user
 
     def add_purchase_of_messages(self, chat_id, num_of_new_messages):
@@ -869,7 +870,7 @@ class Johnny:
             self.characteristics_of_sub[self.subscription]["messages_limit"]
             + num_of_new_messages
         )
-        self.db_controller.update_messages_of_user_with_sub(chat_id, new_total_messages)
+        db_controller.update_messages_of_user_with_sub(chat_id, new_total_messages)
 
     def change_memory_size(self, size):
         self.temporary_memory_size = size
@@ -877,7 +878,7 @@ class Johnny:
         self.load_data()
 
     def load_subscription(self, chat_id):
-        data = self.db_controller.get_user_with_sub_by_chat_id(chat_id)
+        data = db_controller.get_user_with_sub_by_chat_id(chat_id)
 
         if data != {}:
             self.subscription = data["TypeOfSubscription"]
@@ -897,7 +898,7 @@ class Johnny:
 
     def load_data(self) -> None:
         """Loads data from to object from db"""
-        recent_events = self.db_controller.get_last_n_message_events_from_chat(
+        recent_events = db_controller.get_last_n_message_events_from_chat(
             chat_id=self.chat_id, n=self.temporary_memory_size
         )
         if not recent_events:

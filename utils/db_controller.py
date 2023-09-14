@@ -1,21 +1,5 @@
 import sqlite3
 from os import path
-from threading import Lock
-from functools import wraps
-
-lock = Lock()
-
-
-def thread_safe_db_operation(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        lock.acquire(True)
-        try:
-            return func(*args, **kwargs)
-        finally:
-            lock.release()
-
-    return wrapper
 
 
 class Controller:
@@ -73,7 +57,6 @@ class Controller:
         cursor.close()
         conn.close()
 
-    @thread_safe_db_operation
     def add_user_with_sub(
         self,
         chat_id: int,
@@ -111,7 +94,6 @@ class Controller:
 
         self.conn.commit()
 
-    @thread_safe_db_operation
     def add_message_event(
         self,
         chat_id: int,
@@ -131,7 +113,6 @@ class Controller:
         )
         self.conn.commit()
 
-    @thread_safe_db_operation
     def update_messages_of_user_with_sub(self, chat_id, data) -> None:
         """Update messages of user by chat_id"""
 
@@ -140,7 +121,6 @@ class Controller:
 
         self.conn.commit()
 
-    @thread_safe_db_operation
     def update_days_of_subscription_of_user_with_sub(self, chat_id, data) -> None:
         """Update days of subscription of user by chat_id"""
 
@@ -149,7 +129,6 @@ class Controller:
 
         self.conn.commit()
 
-    @thread_safe_db_operation
     def check_the_existing_of_user_with_sub(self, chat_id) -> bool:
         """Check the existing of user in db by chat_id"""
         # Проверка наличия строки с определенным id
@@ -166,7 +145,6 @@ class Controller:
         else:
             return True
 
-    @thread_safe_db_operation
     def delete_the_existing_of_user_with_sub(self, chat_id) -> None:
         """delete data of user by chat_id"""
 
@@ -175,7 +153,6 @@ class Controller:
 
         self.conn.commit()
 
-    @thread_safe_db_operation
     def delete_the_existing_of_user_with_sub_by_date(self, date_of_start) -> None:
         """delete data of user by chat_id"""
 
@@ -184,7 +161,6 @@ class Controller:
 
         self.conn.commit()
 
-    @thread_safe_db_operation
     def get_users_with_sub_by_chat_id(self, user_chat_id: int):
         """aa"""
         query = "SELECT DateOfStart FROM UserSubscriptions WHERE ChatID=?"
@@ -193,7 +169,6 @@ class Controller:
 
         return result
 
-    @thread_safe_db_operation
     def get_first_date_of_start_of_user(self, user_chat_id: int):
         """Get the days of subscription of user by id"""
         query = "SELECT DateOfStart FROM UserSubscriptions WHERE ChatID = ? ORDER BY DateOfStart ASC LIMIT 1"
@@ -202,7 +177,6 @@ class Controller:
 
         return result[0]
 
-    @thread_safe_db_operation
     def get_last_date_of_start_of_user(self, user_chat_id: int):
         """Get the days of subscription of user by id"""
         query = "SELECT DateOfStart FROM UserSubscriptions WHERE ChatID = ? ORDER BY DateOfStart DESC LIMIT 1"
@@ -211,7 +185,6 @@ class Controller:
 
         return result[0]
 
-    @thread_safe_db_operation
     def get_user_with_sub_by_username(self, user_username: int) -> dict:
         """Returns dict with data about user where each key is a column name"""
         query = "SELECT * FROM UserSubscriptions WHERE SenderUsername = ? ORDER BY DateOfStart ASC LIMIT 1"
@@ -236,7 +209,6 @@ class Controller:
 
         return users_dict
 
-    @thread_safe_db_operation
     def get_user_with_sub_by_chat_id(self, user_chat_id: int) -> dict:
         """Returns dict with data about user where each key is a column name"""
         query = "SELECT * FROM UserSubscriptions WHERE ChatID = ? ORDER BY DateOfStart ASC LIMIT 1"
@@ -263,7 +235,6 @@ class Controller:
 
         return users_dict
 
-    @thread_safe_db_operation
     def get_last_n_message_events_from_chat(self, n: int, chat_id: int):
         """Get last n rows from db in list format
 
@@ -285,7 +256,6 @@ class Controller:
         )
         return self.cursor.fetchall()
 
-    @thread_safe_db_operation
     def get_last_n_messages_from_chat(self, n: int, chat_id: int):
         """Get last n messages from db
 
