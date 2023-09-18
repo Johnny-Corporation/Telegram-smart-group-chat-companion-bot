@@ -2,6 +2,8 @@
 from os import environ, makedirs, path, remove, path
 from shutil import copytree
 
+from functools import wraps
+
 makedirs("output//", exist_ok=True)
 
 # Bot API
@@ -20,6 +22,7 @@ from utils.gpt_interface import *
 from dotenv import load_dotenv
 import traceback
 from datetime import datetime
+from time import sleep
 import threading
 from typing import Dict
 
@@ -34,8 +37,11 @@ ignored_messages = 0  # count number of ignored messages when bot was offline fo
 
 
 bot_token = environ.get("BOT_API_TOKEN")
+bot_token = "6338457969:AAHwxoMJyk_-u1hVq9Jwry5LKYXAha1RSro"
 
 yoomoney_token = environ.get("PAYMENT_RUS_TOKEN")
+
+commercial_links = {"greenlightInv": 10}    #Link: num_of_messages for it
 
 developer_chat_IDs = environ.get("DEVELOPER_CHAT_IDS")
 if not bot_token:
@@ -121,6 +127,16 @@ def delete_pending_messages():
         bot.delete_message(m.chat.id, m.message_id)
         messages_to_be_deleted_global.remove(m)
 
+def infinite_retry(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        while True:
+            try:
+                return func(*args, **kwargs)
+            except Exception as e:
+                print(f"Exception caught: {e}, retrying...")
+                time.sleep(1)
+    return wrapper
 
 # --------------- Error handling ---------------
 
@@ -313,6 +329,8 @@ def send_welcome_text_and_load_data(
     # Load messages
     groups[chat_id].load_data()
 
+    groups[chat_id].commercial_links = commercial_links
+
     # User
     if chat_id > 0:
         # Try to get info from database
@@ -463,6 +481,7 @@ def init_new_group(chat_id, inviting=False, referrer_id=None):
 # --------------- Commands ---------------
 
 # Reply handlers (important to import them before commands, because commands are using them)
+from commands.reply_handlers.add_commercial_link import *
 from commands.reply_handlers.settings_change_language import *
 from commands.reply_handlers.bug_report import *
 from commands.reply_handlers.feature_request import *
@@ -491,6 +510,7 @@ from commands.dev_tools import *
 from commands.enable_disable import *
 from commands.group import *
 from commands.help import *
+from commands.purchase_commercial import *
 from commands.purchase_enter_promocode import *
 from commands.purchase_extend_sub import *
 from commands.purchase_pay_subscription import *
@@ -570,7 +590,7 @@ def main_messages_handler(message: types.Message):
         # Checks the registration of user
         if groups[message.chat.id].activated == False:
             return
-
+        
         new_thread = threading.Thread(
             target=groups[message.chat.id].new_message, args=(message, groups)
         )

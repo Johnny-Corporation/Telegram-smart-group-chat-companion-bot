@@ -2,6 +2,7 @@ from __main__ import *
 
 
 # --- Request feature ---
+@infinite_retry
 @bot.message_handler(commands=["request_feature"], func=time_filter)
 @error_handler
 def request_feature(message):

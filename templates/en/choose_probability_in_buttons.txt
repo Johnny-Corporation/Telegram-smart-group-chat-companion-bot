@@ -1,0 +1,2 @@
+Choose the probability that Johnny will answer you.
+<i>how this value is high, how often Bot will answer</i>

@@ -44,6 +44,17 @@ def check_code(promocode_in):
 
     else:
         return []
+def generate_new_code(code):
+    global sub_pro_promocode, promocode_100, discount_on_sub_50
+    if code == 'sub_pro_promocode':
+        sub_pro_promocode = generate_code()
+    elif code == 'discount_on_sub_50':
+        discount_on_sub_50 = generate_code()
+    elif code == 'promocode_100':
+        promocode_100 = generate_code()
+    else:
+        print("e3rqFEEGWTRHESTRJYKFUYFJYYTRFETGRYTHYJUKLIYHKUTURYETRWRWFETREYTYUKHTREYTWR")
+
 
 
 # create a scheduler

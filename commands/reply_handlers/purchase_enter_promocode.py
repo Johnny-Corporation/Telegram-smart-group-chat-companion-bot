@@ -29,10 +29,13 @@ def enter_promocode_reply_handler(inner_message):
             groups[inner_message.chat.id].add_purchase_of_messages(inner_message.chat.id, code_back[0])
 
             bot.send_message(inner_message.chat.id, templates[language_code]["more_100000_messages.txt"].format(messages=groups[inner_message.chat.id].characteristics_of_sub[groups[inner_message.chat.id].subscription]["messages_limit"]))
+            generate_new_code('promocode_100')
         elif code_back[0]<1:
             groups[inner_message.chat.id].discount_subscription["Promocode discount"] = 0.50
 
             bot.send_message(inner_message.chat.id, templates[language_code]["promocode_discount_50.txt"])
+
+            generate_new_code('discount_on_sub_50')
 
 
     elif len(code_back) == 2:
@@ -46,6 +49,8 @@ def enter_promocode_reply_handler(inner_message):
             groups[group_id].characteristics_of_sub[groups[group_id].subscription]["voice_output_permission"] = groups[inner_message.chat.id].characteristics_of_sub[groups[inner_message.chat.id].subscription]["voice_output_permission"]
 
         groups[inner_message.chat.id].track_sub(inner_message.chat.id, new=True)
+
+        generate_new_code('sub_pro_promocode')
 
     else:
         bot.send_message(

@@ -49,10 +49,38 @@ def enable(message):
 
 # --- Auto mode Enable ---
 @error_handler
-def auto_enable(message):
-    groups[message.chat.id].enabled = True
-
+def choose_prob(message):
     language_code = groups[message.chat.id].lang_code
+
+    markup = types.InlineKeyboardMarkup()
+    button1 = types.InlineKeyboardButton(
+        text="0.2",
+        callback_data="choose-prob_0.2",
+    )
+    button2 = types.InlineKeyboardButton(
+        text="0.4",
+        callback_data="choose-prob_0.4",
+    )
+    button3 = types.InlineKeyboardButton(
+        text="0.7",
+        callback_data="choose-prob_0.7",
+    )
+    markup.add(button1)
+    markup.add(button2)
+    markup.add(button3)
+
+    bot.edit_message_text(
+        templates[language_code]["choose_probability_in_buttons.txt"],
+        message.chat.id,
+        message.message_id,
+        reply_markup=markup,
+        parse_mode="HTML",
+    )
+
+def auto_enable(message, prob):
+    language_code = groups[message.chat.id].lang_code
+
+    groups[message.chat.id].enabled = True
 
     markup_commands = load_buttons(
         types,
@@ -64,7 +92,7 @@ def auto_enable(message):
 
     bot.delete_message(message.chat.id, message.message_id)
 
-    groups[message.chat.id].trigger_probability = 0.7
+    groups[message.chat.id].trigger_probability = prob
 
     bot.send_message(
         message.chat.id,

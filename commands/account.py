@@ -2,6 +2,7 @@ from __main__ import *
 
 
 # --- Help ---
+@infinite_retry
 def account(message):
     language_code = groups[message.chat.id].lang_code
 

@@ -2,6 +2,7 @@ from __main__ import *
 
 
 # --- About ---
+@infinite_retry
 @bot.message_handler(commands=["about"], func=time_filter)
 # @error_handler
 def about(message, back_from=False):

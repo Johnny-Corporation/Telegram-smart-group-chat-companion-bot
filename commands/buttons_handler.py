@@ -5,12 +5,21 @@ from utils.functions_for_developers import *
 
 @bot.callback_query_handler(func=lambda call: True)
 @error_handler
+@infinite_retry
 def keyboard_buttons_handler(call):
     previous_language_code = groups[call.message.chat.id].lang_code
 
     call_data = call.data
     if "apply_lang" in call.data:
         call_data = "apply_lang"
+    if "choose-prob" in call.data:
+        call_data = "choose-prob"
+    if "commercial" in call.data:
+        call_data = "commercial"
+    if "confirm-commercial" in call.data:
+        call_data = "confirm-commercial"
+    if "add_commercial_link" in call.data:
+        call_data = "add_commercial_link"
     # if "group_permission" in call.data:
     #     call_data
 
@@ -43,7 +52,13 @@ def keyboard_buttons_handler(call):
         # Choosing mode
 
         case "auto_mode":
-            auto_enable(message=call.message)
+            choose_prob(message=call.message)
+        case "choose-prob":
+            prob = float(call.data.split("_")[1])
+            auto_enable(message=call.message, prob=prob)
+
+
+            
         case "dialog_mode":
             dialog_enable(message=call.message)
         case "manual_mode":
@@ -296,13 +311,12 @@ def keyboard_buttons_handler(call):
                 templates[previous_language_code]["length_chosen.txt"],
             )
 
+
         # Language
 
         case "apply_lang":
             button_text, button_id = call.data.split("-")
             lang = check_language(button_text)
-
-            print("QQQQQQQQQQ         ", lang[0])
 
             groups[call.message.chat.id].lang_code = lang[0]
 
@@ -374,8 +388,52 @@ def keyboard_buttons_handler(call):
 
             reply_blacklist[call.message.chat.id].append(reply_to.message_id)
             bot.register_for_reply(reply_to, change_language_reply_handler)
-
+        case "add_commercial_link":
+            language_code = groups[call.message.chat.id].lang_code
+            reply_to = bot.send_message(
+                call.message.chat.id,
+                "Write usename and num of messages in format 'username;num' (and don't forget add bot to channel)",
+            )
+            reply_blacklist[call.message.chat.id].append(reply_to.message_id)
+            bot.register_for_reply(reply_to, add_commercial_link_reply_handler)
         # Purchase the subscription
+
+        case "free_messages":
+            commercial(message=call.message)
+        case "commercial":
+            subscribe_to_channel(message=call.message, num=call.data.split("ㅤ")[2], channel_username=call.data.split("ㅤ")[1])
+        case "confirm-commercial":
+            channel_username = call.data.split("ㅤ")[1]
+            val = call.data.split("ㅤ")[2]
+
+            check = check_on_channel_sub(bot, call.message.from_user.id, channel_username)
+            if check:
+
+                check_on_sub = groups[call.message.chat.id].commercial_links.pop(channel_username, False)
+                if check_on_sub == False:
+                    commercial_markup = types.InlineKeyboardMarkup()
+                    back_button = types.InlineKeyboardButton(
+                        text="<<<",
+                        callback_data="purchase",
+                    )
+                    commercial_markup.add(back_button)
+                    bot.send_message(
+                        call.message.chat.id,
+                        templates[previous_language_code]["purchase_used_sub.txt"],
+                        reply_markup=commercial_markup,
+                        parse_mode="HTML",
+                    )
+
+                groups[call.message.chat.id].add_purchase_of_messages(call.message.chat.id, int(val))
+                bot.send_message(
+                    call.message.chat.id,
+                    templates[previous_language_code]["new_messages.txt"],
+                    parse_mode="HTML",
+                )
+
+                bot.delete_message(call.message.chat.id, call.message.message_id)
+                return
+            bot.answer_callback_query(call.id, text=templates[previous_language_code]["purchase_you_unsubscribed.txt"], show_alert=True)
 
         case "free_sub":
             rus_payment(call.message, type_of_sub="free_sub")

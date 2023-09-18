@@ -4,6 +4,7 @@ from __main__ import *
 # ---------- Main message ----------
 
 # --- customizations functions ---
+@infinite_retry
 def special_features_settings(message):
 
     language_code = groups[message.chat.id].lang_code
@@ -47,6 +48,7 @@ def special_features_settings(message):
 # ---------- Ahead functions ----------
 
 # --- Dynamic generation ---
+@infinite_retry
 @error_handler
 def enable_disable_dynamic_generation(message):
     language_code = groups[message.chat.id].lang_code
@@ -87,6 +89,7 @@ def enable_disable_dynamic_generation(message):
         parse_mode="HTML",
     )
 # --- Voice out ---
+@infinite_retry
 @error_handler
 def enable_disable_voice_out(message):
 

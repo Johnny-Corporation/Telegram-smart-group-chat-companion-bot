@@ -3,6 +3,7 @@ from __main__ import *
 
 # ---------- Main message ----------
 
+@infinite_retry
 def inline_mode_settings(message):
 
     language_code = groups[message.chat.id].lang_code

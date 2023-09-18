@@ -3,7 +3,7 @@ from __main__ import *
 
 # ---------- Main message ----------
 
-
+@infinite_retry
 def menu(message, back_from=False):
     language_code = groups[message.chat.id].lang_code
 
@@ -43,12 +43,12 @@ def menu(message, back_from=False):
     )
     markup.add(button1)
     button1 = types.InlineKeyboardButton(
-        text=templates[language_code]["button_menu_report_bug.txt"],
-        callback_data="report_bug",
+        text=templates[language_code]["button_menu_feedback.txt"],
+        url="https://t.me/JohnnyCorp",
     )
     button2 = types.InlineKeyboardButton(
-        text=templates[language_code]["button_menu_request_feature.txt"],
-        callback_data="request_feature",
+        text=templates[language_code]["button_menu_cooperation.txt"],
+        url="https://t.me/Pentagon054",
     )
     markup.add(button1, button2)
     button2 = types.InlineKeyboardButton(

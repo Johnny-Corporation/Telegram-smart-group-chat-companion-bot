@@ -1,0 +1,5 @@
+To get free {num} messages, you have to subscribe to this channel:
+
+➡️ {link} ⬅️
+
+When you done, push to button⬇️

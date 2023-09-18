@@ -122,6 +122,7 @@ class Johnny:
         # User
         self.id_groups = []
         self.commercial_trigger = 0
+        self.commercial_links = {}
 
         # Group
         self.owner_id = None
@@ -862,6 +863,7 @@ class Johnny:
 
     def add_purchase_of_messages(self, chat_id, num_of_new_messages):
         new_total_messages = self.characteristics_of_sub[self.subscription]["messages_limit"] + num_of_new_messages
+        self.characteristics_of_sub[self.subscription]["messages_limit"] = new_total_messages
         db_controller.update_messages_of_user_with_sub(chat_id, new_total_messages)
 
     def change_memory_size(self, size):

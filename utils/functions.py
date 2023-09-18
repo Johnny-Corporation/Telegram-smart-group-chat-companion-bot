@@ -653,10 +653,12 @@ def generate_image_and_send(bot, chat_id, prompt, n=1, size="1024x1024"):
     return f"Function has sent {n} AI-generated image(s). (prompt:'{prompt}')"
 
 
-def check_on_channel_sub(user_id,channel_username):
-    member = bot.get_chat_member(f"@{channel_username}", user_id)
-    if member.status not in ["creator", "administrator", "member"]:
+def check_on_channel_sub(bot, user_id, channel_username):
+    
+    try:
+        member = bot.get_chat_member(f"@{channel_username}", user_id)
+        if member.status not in ["creator", "administrator", "member"]:
+            return False
         return True
-        # CHANNEL_URL = "https://t.me/your_channel_username"
-        # bot.answer_callback_query(call.id, text="Подпишитесь на канал!", show_alert=True, url=CHANNEL_URL)
-    return False
+    except:
+        return False

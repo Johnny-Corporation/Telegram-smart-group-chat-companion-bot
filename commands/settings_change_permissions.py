@@ -4,6 +4,7 @@ from __main__ import *
 # ---------- Main message ----------
 
 # --- customizations functions ---
+@infinite_retry
 @bot.message_handler(commands=["special_features"], func=time_filter)
 def change_permissions_settings(message):
 

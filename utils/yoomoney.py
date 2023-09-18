@@ -142,14 +142,14 @@ def accept_payment(message, cost, type_of_own="update", messages=0):
                 groups[message.chat.id].track_sub(message.chat.id, new=True)
             elif type_of_own == "more_messages":
                 groups[message.chat.id].add_purchase_of_messages(message.chat.id, val)
-                groups[message.chat.id].messages_limit = (
-                    groups[message.chat.id].groups[message.chat.id].messages_limit + val
-                )
+                # groups[message.chat.id].characteristics_of_sub[groups[message.chat.id].subscription]["messages_limit"] = (
+                #     groups[message.chat.id].characteristics_of_sub[groups[message.chat.id].subscription]["messages_limit"] + val
+                # )
 
                 for group in groups[message.chat.id].id_groups:
-                    groups[group].messages_limit = groups[
+                    groups[group].characteristics_of_sub[groups[message.chat.id].subscription]["messages_limit"] = groups[
                         message.chat.id
-                    ].messages_limit
+                    ].characteristics_of_sub[groups[message.chat.id].subscription]["messages_limit"]
 
                 bot.send_message(
                     message.chat.id,

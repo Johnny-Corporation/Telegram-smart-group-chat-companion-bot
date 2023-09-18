@@ -1,5 +1,6 @@
 import sqlite3
 from os import path
+from time import sleep
 
 
 class Controller:
@@ -104,15 +105,19 @@ class Controller:
         username: str,
         messages_total: int,
     ):
-        self.cursor.execute(
-            f"""
-            INSERT INTO MessageEvents (ChatID, MessageText, Time, SenderFirstName, SenderLastName, SenderUsername, MessagesTotal)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-            """,
-            (chat_id, text, time, first_name, last_name, username, messages_total),
-        )
-        self.conn.commit()
-
+        
+        try:
+            self.cursor.execute(
+                f"""
+                INSERT INTO MessageEvents (ChatID, MessageText, Time, SenderFirstName, SenderLastName, SenderUsername, MessagesTotal)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                """,
+                (chat_id, text, time, first_name, last_name, username, messages_total),
+            )
+            self.conn.commit()
+            return 
+        except:
+            None
     def update_messages_of_user_with_sub(self, chat_id, data) -> None:
         """Update messages of user by chat_id"""
 

@@ -6,6 +6,7 @@ from __main__ import *
 
 @bot.message_handler(commands=["bot_answers_settings"], func=time_filter)
 @error_handler
+@infinite_retry
 def bot_answers_settings(message):
     language_code = groups[message.chat.id].lang_code
 
@@ -72,6 +73,7 @@ def bot_answers_settings(message):
 
 
 # --- Set probability ---
+@infinite_retry
 def set_probability(message):
     language_code = groups[message.chat.id].lang_code
 
@@ -97,6 +99,7 @@ def set_probability(message):
 
 
 # --- Set temp ---
+@infinite_retry
 def set_temperature(message):
     language_code = groups[message.chat.id].lang_code
 
@@ -121,6 +124,7 @@ def set_temperature(message):
     bot.register_for_reply(bot_reply, set_temp_reply_handler)
 
 # --- Set frequency penalty (variety of answers) ---
+@infinite_retry
 def set_frequency_penalty(message):
     language_code = groups[message.chat.id].lang_code
 
@@ -146,6 +150,7 @@ def set_frequency_penalty(message):
 
 
 # --- Set presence penalty (creativity of answers) ---
+@infinite_retry
 def set_presence_penalty(message):
     language_code = groups[message.chat.id].lang_code
 
@@ -171,6 +176,7 @@ def set_presence_penalty(message):
 
 
 # --- Set answers' length ---
+@infinite_retry
 def set_length_answer(message):
     language_code = groups[message.chat.id].lang_code
 
@@ -210,7 +216,7 @@ def set_length_answer(message):
 
 
 # --- Set sphere of conversation ---
-@error_handler
+@infinite_retry
 def set_sphere_command(message):
     language_code = groups[message.chat.id].lang_code
 

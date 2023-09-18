@@ -2,6 +2,7 @@ from __main__ import *
 
 
 # --- set_up functions ---
+@infinite_retry
 @bot.message_handler(commands=["settings"], func=time_filter)
 def settings(message):
     language_code = groups[message.chat.id].lang_code

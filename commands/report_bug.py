@@ -2,9 +2,9 @@ from __main__ import *
 
 
 # --- Report bug ---
-@bot.message_handler(commands=["report_bug"], func=time_filter)
+@infinite_retry
 @error_handler
-def report_bug(message):
+def Feedback(message):
     language_code = groups[message.chat.id].lang_code
 
     markup = types.InlineKeyboardMarkup()

@@ -5,6 +5,7 @@ from __main__ import *
 
 
 # --- customizations functions ---
+@infinite_retry
 def models_switcher(message):
     language_code = groups[message.chat.id].lang_code
 
