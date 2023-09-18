@@ -1,7 +1,7 @@
 [
     {
         "name": "google",
-        "description": "Use only when there is no way to avoid this, for example when user asks directly or asks some precise data which u dont know",
+        "description": "This function returns few lines and their links - top results from google search. Assumed to be called together with read_from_link. Use only when necessary",
         "parameters": {
             "type": "object",
             "properties": {
