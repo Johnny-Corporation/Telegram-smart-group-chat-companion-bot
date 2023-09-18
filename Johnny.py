@@ -503,7 +503,7 @@ class Johnny:
 
         if self.last_function_request is None:
             self.thinking_message = self.bot.send_message(
-                self.chat_id, "🤔", parse_mode="Markdown"
+                self.chat_id, "🤔"
             )
 
         text_answer = ""  # stores whole answer

@@ -12,7 +12,7 @@ file_handler_info.setLevel(logging.INFO)
 
 logging.basicConfig(
     level=logging.DEBUG,
-    format="%(asctime)s - %(levelname)s - %(message)s",
+    format="%(asctime)s | %(levelname)s | %(message)s | Logger: %(name)s | File name: %(filename)s | Function name: %(funcName)s | Line: %(lineno)d",
     handlers=[
         file_handler_debug,
         file_handler_info,
@@ -20,3 +20,5 @@ logging.basicConfig(
     ],
 )
 logger = logging.getLogger(__name__)
+
+logging.getLogger("hpack.hpack").setLevel(logging.ERROR)
