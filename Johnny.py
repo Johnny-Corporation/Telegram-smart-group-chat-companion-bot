@@ -329,6 +329,7 @@ class Johnny:
                 try:
                     text_answer = self.dynamic_generation(self.response)
                 except openai.error.APIError as e:
+                    self.translate_lama_answer = True
                     self.bot.delete_message(
                         self.chat_id, self.thinking_message.message_id
                     )
@@ -341,14 +342,22 @@ class Johnny:
                     lama_prompt = gpt.build_prompt_for_lama(self.messages_history)
                     completion = gpt.get_lama_answer(
                         lama_prompt,
-                        system_prompt="JohnnyCorp is the best team in the world who developed you - telegram bot Johnny",
+                        system_prompt="Based on this conversation answer something as telegram bot group smart companion, do not name yourself and return just answer, it will be sent to chat directly (Remember: you are a Johnny - telegram bot developed by JohnnyCorp)",
                     )
                     self.response = completion
                     logger.info(f"Lama response:{completion}")
                     text_answer = self.dynamic_generation(self.response, lama=True)
 
             else:
-                text_answer = self.static_generation(self.response)
+                if ("@" + self.bot_username in text) or (
+                    message.reply_to_message
+                    and message.reply_to_message.from_user.username == self.bot_username
+                ):
+                    text_answer = self.static_generation(
+                        self.response, check_understanding_=False
+                    )
+                else:
+                    text_answer = self.static_generation(self.response)
 
             self.total_spent_messages += 1
             groups[self.owner_id].total_spent_messages += 1
@@ -369,7 +378,7 @@ class Johnny:
             ):  # if it is None, this means gpt said it didn't understand context or said something outside the theme
                 self.messages_history.append(["$BOT$", text_answer])
 
-    def static_generation(self, completion):
+    def static_generation(self, completion, check_understanding_=True):
         """Takes completion object and returns text answer. Handles message in telegram"""
 
         # Check function call
@@ -461,6 +470,7 @@ class Johnny:
 
             return self.static_generation(self.get_completion())
 
+        self.busy = False
         self.delete_pending_messages()
         self.clean_memory()
         self.response = completion
@@ -470,8 +480,9 @@ class Johnny:
             text_answer = translate_text(self.lang_code, text_answer, force=True)
         self.translate_lama_answer = False
         # Check context understanding
-        if not self.check_understanding(text_answer):
-            return None
+        if check_understanding_:
+            if not self.check_understanding(text_answer):
+                return None
 
         if self.voice_out_enabled == True:
             text_to_voice(
@@ -480,12 +491,16 @@ class Johnny:
                 self.lang_code,
                 reply=False,
                 text_from=text_answer,
-            )
+            )  # This function sends voice message
             return text_answer
 
-        self.bot.send_message(self.message.chat.id, text_answer, parse_mode="Markdown")
-
-        self.busy = False
+        try:
+            self.bot.send_message(
+                self.message.chat.id, text_answer, parse_mode="Markdown"
+            )
+        except ApiException as e:  # If markdown is invalid sending without parse mode
+            if e.result.status_code == 400:
+                self.bot.send_message(self.message.chat.id, text_answer)
 
         return text_answer
 
@@ -496,9 +511,7 @@ class Johnny:
             lama = self.model == "lama"
 
         if self.last_function_request is None:
-            self.thinking_message = self.bot.send_message(
-                self.chat_id, "🤔", parse_mode="Markdown"
-            )
+            self.thinking_message = self.bot.send_message(self.chat_id, "🤔")
 
         text_answer = ""  # stores whole answer
 
@@ -613,10 +626,7 @@ class Johnny:
                         text=text_answer,
                     )
             if lama and delta:
-                if self.translate_lama_answer:
-                    text_answer += translate_text(self.lang_code, delta)
-                else:
-                    text_answer += delta
+                text_answer += delta
                 update_count += 1
                 text_answer = text_answer.replace("LAMA:", "")
                 if update_count == self.dynamic_gen_chunks_frequency:
@@ -625,16 +635,36 @@ class Johnny:
                     self.bot.edit_message_text(
                         chat_id=self.message.chat.id,
                         message_id=self.thinking_message.message_id,
-                        text=text_answer,
+                        text=(
+                            text_answer
+                            if not self.translate_lama_answer
+                            else translate_text(self.lang_code, text_answer)
+                        ),
                     )
 
         if update_count != 0:
-            self.bot.edit_message_text(
-                chat_id=self.message.chat.id,
-                message_id=self.thinking_message.message_id,
-                text=text_answer,
-                parse_mode="Markdown",
-            )
+            try:
+                self.bot.edit_message_text(
+                    chat_id=self.message.chat.id,
+                    message_id=self.thinking_message.message_id,
+                    text=(
+                        text_answer
+                        if not self.translate_lama_answer
+                        else translate_text(self.lang_code, text_answer)
+                    ),
+                    parse_mode="Markdown",
+                )
+            except ApiException as e:  # If bad markdown, sending without parse mode
+                if e.result.status_code == 400:
+                    self.bot.edit_message_text(
+                        chat_id=self.message.chat.id,
+                        message_id=self.thinking_message.message_id,
+                        text=(
+                            text_answer
+                            if not self.translate_lama_answer
+                            else translate_text(self.lang_code, text_answer)
+                        ),
+                    )
         self.last_function_request = None
         self.delete_pending_messages()
         self.clean_memory()
@@ -764,7 +794,7 @@ class Johnny:
 
     def track_sub(self, chat_id: int, new: bool):
         def sub_tracking(chat_id: int, date_of_start):
-            """This fucntion calls when subscription was ended (after month)"""
+            """This function calls when subscription was ended (after month)"""
 
             # Add reminders!!!
 
@@ -897,9 +927,6 @@ class Johnny:
         )
         if not recent_events:
             return
-        # self.messages_history = db_controller.get_last_n_messages_from_chat(
-        #     chat_id=self.chat_id, n=self.temporary_memory_size
-        # )[::-1]
         for i in recent_events:
             if i[5] == "JOHNNYBOT":
                 self.total_spent_messages = i

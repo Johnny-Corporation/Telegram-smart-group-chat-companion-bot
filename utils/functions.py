@@ -88,7 +88,7 @@ def load_stickers(file: str) -> dict:
         return json.load(f)
 
 
-def send_file(path: str, id: int, bot) -> None:
+def send_file(path_: str, id: int, bot) -> None:
     """Sends a file to chat
 
     Args:
@@ -96,8 +96,16 @@ def send_file(path: str, id: int, bot) -> None:
         id (int): chat id
         bot (_type_): TeleBot object
     """
-    with open(path, "rb") as file:
-        bot.send_document(id, file)
+    file_size_in_bytes = path.getsize(path_)
+    file_size_in_mbs = file_size_in_bytes / (1024 * 1024)
+
+    if file_size_in_mbs > 50:
+        bot.send_message(id, "File size is too large to send. (Restriction: 50 MBs)")
+        bot.send_message(id, f"Size: {round(file_size_in_mbs,3)} MBs")
+    else:
+        with open(path_, "rb") as file:
+            bot.send_document(id, file)
+            bot.send_message(id, f"Size: {round(file_size_in_mbs,3)} MBs")
 
 
 def send_image_from_link(bot, url, chat_id):

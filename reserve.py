@@ -40,7 +40,7 @@ def create_archive(folder_path, output_path):
                 archive.write(file_path, archive_path)
 
 
-def send_file(path: str, id: int, bot) -> None:
+def send_file(path_: str, id: int, bot) -> None:
     """Sends a file to chat
 
     Args:
@@ -48,8 +48,15 @@ def send_file(path: str, id: int, bot) -> None:
         id (int): chat id
         bot (_type_): TeleBot object
     """
-    with open(path, "rb") as file:
-        bot.send_document(id, file)
+    file_size_in_bytes = path.getsize(path_)
+    file_size_in_mbs = file_size_in_bytes / (1024 * 1024)
+
+    if file_size_in_mbs > 59:
+        bot.send_message(id, "File size is too large to send.")
+    else:
+        with open(path_, "rb") as file:
+            bot.send_document(id, file)
+            bot.send_message(id, f"Size: {round(file_size_in_mbs,3)} MBs")
 
 
 if not path.exists("output"):
@@ -81,8 +88,8 @@ for filename in file_list:
             crash_message,
             reply_markup=markup,
         )
-        
-        
+
+
 controller = Controller()
 # ----------------------- Functions for devtools -----------------------
 
@@ -165,7 +172,6 @@ def get_group_info_reply_handler(inner_message):
         inner_message.chat.id,
         bot,
     )
-
 
 
 @bot.message_handler(commands=["dev_tools"])
@@ -309,4 +315,3 @@ def main_messages_handler(message: types.Message):
 
 
 bot.polling()
-

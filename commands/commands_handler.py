@@ -3,7 +3,9 @@ from utils.functions_for_developers import *
 
 
 def reply_keyboard_buttons_handler(message, commands):
-    groups[message.chat.id].busy = False
+    groups[
+        message.chat.id
+    ].busy = False  # When resetting memory for example if lama didn't answer for some reason we need to reset busy status each button press to keep Johnny alive
     if message.chat.id < 0:
         print(commands)
 
@@ -26,13 +28,11 @@ def reply_keyboard_buttons_handler(message, commands):
         i = 1
         if groups[message.chat.id].enabled == True:
             i = 4
-            groups[message.chat.id].busy = False
         if message.text == commands[0]:
             if groups[message.chat.id].enabled == False:
                 enable(message)
             else:
                 clean_memory(message)
-                groups[message.chat.id].busy = False
                 disable(message)
             return True
 
@@ -59,7 +59,6 @@ def reply_keyboard_buttons_handler(message, commands):
                 return True
             else:
                 clean_memory(message)
-                groups[message.chat.id].busy = False
                 return True
 
         elif message.text == commands[1]:
