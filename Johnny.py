@@ -348,7 +348,13 @@ class Johnny:
                     text_answer = self.dynamic_generation(self.response, lama=True)
 
             else:
-                text_answer = self.static_generation(self.response)
+                if ("@" + self.bot_username in text) or (
+                    message.reply_to_message
+                    and message.reply_to_message.from_user.username == self.bot_username
+                ):
+                    text_answer = self.static_generation(self.response,check_understanding_=False)
+                else:
+                    text_answer = self.static_generation(self.response)
 
             self.total_spent_messages += 1
             groups[self.owner_id].total_spent_messages += 1
@@ -369,7 +375,7 @@ class Johnny:
             ):  # if it is None, this means gpt said it didn't understand context or said something outside the theme
                 self.messages_history.append(["$BOT$", text_answer])
 
-    def static_generation(self, completion):
+    def static_generation(self, completion, check_understanding_=True):
         """Takes completion object and returns text answer. Handles message in telegram"""
 
         # Check function call
@@ -471,8 +477,9 @@ class Johnny:
             text_answer = translate_text(self.lang_code, text_answer, force=True)
         self.translate_lama_answer = False
         # Check context understanding
-        if not self.check_understanding(text_answer):
-            return None
+        if check_understanding_:
+            if not self.check_understanding(text_answer):
+                return None
 
         if self.voice_out_enabled == True:
             text_to_voice(
