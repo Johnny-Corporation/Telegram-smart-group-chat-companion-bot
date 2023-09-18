@@ -99,8 +99,9 @@ def send_file(path_: str, id: int, bot) -> None:
     file_size_in_bytes = path.getsize(path_)
     file_size_in_mbs = file_size_in_bytes / (1024 * 1024)
 
-    if file_size_in_mbs > 59:
-        bot.send_message(id, "File size is too large to send.")
+    if file_size_in_mbs > 50:
+        bot.send_message(id, "File size is too large to send. (Restriction: 50 MBs)")
+        bot.send_message(id, f"Size: {round(file_size_in_mbs,3)} MBs")
     else:
         with open(path_, "rb") as file:
             bot.send_document(id, file)
