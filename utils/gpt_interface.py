@@ -288,25 +288,16 @@ def check_context_understanding(answer):
 
 
 async def generate_suggestion_for_inline(query, verbose=False):
-    if verbose:
-        prepared_messages = [
-            {
-                "role": "system",
-                "content": "Be verbose but short, about 5-7 short sentences",
-            },
-            {
-                "role": "user",
-                "content": query,
-            },
-        ]
-    else:
-        prepared_messages = [
-            {
-                "role": "user",
-                "content": "Generate one short suggestion. Format: '{Title}|{FewWordsDescription}|{Body}'. Answer only in this format, no additional chars, no quotes. User query: "
-                + query,
-            }
-        ]
+    prepared_messages = [
+        {
+            "role": "system",
+            "content": "Your answer will be sent to telegram dialog, dont try to speak with user, just make what he asking and assume he is using u to speak with another person, be brief",
+        },
+        {
+            "role": "user",
+            "content": query,
+        },
+    ]
     logger.info("Starting asynchronous request to openAI...")
     completion = await openai.ChatCompletion.acreate(
         model="gpt-3.5-turbo",

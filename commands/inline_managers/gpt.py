@@ -3,26 +3,19 @@ import asyncio
 from aiohttp import ClientSession
 import openai
 
+
 async def get_gpt_results(query, num_results=2):
     results = []
-    
+
     verbose = num_results == 1
 
     openai.aiosession.set(ClientSession())
-    tasks = [generate_suggestion_for_inline(query,verbose) for _ in range(num_results)]
+    tasks = [generate_suggestion_for_inline(query, verbose) for _ in range(num_results)]
     suggestions = await asyncio.gather(*tasks)
     await openai.aiosession.get().close()
-    
+
     for sug in suggestions:
-        try:
-            if not verbose:
-                title, description, body = sug.split("|")
-            else:
-                title = "✅"
-                description = sug
-                body = sug
-        except:
-            continue
+        title, description, body = sug.split()[:5], sug, sug
         results.append(
             {
                 "has_button": False,

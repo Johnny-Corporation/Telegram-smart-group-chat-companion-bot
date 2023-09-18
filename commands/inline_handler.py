@@ -10,6 +10,7 @@ from commands.inline_managers.youtube import *
 from telebot.apihelper import ApiTelegramException
 import asyncio
 
+
 @bot.inline_handler(lambda query: True)
 def inline_search(query):
     chat_id = query.from_user.id
@@ -42,14 +43,13 @@ def inline_search(query):
                 "description": "Run Johnny",
             }
         ]
-    elif (
-        search_query == ""
-    ):  # Just triggered inline, haven't started typing, its important to set low cache time for this to work
+        cache_time = 1  # if user registered but didnt set lang, we also will force him to register, this is important
+    elif search_query == "":  # Just triggered inline, haven't started typing
         results = [
             {
                 "has_button": False,
                 "title": groups[chat_id].inline_mode,
-                "message_text": "😏",
+                "message_text": "...",
                 "thumbnail": thumbnails[groups[chat_id].inline_mode],
                 "description": translate_text(
                     groups[chat_id].lang_code, "Current mode. Just start typing."
@@ -61,7 +61,12 @@ def inline_search(query):
             case "Google":
                 results = get_google_results(search_query)
             case "GPT":
-                results = asyncio.run( get_gpt_results(search_query,num_results=groups[chat_id].num_inline_gpt_suggestions))
+                results = asyncio.run(
+                    get_gpt_results(
+                        search_query,
+                        num_results=groups[chat_id].num_inline_gpt_suggestions,
+                    )
+                )
             case "Youtube":
                 results = get_youtube_results(search_query)
 
@@ -93,13 +98,21 @@ def inline_search(query):
         articles.append(article)
 
     try:
-        bot.answer_inline_query(query.id, articles, cache_time=1)
+        if chat_id in groups:
+            if groups[chat_id].inline_mode == "GPT":
+                cache_time = 86400  # maximum possible cache time (24hrs)
+            elif groups[chat_id].inline_mode == "Google":
+                cache_time = 1  # 1 second
+            elif groups[chat_id].inline_mode == "Youtube":
+                cache_time = 1  # 1 second
+        else:
+            cache_time = 1
+        bot.answer_inline_query(query.id, articles, cache_time=cache_time)
     except ApiException as e:
         if e.error_code == 400:
             pass
-        else: 
+        else:
             raise e
-        
 
 
 # Works only after enabling sending inline feedback via BotFather
