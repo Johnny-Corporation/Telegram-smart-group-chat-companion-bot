@@ -352,7 +352,9 @@ class Johnny:
                     message.reply_to_message
                     and message.reply_to_message.from_user.username == self.bot_username
                 ):
-                    text_answer = self.static_generation(self.response,check_understanding_=False)
+                    text_answer = self.static_generation(
+                        self.response, check_understanding_=False
+                    )
                 else:
                     text_answer = self.static_generation(self.response)
 
@@ -491,7 +493,13 @@ class Johnny:
             )  # This function sends voice message
             return text_answer
 
-        self.bot.send_message(self.message.chat.id, text_answer, parse_mode="Markdown")
+        try:
+            self.bot.send_message(
+                self.message.chat.id, text_answer, parse_mode="Markdown"
+            )
+        except ApiException as e:  # If markdown is invalid sending without parse mode
+            if e.result.status_code == 400:
+                self.bot.send_message(self.message.chat.id, text_answer)
 
         return text_answer
 
@@ -502,9 +510,7 @@ class Johnny:
             lama = self.model == "lama"
 
         if self.last_function_request is None:
-            self.thinking_message = self.bot.send_message(
-                self.chat_id, "🤔"
-            )
+            self.thinking_message = self.bot.send_message(self.chat_id, "🤔")
 
         text_answer = ""  # stores whole answer
 
@@ -636,16 +642,28 @@ class Johnny:
                     )
 
         if update_count != 0:
-            self.bot.edit_message_text(
-                chat_id=self.message.chat.id,
-                message_id=self.thinking_message.message_id,
-                text=(
-                    text_answer
-                    if not self.translate_lama_answer
-                    else translate_text(self.lang_code, text_answer)
-                ),
-                parse_mode="Markdown",
-            )
+            try:
+                self.bot.edit_message_text(
+                    chat_id=self.message.chat.id,
+                    message_id=self.thinking_message.message_id,
+                    text=(
+                        text_answer
+                        if not self.translate_lama_answer
+                        else translate_text(self.lang_code, text_answer)
+                    ),
+                    parse_mode="Markdown",
+                )
+            except ApiException as e:  # If bad markdown, sending without parse mode
+                if e.result.status_code == 400:
+                    self.bot.edit_message_text(
+                        chat_id=self.message.chat.id,
+                        message_id=self.thinking_message.message_id,
+                        text=(
+                            text_answer
+                            if not self.translate_lama_answer
+                            else translate_text(self.lang_code, text_answer)
+                        ),
+                    )
         self.last_function_request = None
         self.delete_pending_messages()
         self.clean_memory()
