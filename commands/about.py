@@ -23,7 +23,7 @@ def about(message, back_from=False):
     markup = types.InlineKeyboardMarkup()
     back_button = types.InlineKeyboardButton(
         text="<<<",
-        callback_data="menu",
+        callback_data="other",
     )
     markup.add(back_button)
 

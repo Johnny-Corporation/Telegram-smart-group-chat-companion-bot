@@ -44,11 +44,11 @@ def purchase(message):
 
         purchase_markup.add(promocode_button)
 
-        commercial_button = types.InlineKeyboardButton(
-            text=templates[language_code]["button_get_free_for_commercial.txt"],
-            callback_data="free_messages",
-        )
-        purchase_markup.add(commercial_button)
+        # commercial_button = types.InlineKeyboardButton(
+        #     text=templates[language_code]["button_get_free_for_commercial.txt"],
+        #     callback_data="free_messages",
+        # )
+        # purchase_markup.add(commercial_button)
 
         back_button = types.InlineKeyboardButton(
             text="<<<",

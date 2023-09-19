@@ -11,7 +11,7 @@ def request_feature(message):
     markup = types.InlineKeyboardMarkup()
     button1 = types.InlineKeyboardButton(
         text="<<<",
-        callback_data="menu_from_reply",
+        callback_data="other_from_reply",
     )
     markup.add(button1)
 

@@ -43,24 +43,10 @@ def menu(message, back_from=False):
     )
     markup.add(button1)
     button1 = types.InlineKeyboardButton(
-        text=templates[language_code]["button_menu_report_bug.txt"],
-        callback_data="report_bug",
+        text=templates[language_code]["button_menu_other.txt"],
+        callback_data="other",
     )
-    button2 = types.InlineKeyboardButton(
-        text=templates[language_code]["button_menu_request_feature.txt"],
-        callback_data="request_feature",
-    )
-    markup.add(button1, button2)
-    button2 = types.InlineKeyboardButton(
-        text=templates[language_code]["button_contact_developer.txt"],
-        url="https://t.me/JohnnyCorp",
-    )
-    markup.add(button2)
-    button2 = types.InlineKeyboardButton(
-        text=templates[language_code]["button_menu_about.txt"],
-        callback_data="about",
-    )
-    markup.add(button2)
+    markup.add(button1)
     button2 = types.InlineKeyboardButton(
         text=templates[language_code]["button_close.txt"],
         callback_data="close_message",

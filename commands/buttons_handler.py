@@ -47,6 +47,15 @@ def keyboard_buttons_handler(call):
             inline_mode_settings(message=call.message)
         case "generate_image":
             ask_gen_image_prompt(call.message)
+        case "other":
+            other(message=call.message)
+        case "other_from_reply":
+            try:
+                reply_blacklist[call.message.chat.id].remove(call.message.message_id)
+            except:
+                None
+            bot.clear_reply_handlers_by_message_id(call.message.message_id)
+            other(message=call.message)
 
         # Choosing mode
 

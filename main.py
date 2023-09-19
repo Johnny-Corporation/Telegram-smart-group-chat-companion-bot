@@ -36,7 +36,8 @@ skip_old_messages = True  # True until message older than bot start time receive
 ignored_messages = 0  # count number of ignored messages when bot was offline for logs
 
 
-bot_token = environ.get("BOT_API_TOKEN")
+bot_token = environ.get("BOT_API_TOKEN_OFFICIAL_OLD")
+
 
 yoomoney_token = environ.get("PAYMENT_RUS_TOKEN")
 
@@ -512,6 +513,7 @@ from commands.dev_tools import *
 from commands.enable_disable import *
 from commands.group import *
 from commands.help import *
+from commands.other import *
 from commands.purchase_commercial import *
 from commands.purchase_enter_promocode import *
 from commands.purchase_extend_sub import *
