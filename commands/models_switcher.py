@@ -5,7 +5,8 @@ from __main__ import *
 
 
 # --- customizations functions ---
-@infinite_retry
+
+
 def models_switcher(message):
     language_code = groups[message.chat.id].lang_code
 
@@ -27,7 +28,7 @@ def models_switcher(message):
         text=templates["en"]["button_gpt35turbo.txt"].format(smile=smile),
         callback_data="switch_to_gpt35turbo",
     )
-    
+
     smile = "❌"
     if groups[message.chat.id].model == "gigachat":
         smile = "✅"
@@ -43,7 +44,7 @@ def models_switcher(message):
         text=templates["en"]["button_vicuna.txt"].format(smile=smile),
         callback_data="switch_to_vicuna",
     )
-    
+
     smile = "❌"
     if groups[message.chat.id].model == "yandexgpt":
         smile = "✅"
@@ -103,7 +104,7 @@ def switch_model(message):
         text=templates[language_code]["button_gpt_4.txt"].format(smile=smile),
         callback_data="switch_to_gpt_4",
     )
-    
+
     smile = "❌"
     if groups[message.chat.id].model == "gigachat":
         smile = "✅"
@@ -111,7 +112,7 @@ def switch_model(message):
         text="{smile} Sber GigaChat".format(smile=smile),
         callback_data="switch_to_gigachat",
     )
-    
+
     smile = "❌"
     if groups[message.chat.id].model == "yandexgpt":
         smile = "✅"
@@ -119,7 +120,6 @@ def switch_model(message):
         text="{smile} YandexGPT".format(smile=smile),
         callback_data="switch_to_yandexgpt",
     )
-    
 
     smile = "❌"
     if groups[message.chat.id].model == "gpt-3.5-turbo":

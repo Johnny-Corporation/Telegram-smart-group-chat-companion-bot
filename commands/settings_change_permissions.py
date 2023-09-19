@@ -4,26 +4,24 @@ from __main__ import *
 # ---------- Main message ----------
 
 # --- customizations functions ---
-@infinite_retry
+
+
 @bot.message_handler(commands=["special_features"], func=time_filter)
 def change_permissions_settings(message):
-
     language_code = groups[message.chat.id].lang_code
 
-    #Choose group
+    # Choose group
 
     characteristics_of_sub_markup = types.InlineKeyboardMarkup()
 
     for num, id_group in enumerate(groups[message.chat.id].groups_id):
         bot.edit_message_text(
-            templates[language_code]["customization.txt"], 
-            message.chat.id, 
-            message.message_id, 
+            templates[language_code]["customization.txt"],
+            message.chat.id,
+            message.message_id,
             reply_markup=characteristics_of_sub_markup,
             parse_mode="HTML",
         )
-
-
 
     # --- Buttons ---
     permission_asnwer_settings_button = types.InlineKeyboardButton(
@@ -48,9 +46,9 @@ def change_permissions_settings(message):
 
     # Sending message with keyboard
     bot.edit_message_text(
-        templates[language_code]["customization.txt"], 
-        message.chat.id, 
-        message.message_id, 
+        templates[language_code]["customization.txt"],
+        message.chat.id,
+        message.message_id,
         reply_markup=characteristics_of_sub_markup,
         parse_mode="HTML",
     )

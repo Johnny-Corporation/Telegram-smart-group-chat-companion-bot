@@ -36,11 +36,11 @@ skip_old_messages = True  # True until message older than bot start time receive
 ignored_messages = 0  # count number of ignored messages when bot was offline for logs
 
 
-bot_token = environ.get("BOT_API_TOKEN_OFFICIAL")
+bot_token = environ.get("BOT_API_TOKEN")
 
 yoomoney_token = environ.get("PAYMENT_RUS_TOKEN")
 
-commercial_links = {"greenlightInv": 10}    #Link: num_of_messages for it
+commercial_links = {"greenlightInv": 10}  # Link: num_of_messages for it
 
 developer_chat_IDs = environ.get("DEVELOPER_CHAT_IDS")
 if not bot_token:
@@ -126,6 +126,7 @@ def delete_pending_messages():
         bot.delete_message(m.chat.id, m.message_id)
         messages_to_be_deleted_global.remove(m)
 
+
 def infinite_retry(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -135,7 +136,9 @@ def infinite_retry(func):
             except Exception as e:
                 print(f"Exception caught: {e}, retrying...")
                 time.sleep(1)
+
     return wrapper
+
 
 # --------------- Error handling ---------------
 
@@ -589,7 +592,7 @@ def main_messages_handler(message: types.Message):
         # Checks the registration of user
         if groups[message.chat.id].activated == False:
             return
-        
+
         new_thread = threading.Thread(
             target=groups[message.chat.id].new_message, args=(message, groups)
         )

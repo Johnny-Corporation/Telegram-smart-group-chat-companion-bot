@@ -2,16 +2,19 @@ from __main__ import *
 
 
 # --- Group info ---
-@infinite_retry
+
+
 @bot.message_handler(commands=["group"], func=time_filter)
 def group(message):
     language_code = groups[message.chat.id].lang_code
 
     # --- Detect characteristics_of_sub
 
-    if message.chat.id>0:
-        bot.send_message(message.chat.id, templates[language_code]["group_info_in_private.txt"])
-        return 
+    if message.chat.id > 0:
+        bot.send_message(
+            message.chat.id, templates[language_code]["group_info_in_private.txt"]
+        )
+        return
 
     if groups[message.chat.id].lang_code == "en":
         language_code1 = "english"
@@ -21,7 +24,6 @@ def group(message):
         language_code1 = "español"
     elif groups[message.chat.id].lang_code == "de":
         language_code1 = "deutsch"
-    
 
     # --- Buttons ---
     markup = types.InlineKeyboardMarkup()
@@ -40,7 +42,6 @@ def group(message):
         callback_data="menu",
     )
     markup.add(back_button)
-    
 
     # --- If we went back from ahead settings ---
     bot.edit_message_text(
@@ -49,36 +50,50 @@ def group(message):
             username=str(bot.get_chat(groups[message.chat.id].owner_id).username),
             subscription=groups[message.chat.id].subscription,
             spent_messages=groups[message.chat.id].total_spent_messages,
-            messages_left = groups[groups[message.chat.id].owner_id].characteristics_of_sub[groups[message.chat.id].subscription]["messages_limit"]-groups[message.chat.id].total_spent_messages,
+            messages_left=groups[
+                groups[message.chat.id].owner_id
+            ].characteristics_of_sub[groups[message.chat.id].subscription][
+                "messages_limit"
+            ]
+            - groups[message.chat.id].total_spent_messages,
             language=language_code1,
         ),
-        message.chat.id, 
-        message.message_id, 
+        message.chat.id,
+        message.message_id,
         reply_markup=markup,
-        parse_mode="HTML"
+        parse_mode="HTML",
     )
+
 
 def see_settings_of_special_functions(message):
     language_code = groups[message.chat.id].lang_code
 
-
     # --- Detect the characteristics_of_sub ---
 
-    #Dynamic gemeration
-    if groups[message.chat.id].characteristics_of_sub[groups[message.chat.id].subscription]["dynamic_gen_permission"] == False:
+    # Dynamic gemeration
+    if (
+        groups[message.chat.id].characteristics_of_sub[
+            groups[message.chat.id].subscription
+        ]["dynamic_gen_permission"]
+        == False
+    ):
         dynamic_gen_en = "disabled"
     else:
         dynamic_gen_en = "enabled"
-        
-    #Voice out
-    if groups[message.chat.id].characteristics_of_sub[groups[message.chat.id].subscription]["voice_output_permission"] == True:
+
+    # Voice out
+    if (
+        groups[message.chat.id].characteristics_of_sub[
+            groups[message.chat.id].subscription
+        ]["voice_output_permission"]
+        == True
+    ):
         voice_out = "allowed"
     else:
         voice_out = "disallowed"
 
-    
     # --- Buttons ---
-    
+
     markup = types.InlineKeyboardMarkup()
     back_button = types.InlineKeyboardButton(
         text="<<<",
@@ -86,23 +101,20 @@ def see_settings_of_special_functions(message):
     )
     markup.add(back_button)
 
-
     # --- Edit 'Group' message ---
     bot.edit_message_text(
         templates[language_code]["special_functions_in_group.txt"].format(
-            dynamic_gen_en=dynamic_gen_en,
-            voice_out=voice_out
+            dynamic_gen_en=dynamic_gen_en, voice_out=voice_out
         ),
-        message.chat.id, 
-        message.message_id, 
+        message.chat.id,
+        message.message_id,
         reply_markup=markup,
-        parse_mode="HTML"
+        parse_mode="HTML",
     )
 
 
 def see_settings_of_bot_answers(message):
     language_code = groups[message.chat.id].lang_code
-
 
     # --- Detect characteristics_of_sub ---
 
@@ -111,7 +123,6 @@ def see_settings_of_bot_answers(message):
     else:
         answer_length = translate_text(language_code, "as you need")
 
-
     # --- Buttons ---
 
     markup = types.InlineKeyboardMarkup()
@@ -120,7 +131,6 @@ def see_settings_of_bot_answers(message):
         callback_data="group",
     )
     markup.add(back_button)
-
 
     # --- Edit 'Group' message ---
     bot.edit_message_text(
@@ -133,8 +143,8 @@ def see_settings_of_bot_answers(message):
             length=answer_length,
             sphere=groups[message.chat.id].sphere,
         ),
-        message.chat.id, 
-        message.message_id, 
+        message.chat.id,
+        message.message_id,
         reply_markup=markup,
-        parse_mode="HTML"
+        parse_mode="HTML",
     )

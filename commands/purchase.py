@@ -4,13 +4,12 @@ from __main__ import *
 # ---------- Main message ----------
 
 # --- Purchase ---
-@infinite_retry
-def purchase(message):
 
+
+def purchase(message):
     language_code = groups[message.chat.id].lang_code
 
-    if message.chat.type == 'private':
-
+    if message.chat.type == "private":
         purchase_markup = types.InlineKeyboardMarkup()
 
         messages_button = types.InlineKeyboardButton(
@@ -20,12 +19,11 @@ def purchase(message):
         purchase_markup.add(messages_button)
 
         if groups[message.chat.id].subscription == "Free":
-                # --- Buttons ---
+            # --- Buttons ---
             sub_button = types.InlineKeyboardButton(
                 text=templates[language_code]["button_pro.txt"],
                 callback_data="pro",
             )
-
 
             purchase_markup.add(sub_button)
 
@@ -36,14 +34,14 @@ def purchase(message):
             )
 
             purchase_markup.add(extend_sub_button)
-        
+
         promocode_button = types.InlineKeyboardButton(
             text=templates[language_code]["button_promocode.txt"],
             callback_data="promocode",
         )
 
         # Adding buttons to keyboard
-        
+
         purchase_markup.add(promocode_button)
 
         commercial_button = types.InlineKeyboardButton(
@@ -60,15 +58,19 @@ def purchase(message):
 
         # Seconding keyboard
         bot.edit_message_text(
-            templates[language_code]["purchase.txt"].format(plan=groups[message.chat.id].subscription),
-            message.chat.id, 
+            templates[language_code]["purchase.txt"].format(
+                plan=groups[message.chat.id].subscription
+            ),
+            message.chat.id,
             message.message_id,
             reply_markup=purchase_markup,
             parse_mode="HTML",
         )
 
-
     else:
-        bot.reply_to(message, templates[language_code]["buy_unavaible_in_group.txt"].format(bot_username=bot_username))
-
-
+        bot.reply_to(
+            message,
+            templates[language_code]["buy_unavaible_in_group.txt"].format(
+                bot_username=bot_username
+            ),
+        )

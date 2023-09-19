@@ -6,7 +6,6 @@ from __main__ import *
 
 @bot.message_handler(commands=["bot_answers_settings"], func=time_filter)
 @error_handler
-@infinite_retry
 def bot_answers_settings(message):
     language_code = groups[message.chat.id].lang_code
 
@@ -64,20 +63,20 @@ def bot_answers_settings(message):
         message.chat.id,
         message.message_id,
         reply_markup=set_up_markup,
-        parse_mode="HTML",)
-    
-
+        parse_mode="HTML",
+    )
 
 
 # ---------- From buttons messages ----------
 
 
 # --- Set probability ---
-@infinite_retry
+
+
 def set_probability(message):
     language_code = groups[message.chat.id].lang_code
 
-    #Back to settings_bot_anwser
+    # Back to settings_bot_anwser
     markup = types.InlineKeyboardMarkup()
     back_button = types.InlineKeyboardButton(
         text="<<<",
@@ -89,21 +88,22 @@ def set_probability(message):
         templates[language_code]["change_probability.txt"].format(
             probability=groups[message.chat.id].trigger_probability
         ),
-        message.chat.id, 
+        message.chat.id,
         message.message_id,
         reply_markup=markup,
-        parse_mode="HTML"
+        parse_mode="HTML",
     )
     reply_blacklist[message.chat.id].append(bot_reply.message_id)
     bot.register_for_reply(bot_reply, set_probability_reply_handler)
 
 
 # --- Set temp ---
-@infinite_retry
+
+
 def set_temperature(message):
     language_code = groups[message.chat.id].lang_code
 
-    #Back to settings_bot_anwser
+    # Back to settings_bot_anwser
     markup = types.InlineKeyboardMarkup()
     back_button = types.InlineKeyboardButton(
         text="<<<",
@@ -115,20 +115,22 @@ def set_temperature(message):
         templates[language_code]["change_temp.txt"].format(
             temperature=groups[message.chat.id].temperature
         ),
-        message.chat.id, 
-        message.message_id, 
-        reply_markup = markup,
+        message.chat.id,
+        message.message_id,
+        reply_markup=markup,
         parse_mode="HTML",
     )
     reply_blacklist[message.chat.id].append(bot_reply.message_id)
     bot.register_for_reply(bot_reply, set_temp_reply_handler)
 
+
 # --- Set frequency penalty (variety of answers) ---
-@infinite_retry
+
+
 def set_frequency_penalty(message):
     language_code = groups[message.chat.id].lang_code
 
-    #Back to settings_bot_anwser
+    # Back to settings_bot_anwser
     markup = types.InlineKeyboardMarkup()
     back_button = types.InlineKeyboardButton(
         text="<<<",
@@ -140,9 +142,9 @@ def set_frequency_penalty(message):
         templates[language_code]["set_frequency_penalty.txt"].format(
             frequency_penalty=groups[message.chat.id].frequency_penalty
         ),
-        message.chat.id, 
-        message.message_id, 
-        reply_markup = markup,
+        message.chat.id,
+        message.message_id,
+        reply_markup=markup,
         parse_mode="HTML",
     )
     reply_blacklist[message.chat.id].append(bot_reply.message_id)
@@ -150,11 +152,12 @@ def set_frequency_penalty(message):
 
 
 # --- Set presence penalty (creativity of answers) ---
-@infinite_retry
+
+
 def set_presence_penalty(message):
     language_code = groups[message.chat.id].lang_code
 
-    #Back to settings_bot_anwser
+    # Back to settings_bot_anwser
     markup = types.InlineKeyboardMarkup()
     back_button = types.InlineKeyboardButton(
         text="<<<",
@@ -166,9 +169,9 @@ def set_presence_penalty(message):
         templates[language_code]["set_presence_penalty.txt"].format(
             presence_penalty=groups[message.chat.id].presence_penalty
         ),
-        message.chat.id, 
+        message.chat.id,
         message.message_id,
-        reply_markup = markup,
+        reply_markup=markup,
         parse_mode="HTML",
     )
     reply_blacklist[message.chat.id].append(bot_reply.message_id)
@@ -176,7 +179,8 @@ def set_presence_penalty(message):
 
 
 # --- Set answers' length ---
-@infinite_retry
+
+
 def set_length_answer(message):
     language_code = groups[message.chat.id].lang_code
 
@@ -198,7 +202,6 @@ def set_length_answer(message):
         text="<<<",
         callback_data="settings_bot_answers",
     )
-    
 
     length_markup.add(long_button)
     length_markup.add(medium_button)
@@ -208,19 +211,20 @@ def set_length_answer(message):
 
     bot.edit_message_text(
         templates[language_code]["set_length_answer.txt"],
-        message.chat.id, 
-        message.message_id, 
+        message.chat.id,
+        message.message_id,
         reply_markup=length_markup,
         parse_mode="HTML",
     )
 
 
 # --- Set sphere of conversation ---
-@infinite_retry
+
+
 def set_sphere_command(message):
     language_code = groups[message.chat.id].lang_code
 
-    #Back to settings
+    # Back to settings
     markup = types.InlineKeyboardMarkup()
     back_button = types.InlineKeyboardButton(
         text="<<<",
@@ -234,9 +238,9 @@ def set_sphere_command(message):
         sphere_in = groups[message.chat.id].sphere
     bot_reply = bot.edit_message_text(
         templates[language_code]["set_sphere.txt"].format(sphere=sphere_in),
-        message.chat.id, 
-        message.message_id, 
-        reply_markup = markup,
+        message.chat.id,
+        message.message_id,
+        reply_markup=markup,
         parse_mode="HTML",
     )
     reply_blacklist[message.chat.id].append(bot_reply.message_id)

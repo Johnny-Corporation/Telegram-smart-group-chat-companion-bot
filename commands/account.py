@@ -2,14 +2,15 @@ from __main__ import *
 
 
 # --- Help ---
-@infinite_retry
+
+
 def account(message):
     language_code = groups[message.chat.id].lang_code
 
     left_messages = (
-        groups[message.chat.id].characteristics_of_sub[groups[message.chat.id].subscription][
-            "messages_limit"
-        ]
+        groups[message.chat.id].characteristics_of_sub[
+            groups[message.chat.id].subscription
+        ]["messages_limit"]
         - groups[message.chat.id].total_spent_messages
     )
     if left_messages < 0:

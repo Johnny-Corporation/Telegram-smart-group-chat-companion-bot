@@ -4,26 +4,28 @@ from __main__ import *
 # ---------- Main message ----------
 
 # --- customizations functions ---
-@infinite_retry
-def special_features_settings(message):
 
+
+def special_features_settings(message):
     language_code = groups[message.chat.id].lang_code
 
     customization_markup = types.InlineKeyboardMarkup()
 
     # --- Buttons ---
-    smile='❌'
+    smile = "❌"
     if groups[message.chat.id].dynamic_gen == True:
-        smile='✅'
+        smile = "✅"
     dyn_gen_button = types.InlineKeyboardButton(
-        text=templates[language_code]["button_dyn_gen.txt"].format(smile=smile), callback_data="dyn_gen"
+        text=templates[language_code]["button_dyn_gen.txt"].format(smile=smile),
+        callback_data="dyn_gen",
     )
 
-    smile='❌'
+    smile = "❌"
     if groups[message.chat.id].voice_out_enabled == True:
-        smile='✅'
+        smile = "✅"
     voice_out_button = types.InlineKeyboardButton(
-        text=templates[language_code]["button_voice_out.txt"].format(smile=smile), callback_data="voice_out"
+        text=templates[language_code]["button_voice_out.txt"].format(smile=smile),
+        callback_data="voice_out",
     )
     back_button = types.InlineKeyboardButton(
         text="<<<",
@@ -37,9 +39,9 @@ def special_features_settings(message):
 
     # Sending message with keyboard
     bot.edit_message_text(
-        templates[language_code]["customization.txt"], 
-        message.chat.id, 
-        message.message_id, 
+        templates[language_code]["customization.txt"],
+        message.chat.id,
+        message.message_id,
         reply_markup=customization_markup,
         parse_mode="HTML",
     )
@@ -48,7 +50,8 @@ def special_features_settings(message):
 # ---------- Ahead functions ----------
 
 # --- Dynamic generation ---
-@infinite_retry
+
+
 @error_handler
 def enable_disable_dynamic_generation(message):
     language_code = groups[message.chat.id].lang_code
@@ -57,24 +60,26 @@ def enable_disable_dynamic_generation(message):
 
     groups[message.chat.id].dynamic_gen = not groups[message.chat.id].dynamic_gen
     # --- Buttons ---
-    smile='❌'
+    smile = "❌"
     if groups[message.chat.id].dynamic_gen == True:
-        smile='✅'
+        smile = "✅"
     dyn_gen_button = types.InlineKeyboardButton(
-        text=templates[language_code]["button_dyn_gen.txt"].format(smile=smile), callback_data="dyn_gen"
+        text=templates[language_code]["button_dyn_gen.txt"].format(smile=smile),
+        callback_data="dyn_gen",
     )
 
-    smile='❌'
+    smile = "❌"
     if groups[message.chat.id].voice_out_enabled == True:
-        smile='✅'
+        smile = "✅"
     voice_out_button = types.InlineKeyboardButton(
-        text=templates[language_code]["button_voice_out.txt"].format(smile=smile), callback_data="voice_out"
+        text=templates[language_code]["button_voice_out.txt"].format(smile=smile),
+        callback_data="voice_out",
     )
     back_button = types.InlineKeyboardButton(
         text="<<<",
         callback_data="settings",
     )
-    
+
     # Adding buttons to keyboard
     customization_markup.add(dyn_gen_button)
     customization_markup.add(voice_out_button)
@@ -82,42 +87,47 @@ def enable_disable_dynamic_generation(message):
 
     # Sending message with keyboard
     bot.edit_message_text(
-        templates[language_code]["customization.txt"], 
-        message.chat.id, 
-        message.message_id, 
+        templates[language_code]["customization.txt"],
+        message.chat.id,
+        message.message_id,
         reply_markup=customization_markup,
         parse_mode="HTML",
     )
+
+
 # --- Voice out ---
-@infinite_retry
+
+
 @error_handler
 def enable_disable_voice_out(message):
-
     language_code = groups[message.chat.id].lang_code
-
 
     customization_markup = types.InlineKeyboardMarkup()
 
-    groups[message.chat.id].voice_out_enabled = not groups[message.chat.id].voice_out_enabled
+    groups[message.chat.id].voice_out_enabled = not groups[
+        message.chat.id
+    ].voice_out_enabled
     # --- Buttons ---
-    smile='❌'
+    smile = "❌"
     if groups[message.chat.id].dynamic_gen == True:
-        smile='✅'
+        smile = "✅"
     dyn_gen_button = types.InlineKeyboardButton(
-        text=templates[language_code]["button_dyn_gen.txt"].format(smile=smile), callback_data="dyn_gen"
+        text=templates[language_code]["button_dyn_gen.txt"].format(smile=smile),
+        callback_data="dyn_gen",
     )
 
-    smile='❌'
+    smile = "❌"
     if groups[message.chat.id].voice_out_enabled == True:
-        smile='✅'
+        smile = "✅"
     voice_out_button = types.InlineKeyboardButton(
-        text=templates[language_code]["button_voice_out.txt"].format(smile=smile), callback_data="voice_out"
+        text=templates[language_code]["button_voice_out.txt"].format(smile=smile),
+        callback_data="voice_out",
     )
     back_button = types.InlineKeyboardButton(
         text="<<<",
         callback_data="settings",
     )
-    
+
     # Adding buttons to keyboard
     customization_markup.add(dyn_gen_button)
     customization_markup.add(voice_out_button)
@@ -125,9 +135,9 @@ def enable_disable_voice_out(message):
 
     # Sending message with keyboard
     bot.edit_message_text(
-        templates[language_code]["customization.txt"], 
-        message.chat.id, 
-        message.message_id, 
+        templates[language_code]["customization.txt"],
+        message.chat.id,
+        message.message_id,
         reply_markup=customization_markup,
         parse_mode="HTML",
     )

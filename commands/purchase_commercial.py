@@ -1,16 +1,16 @@
 from __main__ import *
 
-@infinite_retry
-def commercial(message):
 
+def commercial(message):
     language_code = groups[message.chat.id].lang_code
 
     commercial_markup = types.InlineKeyboardMarkup()
 
     for suggestion in commercial_links:
-
         button = types.InlineKeyboardButton(
-            text=templates[language_code]["button_messages.txt"].format(num_of_messages=commercial_links[suggestion]),
+            text=templates[language_code]["button_messages.txt"].format(
+                num_of_messages=commercial_links[suggestion]
+            ),
             callback_data=f"commercialㅤ{suggestion}ㅤ{commercial_links[suggestion]}",
         )
         commercial_markup.add(button)
@@ -29,7 +29,7 @@ def commercial(message):
         parse_mode="HTML",
     )
 
-@infinite_retry
+
 def subscribe_to_channel(message, num, channel_username):
     language_code = groups[message.chat.id].lang_code
 
@@ -47,7 +47,9 @@ def subscribe_to_channel(message, num, channel_username):
     commercial_markup.add(back_button)
 
     bot.edit_message_text(
-        templates[language_code]["purchase_commercial_subscribe_to_channel.txt"].format(num=num, link=f"https://t.me/{channel_username}"),
+        templates[language_code]["purchase_commercial_subscribe_to_channel.txt"].format(
+            num=num, link=f"https://t.me/{channel_username}"
+        ),
         message.chat.id,
         message.message_id,
         reply_markup=commercial_markup,

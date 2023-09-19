@@ -2,9 +2,10 @@ from __main__ import *
 
 
 # --- Report bug ---
-@infinite_retry
+
+
 @error_handler
-def Feedback(message):
+def report_bug(message):
     language_code = groups[message.chat.id].lang_code
 
     markup = types.InlineKeyboardMarkup()
@@ -14,6 +15,11 @@ def Feedback(message):
     )
     markup.add(button1)
 
-    bot_reply = bot.edit_message_text(templates[language_code]["report_bug.txt"], message.chat.id, message.message_id, reply_markup=markup)
+    bot_reply = bot.edit_message_text(
+        templates[language_code]["report_bug.txt"],
+        message.chat.id,
+        message.message_id,
+        reply_markup=markup,
+    )
     reply_blacklist[message.chat.id].append(bot_reply.message_id)
     bot.register_for_reply(bot_reply, bug_report_reply_handler)
