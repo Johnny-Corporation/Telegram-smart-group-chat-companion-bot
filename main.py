@@ -36,7 +36,7 @@ skip_old_messages = True  # True until message older than bot start time receive
 ignored_messages = 0  # count number of ignored messages when bot was offline for logs
 
 
-bot_token = environ.get("BOT_API_TOKEN_OFFICIAL_OLD")
+bot_token = environ.get("BOT_API_TOKEN")
 
 
 yoomoney_token = environ.get("PAYMENT_RUS_TOKEN")
@@ -126,19 +126,6 @@ def delete_pending_messages():
     for m in messages_to_be_deleted_global:
         bot.delete_message(m.chat.id, m.message_id)
         messages_to_be_deleted_global.remove(m)
-
-
-def infinite_retry(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        while True:
-            try:
-                return func(*args, **kwargs)
-            except Exception as e:
-                print(f"Exception caught: {e}, retrying...")
-                time.sleep(1)
-
-    return wrapper
 
 
 # --------------- Error handling ---------------
