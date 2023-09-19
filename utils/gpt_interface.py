@@ -205,20 +205,24 @@ def create_chat_completion(
     except openai.error.APIError as e:
         logger.error(f"OpenAI API returned an API Error: {e}")
         functions.send_to_developers(
-            "❗❗Server error occurred❗❗ Using Lama without functions",
+            "❗❗Server error occurred❗❗ Using GPT without functions",
             johnny.bot,
             environ["DEVELOPER_CHAT_IDS"].split(","),
         )
-        johnny.messages_history = []
-        lama_prompt = build_prompt_for_lama(messages)
-        completion = get_lama_answer(
-            lama_prompt,
-            system_prompt=system_content,
-            temperature=temperature,
-            top_p=top_p,
+        johnny.messages_history.pop()
+        del chat_completion_arguments["functions"]
+        del chat_completion_arguments["function_call"]
+        previous_messages = [
+            {
+                "role": "system",
+                "content": system_content,
+            }
+        ]
+        previous_messages.extend(
+            get_messages_in_official_format(johnny.messages_history)
         )
-        johnny.translate_lama_answer = True
-        logger.info(f"Lama response:{completion}")
+        chat_completion_arguments["messages"] = previous_messages
+        completion = openai.ChatCompletion.create(**chat_completion_arguments)
 
     except openai.error.APIConnectionError as e:
         logger.error(f"Failed to connect to OpenAI API: {e}")

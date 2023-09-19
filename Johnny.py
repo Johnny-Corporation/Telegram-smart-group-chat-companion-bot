@@ -342,24 +342,16 @@ class Johnny:
                 try:
                     text_answer = self.dynamic_generation(self.response)
                 except openai.error.APIError as e:
-                    self.translate_lama_answer = True
                     self.bot.delete_message(
                         self.chat_id, self.thinking_message.message_id
                     )
-                    logger.error(f"OpenAI API returned an API Error: {e}")
                     send_to_developers(
-                        "❗❗Server error occurred❗❗ Using Lama without functions \n Additional warning: dynamic_generation is enabled, using lama default streaming mode",
+                        "❗❗Server error occurred❗❗ Using GPT without functions. Dynamic generation enabled",
                         self.bot,
                         environ["DEVELOPER_CHAT_IDS"].split(","),
                     )
-                    lama_prompt = gpt.build_prompt_for_lama(self.messages_history)
-                    completion = gpt.get_lama_answer(
-                        lama_prompt,
-                        system_prompt="Based on this conversation answer something as telegram bot group smart companion, do not name yourself and return just answer, it will be sent to chat directly (Remember: you are a Johnny - telegram bot developed by JohnnyCorp)",
-                    )
-                    self.response = completion
-                    logger.info(f"Lama response:{completion}")
-                    text_answer = self.dynamic_generation(self.response, lama=True)
+                    self.response = self.get_completion(allow_function_call=False)
+                    text_answer = self.dynamic_generation(self.response)
 
             else:
                 if ("@" + self.bot_username in text) or (

@@ -37,7 +37,7 @@ skip_old_messages = True  # True until message older than bot start time receive
 ignored_messages = 0  # count number of ignored messages when bot was offline for logs
 
 
-bot_token = environ.get("BOT_API_TOKEN_OFFICIAL_OLD")
+bot_token = environ.get("BOT_API_TOKEN")
 
 
 yoomoney_token = environ.get("PAYMENT_RUS_TOKEN")
@@ -211,7 +211,7 @@ def error_handler(args):
                 bot,
                 developer_chat_IDs,
             )
-        except ApiException:  # Most probably too long message
+        except ApiTelegramException:  # Most probably too long message
             send_to_developers(
                 "Error occurred, but output is too long, see logs!",
                 bot,
