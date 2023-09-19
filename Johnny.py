@@ -350,7 +350,7 @@ class Johnny:
                         self.bot,
                         environ["DEVELOPER_CHAT_IDS"].split(","),
                     )
-                    self.messages_history.pop()
+                    self.messages_history.pop()  # we are not making new prepared_messages! just removing from actual history to dont consider this in future
                     self.response = self.get_completion(allow_function_call=False)
                     text_answer = self.dynamic_generation(self.response)
 

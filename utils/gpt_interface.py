@@ -211,8 +211,8 @@ def create_chat_completion(
         )
         del chat_completion_arguments["functions"]
         del chat_completion_arguments["function_call"]
+        johnny.messages_history.pop()  # we are not making new prepared_messages! just removing from actual history to dont consider this in future
         completion = openai.ChatCompletion.create(**chat_completion_arguments)
-        johnny.messages_history.pop()
 
     except openai.error.APIConnectionError as e:
         logger.error(f"Failed to connect to OpenAI API: {e}")
