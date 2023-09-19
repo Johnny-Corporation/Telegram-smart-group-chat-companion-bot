@@ -138,6 +138,7 @@ class Johnny:
     def trigger_probability(self, val):
         self.trigger_probability_ = val
         print("=====================================")
+        # This line does nothing! Because load_buttons just returns markup.
         load_buttons(telebot_types, groups, self.chat_id, self.lang_code, self.owner_id)
 
     def get_completion(self, allow_function_call=None):
@@ -350,7 +351,8 @@ class Johnny:
                         self.bot,
                         environ["DEVELOPER_CHAT_IDS"].split(","),
                     )
-                    self.messages_history.pop()  # we are not making new prepared_messages! just removing from actual history to dont consider this in future
+                    # self.messages_history.pop()  # we are not making new prepared_messages! just removing from actual history to dont consider this in future
+                    self.messages_history.clear()
                     self.response = self.get_completion(allow_function_call=False)
                     text_answer = self.dynamic_generation(self.response)
 
