@@ -437,10 +437,6 @@ def load_buttons(types, groups, chat_id, language_code, owner_id=None):
         markup.add(itembtn1)
 
         if groups[chat_id].enabled == True:
-            text3 = translate_text(language_code, "ㅤ🔎 View current modeㅤ")
-            itembtn3 = types.KeyboardButton(text3)
-            groups[chat_id].button_commands.append(text3)
-            markup.add(itembtn3)
             text4 = translate_text(language_code, "ㅤ🛠 Change modeㅤ")
             itembtn4 = types.KeyboardButton(text4)
             groups[chat_id].button_commands.append(text4)
