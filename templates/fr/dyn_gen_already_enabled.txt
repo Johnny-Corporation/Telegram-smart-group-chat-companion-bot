@@ -1,1 +1,0 @@
-Génération dynamique de messages déjà activée. Il sera désactivé.

@@ -1,4 +1,0 @@
-Vous disposez d'un forfait <i>{plan}</i>.
-Voilà donc le prix pour vous : <i>{price}</i>
-
-<i>Pour connaître les forfaits :  /subs_list </i>

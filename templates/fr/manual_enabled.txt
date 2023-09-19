@@ -1,5 +1,0 @@
-Le mode manuel est activé.
-
-Désormais, Bot répond lorsque vous le <b>taguez</b> ou lorsque vous <b>répondez à son message</b>.
-
- /disable_manual pour quitter ce mode.

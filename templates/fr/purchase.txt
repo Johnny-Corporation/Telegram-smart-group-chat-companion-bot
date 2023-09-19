@@ -1,3 +1,0 @@
-Vous disposez actuellement d'un forfait :<b> {plan} </b>. Voici les tarifs que nous proposons :
-
-<i>Pour connaître les tarifs :  /subs_list </i>

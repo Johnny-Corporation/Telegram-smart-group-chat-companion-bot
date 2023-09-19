@@ -1,3 +1,0 @@
-La boîte de dialogue de mode a été activée. Johnny prêt à discuter avec vous.
-
- /disable_dialog - pour quitter ce mode

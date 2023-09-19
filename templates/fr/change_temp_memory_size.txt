@@ -1,4 +1,0 @@
-Veuillez saisir une valeur <b>supérieure à 0 en réponse à ce message</b>.
-Johnny concerne les messages en mémoire temporaire par requête.
-
-<i>Configurer {memory} maintenant</i>

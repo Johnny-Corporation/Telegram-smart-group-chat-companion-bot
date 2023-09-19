@@ -1,5 +1,0 @@
-Pour recevoir {num} messages gratuits, vous devez vous abonner à cette chaîne :
-
-➡️ {link} ⬅️
-
-Lorsque vous avez terminé, appuyez sur le bouton⬇️

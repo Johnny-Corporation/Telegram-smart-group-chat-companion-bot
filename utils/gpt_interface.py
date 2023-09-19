@@ -209,20 +209,10 @@ def create_chat_completion(
             johnny.bot,
             environ["DEVELOPER_CHAT_IDS"].split(","),
         )
-        johnny.messages_history.pop()
         del chat_completion_arguments["functions"]
         del chat_completion_arguments["function_call"]
-        previous_messages = [
-            {
-                "role": "system",
-                "content": system_content,
-            }
-        ]
-        previous_messages.extend(
-            get_messages_in_official_format(johnny.messages_history)
-        )
-        chat_completion_arguments["messages"] = previous_messages
         completion = openai.ChatCompletion.create(**chat_completion_arguments)
+        johnny.messages_history.pop()
 
     except openai.error.APIConnectionError as e:
         logger.error(f"Failed to connect to OpenAI API: {e}")

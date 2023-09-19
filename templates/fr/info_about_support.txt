@@ -1,5 +1,0 @@
-Merci pour votre soutien. Vous souhaitez faire un don : {cost} roubles.
-
-<i> /subs_list pour en savoir plus</i>
-
-Appuyez sur le bouton pour acheter :

@@ -1,5 +1,0 @@
-Désolé, une erreur inattendue s'est produite. Veuillez essayer de réinitialiser la mémoire ou attendre quelques secondes et répéter la demande, cela aide généralement.
-
-Le robot fonctionne toujours !
-
-Vous pouvez nous aider en utilisant la commande <i> /report_bug </i> ci-dessous et en fournissant quelques détails.

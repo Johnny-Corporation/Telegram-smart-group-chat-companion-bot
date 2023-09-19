@@ -1,2 +1,0 @@
-Nombre de suggestions par GPT, n'affecte pas le temps de génération
-Lorsqu'elle est définie sur 1, la suggestion est détaillée et détaillée.

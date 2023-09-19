@@ -1,3 +1,0 @@
-L'utilisateur {invited_user} s'est inscrit et a utilisé votre lien.
-
-Vous bénéficiez d'une réduction de 5% sur les messages/abonnement !

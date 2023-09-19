@@ -1,7 +1,0 @@
-<b>Personnalisation</b>
-
-La génération dynamique est {dynamic_gen_en}.
-
-La sortie vocale est {voice_out}
-
-Dans <i> Paramètres/opportunités spéciales</i>, vous pouvez le modifier

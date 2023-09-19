@@ -1,4 +1,0 @@
-Saisissez une valeur flottante <b>de 0</b> (aucune réponse) <b>à 1></b> (réponse à chaque message) <b>en réponse à ce message</b>.
-Le bot répondra aussi souvent que cette valeur est élevée.
-
-<i>Configurer {probability} maintenant</i>
