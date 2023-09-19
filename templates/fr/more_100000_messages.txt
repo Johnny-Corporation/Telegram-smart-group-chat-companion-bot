@@ -1,0 +1,3 @@
+Toutes nos félicitations! Vous avez reçu plus de 100 messages !
+
+Vous avez maintenant {messages} messages.

@@ -1,0 +1,2 @@
+Désolé, mais l'achat de l'abonnement n'est pas disponible en groupe.
+Vous pouvez acheter l'abonnement en messages privés au bot : @{bot_username}

@@ -1,0 +1,10 @@
+👨 <i>Compte : {first_name} </i>
+
+➡ <b>Forfait : {subscription}</b>
+
+📨 <b>J'ai laissé {left_messages} messages</b>
+ 🔹<i>Dans <b>Achats</b>, le propriétaire peut acheter davantage</i>🔹
+
+👥 Groupes : {name_of_groups}
+
+⬇ <i>Ci-dessous, vous pouvez en voir plus</i> ⬇

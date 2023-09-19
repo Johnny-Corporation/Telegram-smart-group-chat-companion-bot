@@ -1,0 +1,6 @@
+Vous achetez un abonnement PRO.
+Coût : {cost} roubles.
+
+Remises actuelles :
+{discounts}
+Appuyez sur le bouton pour acheter :

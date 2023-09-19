@@ -1,0 +1,3 @@
+Votre bot fonctionne en mode dialogue !💥
+
+Changez de mode ou désactivez-le, vous pouvez ci-dessous !

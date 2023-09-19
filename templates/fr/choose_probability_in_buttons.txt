@@ -1,0 +1,2 @@
+Choisissez la probabilité que Johnny vous réponde.
+<i>dans quelle mesure cette valeur est élevée, à quelle fréquence le Bot répondra</i>

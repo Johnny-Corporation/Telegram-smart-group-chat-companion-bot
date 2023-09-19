@@ -1,0 +1,4 @@
+Saisissez une valeur <b>de 0</b> (la moins variée) <b>à 2</b> (la plus variée) <b>en réponse à ce message</b>.
+La diversité des réponses rend le bot plus diversifié.
+
+<i>Configurer {frequency_penalty} maintenant</i>

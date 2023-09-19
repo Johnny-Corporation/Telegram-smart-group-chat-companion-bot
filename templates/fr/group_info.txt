@@ -1,0 +1,13 @@
+👥 <i>Groupe : {group_name}</i>
+👤 <b>Propriétaire : {username}</b>
+
+😛 Le bot fonctionne sur la langue {language}.
+
+<b>INFOS sur le propriétaire</b>
+
+<b>Abonnement : {subscription} </b>
+
+🔷 Le groupe a dépensé <b>{spent_messages} messages</b>.
+
+🔷 Messages laissés : {messages_left}
+ 🔹<i>Dans les <b>achats</b>, le propriétaire peut acheter davantage</i>🔹

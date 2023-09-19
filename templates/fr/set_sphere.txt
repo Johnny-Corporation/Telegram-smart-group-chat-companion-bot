@@ -1,0 +1,5 @@
+Saisissez <b>le thème de votre conversation (par exemple, professionnel) en réponse au message</b>.
+
+Bot ne répondra que lorsque vous discuterez de ce thème. Cette fonctionnalité fonctionne uniquement en mode Auto.
+
+<i>Configurer maintenant : {sphere}</i>

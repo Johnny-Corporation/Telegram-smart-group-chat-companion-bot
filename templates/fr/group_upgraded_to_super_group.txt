@@ -1,0 +1,1 @@
+Votre groupe a été mis à niveau vers un super-groupe, ne vous inquiétez pas, il s'agit d'une fonctionnalité principale du télégramme. Veuillez réinitialiser le bot en le supprimant et en l'ajoutant au groupe !

@@ -1,0 +1,1 @@
+Veuillez vous inscrire sur @{bot_username}

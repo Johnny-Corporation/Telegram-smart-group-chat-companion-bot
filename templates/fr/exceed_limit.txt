@@ -1,0 +1,4 @@
+La limite de la mémoire temporaire a été dépassée.
+Vous pouvez désormais recevoir {temp_memory_size} messages au maximum.
+
+<i> /subs_list pour connaître les limites</i>

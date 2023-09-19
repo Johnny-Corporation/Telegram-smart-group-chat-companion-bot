@@ -1,0 +1,1 @@
+Entrez la langue soit sous forme de code (ex. "en") ou de nom (ex. "espagnol") en séparant plusieurs langues par une virgule comme en,de

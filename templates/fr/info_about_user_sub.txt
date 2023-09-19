@@ -1,0 +1,18 @@
+<i>Compte : {first_name} </i>
+
+<b>Abonnement : {subscription}</b>
+
+Messages : recevez {messages} messages gratuits.
+<b>J'ai laissé {left_messages} messages</b>
+
+Prix ​​sur 1 message : {price_of_message}
+
+Groupes : {name_of_groups}
+
+Génération dynamique {dyn_gen_per}
+
+La voix de Johnny est {voice_out_per}
+
+Mise en place d'une sphère de conversion : {set_up_per}
+
+<i> /subs_list pour en savoir plus</i>

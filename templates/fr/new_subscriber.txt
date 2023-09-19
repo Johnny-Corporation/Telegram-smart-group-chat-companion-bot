@@ -1,0 +1,3 @@
+Toutes nos félicitations! Vous disposez désormais d'un abonnement : <b>{sub}</b>
+
+<i> Accédez à Compte pour voir les modifications</i>

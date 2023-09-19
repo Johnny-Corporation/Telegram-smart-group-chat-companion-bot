@@ -1,0 +1,1 @@
+Recevoir {num_of_messages} messages

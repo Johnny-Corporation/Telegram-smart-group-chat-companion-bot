@@ -1,0 +1,32 @@
+Hé !👋
+Je m'appelle Johnny – un chatbot intelligent doté d'une IA🤖
+
+Je peux poursuivre la conversation dans n'importe quel format :
+🔸 texte
+🔸 messages vocaux🎵 (je peux écouter et envoyer des messages vocaux)
+🔸notes vidéo🎬 ! (Je peux voir et écouter les cercles de télégarm)
+🔸images🖼️! (Je peux décrire vos images et en détecter du texte, je peux également les générer pour vous)
+🔸fichiers📄 ! (Je peux lire le haut des fichiers xls, xlsx, docx, pdf, txt et autres !)
+
+Je suis une puissante combinaison de modèles de textes neuronaux🤖
+🔹 [GPT-4](https://openai.com/research/gpt-4)
+🔹 [GPT-3.5-turbo](https://openai.com/blog/gpt-3-5-turbo-fine-tuning-and-api-updates)
+🔹 [Lama](https://ai.meta.com/llama/)
+🔹 [Vigogne](https://lmsys.org/blog/2023-03-30-vicuna/)
+🔹 [Sber GigaChat](https://developers.sber.ru/portal/products/gigachat)
+🔹 [YandexGPT2](https://ya.ru/gpt/2)
+
+Principales caractéristiques:
+🔹Internet entier jusqu'en 2022🤓
+🔹 Rechercher de nouvelles informations sur Internet🌐
+🔹 Compréhension du contexte et optimisation de la mémoire spécialement améliorées
+🔹 Blocage de thème personnalisé (vous ne pouvez définir qu'un seul thème spécifique et je vous répondrair uniquement des questions connexes)
+🔹 Génération dynamique - identique à ChatGPT
+🔹 [Midjourney 5](https://www.midjourney.com/) pour la génération d'images
+
+Et notre fonctionnalité qui tue : 🥁🥁🥁
+⚡ Interactions en ligne ! ⚡
+
+Vous pouvez discuter comme dans les messages privés👤, comme dans les discussions de groupe👥 – ajoutez-le simplement au groupe !
+
+Je suis prêt à vous aider et à discuter de vos idées !🔥🔥🔥

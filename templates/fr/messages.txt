@@ -1,0 +1,1 @@
+Vous avez dépensé {spent_messages} messages. c'est environ {dollars}$

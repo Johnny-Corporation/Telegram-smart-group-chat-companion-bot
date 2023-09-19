@@ -32,8 +32,3 @@ def change_language_reply_handler(inner_message):
         translate_templates(language_code)
 
         bot.send_message(chat_id, "💛")
-
-        bot.send_message(
-            chat_id,
-            templates[lang_code[0]]["language_applied.txt"],
-        )

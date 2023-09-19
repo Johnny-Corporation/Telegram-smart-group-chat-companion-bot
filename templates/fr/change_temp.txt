@@ -1,0 +1,4 @@
+Veuillez saisir une valeur <b>de 0</b> (la plus déterministe) <b>à 2</b> (la plus aléatoire) <b>en réponse à ce message</b>.
+Ce paramètre définit le degré de caractère aléatoire des réponses GPT.
+
+<i>Configurer {temperature} maintenant</i>

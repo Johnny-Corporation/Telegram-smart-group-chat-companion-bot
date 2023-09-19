@@ -1,0 +1,10 @@
+Ici vous pouvez choisir les suggestions en mode inline !
+
+💡 Comment utiliser efficacement l'inline :
+
+1️⃣ Posez une question en supposant plusieurs réponses
+Exemple : Idée cadeau
+
+2️⃣ Soyez le plus court possible
+❌ Faux : proposez-moi des idées sympas pour des desserts savoureux !
+✅ À droite : des desserts savoureux
