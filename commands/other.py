@@ -20,8 +20,9 @@ def other(message):
     markup.add(button1, button2)
     button2 = types.InlineKeyboardButton(
         text=templates[language_code]["button_support_us.txt"],
-        url="https://t.me/JohnnyCorp",
+        url="https://boosty.to/johnnycorp?postsTagsIds=67636",
     )
+    markup.add(button2)
     button2 = types.InlineKeyboardButton(
         text=templates[language_code]["button_contact_developer.txt"],
         url="https://t.me/JohnnyCorp",
@@ -42,7 +43,7 @@ def other(message):
     # Initialize buttons
 
     bot.edit_message_text(
-        templates[language_code]["change_bot_settings.txt"],
+        templates[language_code]["other.txt"],
         message.chat.id,
         message.message_id,
         reply_markup=markup,
