@@ -1,6 +1,7 @@
 from __main__ import *
 from os import _exit
 from utils.functions_for_developers import *
+from utils.functions import translate_text
 
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -403,6 +404,23 @@ def keyboard_buttons_handler(call):
             )
             reply_blacklist[call.message.chat.id].append(reply_to.message_id)
             bot.register_for_reply(reply_to, add_commercial_link_reply_handler)
+
+        case "ask_newsletter":
+            ask_newsletter(call.message)
+
+        case "decline_send_newsletter":
+            bot.send_message(
+                call.message.chat.id,
+                translate_text(
+                    groups[call.message.chat.id].lang_code,
+                    "Canceled. You can create new now",
+                ),
+            )
+            groups[call.message.chat.id].prepared_newsletter = None
+
+        case "confirm_send_newsletter":
+            send_newsletter(call.message)
+
         # Purchase the subscription
 
         case "free_messages":

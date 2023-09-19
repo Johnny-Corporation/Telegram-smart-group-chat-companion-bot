@@ -78,6 +78,11 @@ def dev_tools(message, edit: bool = False):
     )
     dev_tools_markup.add(button)
     button = types.InlineKeyboardButton(
+        text=translate_text(groups[chat_id].lang_code, "Send newsletter to all users"),
+        callback_data="ask_newsletter",
+    )
+    dev_tools_markup.add(button)
+    button = types.InlineKeyboardButton(
         text=translate_text(groups[chat_id].lang_code, "💀Close dev tools"),
         callback_data="close_message",
     )
