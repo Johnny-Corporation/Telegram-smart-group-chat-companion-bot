@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from telebot import TeleBot
 from telebot.types import Message
+import telebot.types as telebot_types
 import soundfile as sf
 from utils.db_controller import Controller
 import utils.gpt_interface as gpt
@@ -14,6 +15,7 @@ from os import environ, makedirs
 import threading
 import tiktoken
 import openai
+from __main__ import groups
 
 from utils.functions import (
     describe_image,
@@ -22,6 +24,7 @@ from utils.functions import (
     describe_image2,
     send_to_developers,
     translate_text,
+    load_buttons,
 )
 
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -66,7 +69,7 @@ class Johnny:
     temporary_memory_size: int = 7
     language_code: str = "eng"
     num_inline_gpt_suggestions: int = 2
-    trigger_probability: float = 0.8
+    trigger_probability_: float = 0.8
     model = "gpt-3.5-turbo"  # "lama" "gpt-3.5-turbo" "gpt-4" "vicuna" "gigachat" "yandexgpt"
     tokens_limit: int = 3950  # Leave gap for functions
     temperature: float = 0.5
@@ -101,7 +104,7 @@ class Johnny:
         self.subscription = "Free"
         self.characteristics_of_sub = {
             "Free": {  # {type_of_sub: {point: value_of_point}}
-                "messages_limit": 20,
+                "messages_limit": 10,
                 "price_of_message": 10,
                 "sphere_permission": False,
                 "dynamic_gen_permission": False,
@@ -126,6 +129,16 @@ class Johnny:
 
         # Group
         self.owner_id = None
+
+    @property
+    def trigger_probability(self):
+        return self.trigger_probability_
+
+    @trigger_probability.setter
+    def trigger_probability(self, val):
+        self.trigger_probability_ = val
+        print("=====================================")
+        load_buttons(telebot_types, groups, self.chat_id, self.lang_code, self.owner_id)
 
     def get_completion(self, allow_function_call=None):
         """Returns completion object and takes one time arguments."""
@@ -892,8 +905,13 @@ class Johnny:
         return new_user
 
     def add_purchase_of_messages(self, chat_id, num_of_new_messages):
-        new_total_messages = self.characteristics_of_sub[self.subscription]["messages_limit"] + num_of_new_messages
-        self.characteristics_of_sub[self.subscription]["messages_limit"] = new_total_messages
+        new_total_messages = (
+            self.characteristics_of_sub[self.subscription]["messages_limit"]
+            + num_of_new_messages
+        )
+        self.characteristics_of_sub[self.subscription][
+            "messages_limit"
+        ] = new_total_messages
         db_controller.update_messages_of_user_with_sub(chat_id, new_total_messages)
 
     def change_memory_size(self, size):

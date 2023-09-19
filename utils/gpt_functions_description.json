@@ -1,7 +1,7 @@
 [
     {
         "name": "google",
-        "description": "This function returns few lines and their links - top results from google search. Assumed to be called together with read_from_link. Use only when necessary",
+        "description": "This function returns a few links to top pages from google search. Assumed to be called together with read_from_link. Use only when necessary",
         "parameters": {
             "type": "object",
             "properties": {

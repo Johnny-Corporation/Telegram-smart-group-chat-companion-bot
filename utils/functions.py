@@ -75,6 +75,9 @@ def load_templates(dir: str) -> dict:
     return file_dict
 
 
+templates = load_templates("templates\\")
+
+
 def load_stickers(file: str) -> dict:
     """Returns stickers dict {sticker_name: sticker_id}
 
@@ -384,7 +387,7 @@ def load_buttons(types, groups, chat_id, language_code, owner_id=None):
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False)
 
-    if chat_id > 0:
+    if chat_id > 0:  # private
         if groups[chat_id].enabled == True:
             text2 = translate_text(language_code, "ㅤStart a conversation from scratchㅤ")
             itembtn1 = types.KeyboardButton(text2)
@@ -407,7 +410,10 @@ def load_buttons(types, groups, chat_id, language_code, owner_id=None):
         markup.add(itembtn1)
         markup.add(itembtn2)
 
-    elif chat_id < 0:
+        markup.input_field_placeholder = templates[language_code][
+            "input_field_placeholder_private.txt"
+        ]
+    elif chat_id < 0:  # group
         print("GROUP CONDITION")
 
         if owner_id == None:
@@ -420,6 +426,10 @@ def load_buttons(types, groups, chat_id, language_code, owner_id=None):
 
             groups[chat_id].button_commands.append(text1)
             groups[chat_id].button_commands.append(text2)
+
+            markup.input_field_placeholder = templates[language_code][
+                "input_field_placeholder_activate.txt"
+            ]
 
             return markup
 
@@ -455,7 +465,24 @@ def load_buttons(types, groups, chat_id, language_code, owner_id=None):
         groups[chat_id].button_commands.append(text2)
         markup.add(itembtn2)
 
-        return markup
+        if groups[chat_id].enabled:
+            match groups[chat_id].trigger_probability:
+                case 0:
+                    mode = translate_text(language_code, "Manual")
+                    prob = ""
+                case 1:
+                    mode = translate_text(language_code, "Dialog")
+                    prob = ""
+                case _:
+                    mode = translate_text(language_code, "Auto")
+                    prob = f"({groups[chat_id].trigger_probability})"
+            markup.input_field_placeholder = templates[language_code][
+                "input_field_placeholder_group.txt"
+            ].format(mode=mode, prob=prob)
+        else:
+            markup.input_field_placeholder = templates[language_code][
+                "input_field_placeholder_group_disabled.txt"
+            ]
 
     return markup
 
@@ -662,7 +689,6 @@ def generate_image_and_send(bot, chat_id, prompt, n=1, size="1024x1024"):
 
 
 def check_on_channel_sub(bot, user_id, channel_username):
-    
     try:
         member = bot.get_chat_member(f"@{channel_username}", user_id)
         if member.status not in ["creator", "administrator", "member"]:

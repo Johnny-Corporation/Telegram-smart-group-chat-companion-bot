@@ -11,6 +11,7 @@ from telebot import TeleBot, types
 from telebot.apihelper import ApiTelegramException
 
 # Local modules
+groups = {}  # {group chat_id:Johnny object}
 from Johnny import Johnny
 from utils.internet_access import *
 from utils.functions import *
@@ -56,7 +57,6 @@ else:
 templates = load_templates("templates\\")
 blacklist = {}  # chat_id:[messages_ids] needed for filtering messages
 reply_blacklist = {}  # chat_id:[messages_ids] needed for filtering replies to messages
-groups: Dict[int, Johnny] = {}  # {group chat_id:Johnny object}
 messages_to_be_deleted_global = []
 
 if path.exists("output"):
@@ -83,8 +83,8 @@ bot_username = bot.get_me().username
 
 markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 run_button = types.KeyboardButton("Start")
+markup.input_field_placeholder = "🚀"
 markup.add(run_button)
-
 
 first_message = input(
     "Enter message to send users who were using bot, if Johnny notified them that he fall, its better to send something to notify them that it is working now, press Enter to do not send anything: "
@@ -392,7 +392,7 @@ def send_welcome_text_and_load_data(
                 message.from_user.last_name,
                 message.from_user.username,
                 "Pro",
-                99999999,
+                999,
             )
             groups[message.chat.id].load_subscription(message.chat.id)
             return
@@ -458,7 +458,7 @@ def init_new_group(chat_id, inviting=False, referrer_id=None):
             # Bonuses to invited men
             groups[chat_id].referrer_id = referrer_id
             groups[chat_id].invited = True
-            groups[chat_id].discount_subscription["Referral discount"] = 0.80
+            groups[chat_id].discount_subscription["Referral discount"] = 0.8
 
         blacklist[chat_id] = []
         reply_blacklist[chat_id] = []

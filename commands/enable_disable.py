@@ -77,10 +77,13 @@ def choose_prob(message):
         parse_mode="HTML",
     )
 
+
 def auto_enable(message, prob):
     language_code = groups[message.chat.id].lang_code
 
     groups[message.chat.id].enabled = True
+
+    groups[message.chat.id].trigger_probability = prob
 
     markup_commands = load_buttons(
         types,
@@ -91,8 +94,6 @@ def auto_enable(message, prob):
     )
 
     bot.delete_message(message.chat.id, message.message_id)
-
-    groups[message.chat.id].trigger_probability = prob
 
     bot.send_message(
         message.chat.id,
@@ -110,6 +111,8 @@ def dialog_enable(message):
     groups[message.chat.id].enabled = True
     language_code = groups[message.chat.id].lang_code
 
+    groups[message.chat.id].trigger_probability = 1
+
     markup_commands = load_buttons(
         types,
         groups,
@@ -119,8 +122,6 @@ def dialog_enable(message):
     )
 
     bot.delete_message(message.chat.id, message.message_id)
-
-    groups[message.chat.id].trigger_probability = 1
 
     bot.send_message(
         message.chat.id,
@@ -136,6 +137,8 @@ def manual_enable(message):
     groups[message.chat.id].enabled = True
     language_code = groups[message.chat.id].lang_code
 
+    groups[message.chat.id].trigger_probability = 0
+
     markup_commands = load_buttons(
         types,
         groups,
@@ -145,8 +148,6 @@ def manual_enable(message):
     )
 
     bot.delete_message(message.chat.id, message.message_id)
-
-    groups[message.chat.id].trigger_probability = 0
 
     bot.send_message(
         message.chat.id,
