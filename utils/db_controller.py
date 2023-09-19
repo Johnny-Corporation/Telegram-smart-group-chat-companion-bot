@@ -3,6 +3,18 @@ from os import path
 from time import sleep
 
 
+def infinite_retry(func):
+    def wrapper(*args, **kwargs):
+        while True:
+            try:
+                return func(*args, **kwargs)
+            except Exception as e:
+                print(f"Exception caught: {e}, retrying...")
+                sleep(1)
+
+    return wrapper
+
+
 class Controller:
     """Controls all operations with sqlite database"""
 
@@ -95,6 +107,7 @@ class Controller:
 
         self.conn.commit()
 
+    @infinite_retry
     def add_message_event(
         self,
         chat_id: int,
@@ -105,7 +118,6 @@ class Controller:
         username: str,
         messages_total: int,
     ):
-        
         try:
             self.cursor.execute(
                 f"""
@@ -115,9 +127,10 @@ class Controller:
                 (chat_id, text, time, first_name, last_name, username, messages_total),
             )
             self.conn.commit()
-            return 
+            return
         except:
             None
+
     def update_messages_of_user_with_sub(self, chat_id, data) -> None:
         """Update messages of user by chat_id"""
 
