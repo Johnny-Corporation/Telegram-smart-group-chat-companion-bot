@@ -27,7 +27,7 @@ def reply_keyboard_buttons_handler(message, commands):
 
         i = 1
         if groups[message.chat.id].enabled == True:
-            i = 4
+            i = 3
         if message.text == commands[0]:
             if groups[message.chat.id].enabled == False:
                 enable(message)
@@ -40,14 +40,10 @@ def reply_keyboard_buttons_handler(message, commands):
             menu(message)
             return True
 
-        elif message.text == commands[1] and i == 4:
-            view_mode(message)
-            return True
-
-        elif message.text == commands[2] and i == 4:
+        elif message.text == commands[1] and i == 3:
             change_mode(message)
             return True
-        elif message.text == commands[3] and i == 4:
+        elif message.text == commands[2] and i == 3:
             groups[message.chat.id].messages_history.clear()
             bot.delete_message(message.chat.id, message.message_id)
             bot.send_message(message.chat.id, "✅")

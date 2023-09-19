@@ -290,7 +290,7 @@ class Johnny:
         # --- If user reach some value to messages, suggest buy a subscription ----
         if (
             self.commercial_trigger < 1
-            and self.total_spent_messages > 10000
+            and self.total_spent_messages > 7
             and self.subscription == "Free"
         ):
             self.bot.send_message(

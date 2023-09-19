@@ -1,5 +1,2 @@
-You have already used more than 10000 messages.
-If you want use Johnny more times, we suggests buy a subscription.
-
-<b>If you buy a subscription before you use 30000 messages, you will get a 20% discount </b>
-
+You have already used more than 5 messages.
+If you want use Johnny more times, we suggests buy a subscription or messages!
