@@ -1,1 +1,1 @@
-Enter the language either as a code (ex. "en") as a name (ex. "spanish")
+Enter the language either as a code (ex. "en") as a name (ex. "spanish") separate multiple langs via comma like en,de

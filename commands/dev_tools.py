@@ -52,9 +52,17 @@ def dev_tools(message, edit: bool = False):
     dev_tools_markup.add(button)
     button = types.InlineKeyboardButton(
         text=translate_text(
-            groups[chat_id].lang_code, "Add new language (not working on server!)"
+            groups[chat_id].lang_code, "Add new language(s) (not working on server!)"
         ),
         callback_data="add_lang",
+    )
+    dev_tools_markup.add(button)
+    button = types.InlineKeyboardButton(
+        text=translate_text(
+            groups[chat_id].lang_code,
+            "Add default langs: ru,de,es (not working on server!)",
+        ),
+        callback_data="add_default_langs",
     )
     dev_tools_markup.add(button)
     button = types.InlineKeyboardButton(

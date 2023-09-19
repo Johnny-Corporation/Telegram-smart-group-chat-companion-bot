@@ -24,6 +24,7 @@ server/
 templates/ru/
 templates/de/
 templates/es/
+templates/el/
 server.zip
 test.ipynb
 test.*

@@ -4,28 +4,36 @@ from __main__ import *
 # --- reply handler for feature requests ---
 @error_handler
 def change_language_reply_handler(inner_message):
-    lang_code = check_language(inner_message.text)
+    if isinstance(inner_message, list):
+        chat_id = inner_message[0]
+        text = inner_message[1]
+    else:
+        chat_id = inner_message.chat.id
+        text = inner_message.text
 
-    if not lang_code:
+    lang_codes = text.split(",")
+    for lc in lang_codes:
+        lang_code = check_language(lc)
+
+        if not lang_code:
+            bot.send_message(
+                chat_id,
+                f"Sorry, the language '{lc}' is not supported or doesnt exist.",
+            )
+            continue
+
+        language_code = lang_code[0]
+
         bot.send_message(
-            inner_message.chat.id,
-            f"Sorry, the language '{inner_message.text}' is not supported or doesnt exist.",
+            chat_id,
+            translate_text(language_code, "Loading... Please, wait a minute"),
         )
-        return
 
-    language_code = lang_code[0]
+        translate_templates(language_code)
 
-    sent_message = bot.send_message(
-        inner_message.chat.id,
-        translate_text(language_code, "Loading... Please, wait a minute"),
-    )
+        bot.send_message(chat_id, "💛")
 
-    translate_templates(language_code)
-
-    bot.send_message(inner_message.chat.id, "💛")
-
-    bot.send_message(
-        inner_message.chat.id,
-        templates[lang_code[0]]["language_applied.txt"],
-        reply_markup=markup,
-    )
+        bot.send_message(
+            chat_id,
+            templates[lang_code[0]]["language_applied.txt"],
+        )

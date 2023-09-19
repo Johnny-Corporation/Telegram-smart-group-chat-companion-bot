@@ -396,6 +396,8 @@ def keyboard_buttons_handler(call):
 
             reply_blacklist[call.message.chat.id].append(reply_to.message_id)
             bot.register_for_reply(reply_to, change_language_reply_handler)
+        case "add_default_langs":
+            change_language_reply_handler([call.message.chat.id, "ru,es,de"])
         case "add_commercial_link":
             language_code = groups[call.message.chat.id].lang_code
             reply_to = bot.send_message(

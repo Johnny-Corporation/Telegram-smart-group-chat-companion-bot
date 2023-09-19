@@ -179,6 +179,8 @@ def error_handler(args):
                 "output\\info_logs.log", bot, developer_chat_IDs, file=True
             )
         else:
+            if isinstance(message, list):
+                return
             if isinstance(message, types.CallbackQuery):
                 logger.info("Callback query processed without errors")
 
