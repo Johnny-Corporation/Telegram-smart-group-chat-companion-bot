@@ -286,7 +286,7 @@ async def generate_suggestion_for_inline(query, verbose=False):
     prepared_messages = [
         {
             "role": "system",
-            "content": "Your answer will be sent to telegram dialog, dont try to speak with user, just make what he asking and assume he is using u to speak with another person, be brief",
+            "content": "Your answer will be sent to telegram dialog, dont try to speak with user, just make what he asking and assume he is using u to speak with another person, be as short as possible",
         },
         {
             "role": "user",
