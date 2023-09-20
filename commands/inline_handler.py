@@ -33,6 +33,8 @@ def inline_search(query):
         "GPT": "https://mrvian.com/wp-content/uploads/2023/02/logo-open-ai.png",
     }
 
+    dont_change_cache_time = False
+
     if (chat_id not in groups) or (groups[chat_id].lang_code is None):
         results = [
             {
@@ -44,6 +46,7 @@ def inline_search(query):
             }
         ]
         cache_time = 1  # if user registered but didnt set lang, we also will force him to register, this is important
+        dont_change_cache_time = True
     elif search_query == "":  # Just triggered inline, haven't started typing
         results = [
             {
@@ -99,14 +102,16 @@ def inline_search(query):
 
     try:
         if chat_id in groups:
-            if groups[chat_id].inline_mode == "GPT":
-                cache_time = 86400  # maximum possible cache time (24hrs)
-            elif groups[chat_id].inline_mode == "Google":
-                cache_time = 1  # 1 second
-            elif groups[chat_id].inline_mode == "Youtube":
-                cache_time = 1  # 1 second
+            if not dont_change_cache_time:
+                if groups[chat_id].inline_mode == "GPT":
+                    cache_time = 86400  # maximum possible cache time (24hrs)
+                elif groups[chat_id].inline_mode == "Google":
+                    cache_time = 1  # 1 second
+                elif groups[chat_id].inline_mode == "Youtube":
+                    cache_time = 1  # 1 second
         else:
             cache_time = 1
+        # cache_time = 1
         bot.answer_inline_query(query.id, articles, cache_time=cache_time)
     except ApiTelegramException as e:
         if e.error_code == 400:
