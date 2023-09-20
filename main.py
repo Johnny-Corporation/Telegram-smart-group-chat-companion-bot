@@ -202,9 +202,16 @@ def error_handler(args):
     else:
         chat_id = args.thread.chat_id
         logger.error(f"Unexpected error: {traceback.format_exc()}")
+        close_btn_markup = types.InlineKeyboardMarkup()
+        button1 = types.InlineKeyboardButton(
+            text=templates[groups[chat_id].lang_code]["button_close.txt"],
+            callback_data="close_message",
+        )
+        close_btn_markup.add(button1)
         bot.send_message(
             chat_id,
             templates[groups[chat_id].lang_code]["error_occured.txt"],
+            reply_markup=close_btn_markup,
             parse_mode="html",
         )
         try:
