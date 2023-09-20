@@ -91,7 +91,7 @@ def load_stickers(file: str) -> dict:
         return json.load(f)
 
 
-def send_file(path_: str, id: int, bot) -> None:
+def send_file(path_: str, id: int, bot, send_size=True) -> None:
     """Sends a file to chat
 
     Args:
@@ -104,11 +104,13 @@ def send_file(path_: str, id: int, bot) -> None:
 
     if file_size_in_mbs > 50:
         bot.send_message(id, "File size is too large to send. (Restriction: 50 MBs)")
-        bot.send_message(id, f"Size: {round(file_size_in_mbs,3)} MBs")
+        if send_size:
+            bot.send_message(id, f"Size: {round(file_size_in_mbs,3)} MBs")
     else:
         with open(path_, "rb") as file:
             bot.send_document(id, file)
-            bot.send_message(id, f"Size: {round(file_size_in_mbs,3)} MBs")
+            if send_size:
+                bot.send_message(id, f"Size: {round(file_size_in_mbs,3)} MBs")
 
 
 def send_image_from_link(bot, url, chat_id):
@@ -120,12 +122,17 @@ def download_and_save_image_from_link(link, filename):
     response = requests.get(link)
     if response.status_code == 200:
         with open(
-            "output\\files\\KANDINKSY\\" + clean_string(filename[:100]) + ".png", "wb"
+            path := "output\\files\\KANDINKSY\\"
+            + clean_string(filename[:100])
+            + ".png",
+            "wb",
         ) as file:  # windows file length limit ~250 chars
             file.write(response.content)
             print("Image downloaded successfully.")
     else:
         print("Failed to download image.")
+
+    return path
 
 
 def send_to_developers(
@@ -659,14 +666,18 @@ def create_archive(folder_path, output_path):
                 archive.write(file_path, archive_path)
 
 
-def generate_image_replicate_kandinsky_2_2(prompt, n, size):
+def generate_image_replicate_kandinsky_2_2(prompt, n, size="poor"):
+    if size == "poor":
+        x, y = 384, 384
+    elif size == "rich":
+        x, y = 2048, 2048
     output = replicate.run(
         "ai-forever/kandinsky-2.2:ea1addaab376f4dc227f5368bbd8eff901820fd1cc14ed8cad63b29249e9d463",
         input={
             "prompt": prompt,
             "num_outputs": 1,
-            "width": 384,
-            "height": 384,
+            "width": x,
+            "height": y,
         },
     )
     return output
@@ -676,10 +687,18 @@ def generate_image_and_send(bot, chat_id, prompt, n=1, size="1024x1024"):
     """Returns message which will be added to history, prompt and info about image"""
     urls = generate_image_replicate_kandinsky_2_2(prompt, n, size)
     for url in urls:
-        send_image_from_link(bot, url, chat_id)
-        download_and_save_image_from_link(
-            url, f"KANDISNKY_IMAGE_NUMBER_{urls.index(url)}_WITH_PROMPT_{prompt}.png"
-        )
+        if size == "poor":
+            send_image_from_link(bot, url, chat_id)
+            download_and_save_image_from_link(
+                url,
+                f"KANDISNKY_IMAGE_NUMBER_{urls.index(url)}_WITH_PROMPT_{prompt}.png",
+            )
+        elif size == "rich":
+            path = download_and_save_image_from_link(
+                url,
+                f"MIDJOURNEY_IMAGE_NUMBER_{urls.index(url)}_WITH_PROMPT_{prompt}.png",
+            )
+            send_file(path, chat_id, bot, send_size=False)
 
     return f"Function has sent {n} AI-generated image(s). (prompt:'{prompt}')"
 
