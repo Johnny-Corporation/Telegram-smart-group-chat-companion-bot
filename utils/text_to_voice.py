@@ -16,7 +16,7 @@ def text_to_voice(bot, message, language_code, reply=True, text_from=" "):
     else:
         text = text_from
 
-    if str(message.from_user.id) in environ.get("DEVELOPER_CHAT_IDS") or groups[message.chat.id].characteristics_of_sub["pro_voice_output"] == True:
+    if str(message.from_user.id) in environ.get("DEVELOPER_CHAT_IDS") or groups[message.chat.id].characteristics_of_sub[groups[message.chat.id].subscription]["pro_voice_output"] == True:
         path = generate_voice_message_premium(message, text, language_code)
     else:
         path = generate_voice_message(message, text, language_code)
