@@ -231,17 +231,29 @@ def set_sphere_command(message):
         callback_data="settings_from_reply",
     )
     markup.add(back_button)
+    reset_button = types.InlineKeyboardButton(
+        text=templates[language_code]["button_reset_sphere.txt"],
+        callback_data="reset_theme_conversation",
+    )
+    markup.add(reset_button)
 
     if groups[message.chat.id].sphere == "":
         sphere_in = "Not set"
     else:
         sphere_in = groups[message.chat.id].sphere
-    bot_reply = bot.edit_message_text(
-        templates[language_code]["set_sphere.txt"].format(sphere=sphere_in),
-        message.chat.id,
-        message.message_id,
-        reply_markup=markup,
-        parse_mode="HTML",
-    )
-    reply_blacklist[message.chat.id].append(bot_reply.message_id)
-    bot.register_for_reply(bot_reply, set_sphere_reply_handler)
+    try:
+        bot_reply = bot.edit_message_text(
+            templates[language_code]["set_sphere.txt"].format(sphere=sphere_in),
+            message.chat.id,
+            message.message_id,
+            reply_markup=markup,
+            parse_mode="HTML",
+        )
+        reply_blacklist[message.chat.id].append(bot_reply.message_id)
+        bot.register_for_reply(bot_reply, set_sphere_reply_handler)
+        groups[message.chat.id].set_sphere_waiting_message_to_edit = message
+        groups[message.chat.id].set_sphere_waiting_message_to_edit_edit_func = globals()[
+            "set_sphere_command"
+        ]
+    except:  # the same content error
+        pass

@@ -246,6 +246,9 @@ def keyboard_buttons_handler(call):
                     reply_markup=markup,
                     parse_mode="HTML",
                 )
+        case "reset_theme_conversation":
+            groups[call.message.chat.id].sphere = None
+            set_sphere_command(call.message)
 
         case "change_lang":
             change_language(call.message.chat.id, call.message.message_id)

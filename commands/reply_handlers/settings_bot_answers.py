@@ -61,9 +61,12 @@ def set_sphere_reply_handler(inner_message):
         return
 
     groups[inner_message.chat.id].sphere = val
-    bot.reply_to(inner_message, "✅")
 
     bot.clear_reply_handlers_by_message_id(inner_message.reply_to_message.message_id)
+
+    groups[inner_message.chat.id].set_sphere_waiting_message_to_edit_edit_func(
+        groups[inner_message.chat.id].set_sphere_waiting_message_to_edit
+    )
 
 
 # --- reply handler for set presense penalty
