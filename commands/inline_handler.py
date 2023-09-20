@@ -108,7 +108,7 @@ def inline_search(query):
         else:
             cache_time = 1
         bot.answer_inline_query(query.id, articles, cache_time=cache_time)
-    except ApiException as e:
+    except ApiTelegramException as e:
         if e.error_code == 400:
             pass
         else:

@@ -15,7 +15,7 @@ async def get_gpt_results(query, num_results=2):
     await openai.aiosession.get().close()
 
     for sug in suggestions:
-        title, description, body = sug.split()[:5], sug, sug
+        title, description, body = " ".join(sug.split()[:5]), sug, sug
         results.append(
             {
                 "has_button": False,
