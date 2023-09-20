@@ -76,19 +76,19 @@ def keyboard_buttons_handler(call):
         case "inline_mode_model":
             johnny = groups[call.message.chat.id]
             if groups[call.message.chat.id].inline_mode != "GPT":
-                if johnny.subscription != "Pro":
-                    target = bot.send_message(
-                        call.message.chat.id,
-                        templates[johnny.lang_code]["only_for_pro.txt"],
-                    )
-                    threading.Timer(
-                        5,
-                        bot.delete_message,
-                        args=(call.message.chat.id, target.message_id),
-                    ).start()
-                else:
-                    groups[call.message.chat.id].inline_mode = "GPT"
-                    inline_mode_settings(message=call.message)
+                # if johnny.subscription != "Pro":
+                # target = bot.send_message(
+                #     call.message.chat.id,
+                #     templates[johnny.lang_code]["only_for_pro.txt"],
+                # )
+                # threading.Timer(
+                #     5,
+                #     bot.delete_message,
+                #     args=(call.message.chat.id, target.message_id),
+                # ).start()
+                # else:
+                groups[call.message.chat.id].inline_mode = "GPT"
+                inline_mode_settings(message=call.message)
         case "inline_mode_google":
             if groups[call.message.chat.id].inline_mode != "Google":
                 groups[call.message.chat.id].inline_mode = "Google"
@@ -109,12 +109,36 @@ def keyboard_buttons_handler(call):
                 inline_mode_additional_settings(message=call.message)
         case "change_inline_gpt_suggestions_num_3":
             if groups[call.message.chat.id].num_inline_gpt_suggestions != 3:
-                groups[call.message.chat.id].num_inline_gpt_suggestions = 3
-                inline_mode_additional_settings(message=call.message)
+                if groups[call.message.chat.id].subscription != "Pro":
+                    target = bot.send_message(
+                        call.message.chat.id,
+                        templates[groups[call.message.chat.id].lang_code]["only_for_pro.txt"],
+                    )
+                    threading.Timer(
+                        5,
+                        bot.delete_message,
+                        args=(call.message.chat.id, target.message_id),
+                    ).start()
+                else:
+                    groups[call.message.chat.id].num_inline_gpt_suggestions = 3
+                    inline_mode_additional_settings(message=call.message)
         case "change_inline_gpt_suggestions_num_4":
             if groups[call.message.chat.id].num_inline_gpt_suggestions != 4:
-                groups[call.message.chat.id].num_inline_gpt_suggestions = 4
-                inline_mode_additional_settings(message=call.message)
+                if groups[call.message.chat.id].subscription != "Pro":
+                    target = bot.send_message(
+                        call.message.chat.id,
+                        templates[groups[call.message.chat.id].lang_code][
+                            "only_for_pro.txt"
+                        ],
+                    )
+                    threading.Timer(
+                        5,
+                        bot.delete_message,
+                        args=(call.message.chat.id, target.message_id),
+                    ).start()
+                else:
+                    groups[call.message.chat.id].num_inline_gpt_suggestions = 4
+                    inline_mode_additional_settings(message=call.message)
 
         # Account info
 
