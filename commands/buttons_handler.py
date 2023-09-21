@@ -191,13 +191,13 @@ def keyboard_buttons_handler(call):
             bot_answers_settings(call.message)
         case "special_features":
             special_features_settings(call.message)
-        case "change-permissions":
-            change_permissions_of_group(message=call.message, group_id=int(call.data.split("_")[1]))
-        case "change-permission":
+        # case "change-permissions":
+        #     change_permissions_of_group(message=call.message, group_id=int(call.data.split("_")[1]))
+        # case "change-permission":
             
 
-        case "permissions_of_group":
-            change_permissions_settings(call.message)
+        # case "permissions_of_group":
+        #     change_permissions_settings(call.message)
         case "inline_mode_model_additional_settings":
             inline_mode_additional_settings(message=call.message)
 
