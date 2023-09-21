@@ -204,11 +204,11 @@ def create_chat_completion(
             completion = openai.ChatCompletion.create(**chat_completion_arguments)
     except openai.error.APIError as e:
         logger.error(f"OpenAI API returned an API Error: {e}")
-        functions.send_to_developers(
-            "❗❗Server error occurred❗❗ Using GPT without functions",
-            johnny.bot,
-            environ["DEVELOPER_CHAT_IDS"].split(","),
-        )
+        # functions.send_to_developers(
+        #     "❗❗Server error occurred❗❗ Using GPT without functions",
+        #     johnny.bot,
+        #     environ["DEVELOPER_CHAT_IDS"].split(","),
+        # )
         del chat_completion_arguments["functions"]
         del chat_completion_arguments["function_call"]
         # johnny.messages_history.pop()  # we are not making new prepared_messages! just removing from actual history to dont consider this in future
