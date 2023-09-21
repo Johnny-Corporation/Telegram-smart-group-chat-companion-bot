@@ -96,7 +96,7 @@ def accept_payment(message, cost, type_of_own="update", messages=0):
                     message.from_user.first_name,
                     message.from_user.last_name,
                     message.from_user.username,
-                    "PRO",
+                    "Pro",
                     100,
                 )
                 groups[message.chat.id].load_subscription(message.chat.id)
