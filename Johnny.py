@@ -346,11 +346,11 @@ class Johnny:
                     self.bot.delete_message(
                         self.chat_id, self.thinking_message.message_id
                     )
-                    send_to_developers(
-                        "❗❗Server error occurred❗❗ Using GPT without functions. Dynamic generation enabled",
-                        self.bot,
-                        environ["DEVELOPER_CHAT_IDS"].split(","),
-                    )
+                    # send_to_developers(
+                    #     "❗❗Server error occurred❗❗ Using GPT without functions. Dynamic generation enabled",
+                    #     self.bot,
+                    #     environ["DEVELOPER_CHAT_IDS"].split(","),
+                    # )
                     # self.messages_history.pop()  # we are not making new prepared_messages! just removing from actual history to dont consider this in future
                     self.messages_history.clear()
                     self.response = self.get_completion(allow_function_call=False)

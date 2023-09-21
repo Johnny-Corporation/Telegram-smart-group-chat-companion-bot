@@ -641,6 +641,9 @@ def read_text_from_image(url):
     print(status_code)
     print(result)
 
+    if status_code != 200:
+        return f"Failed to detect text. (status_code:{status_code}) "
+
     if "all_text" in response.json():
         return response.json()["all_text"][:2000]
     else:

@@ -17,10 +17,10 @@
     },
     {
         "name": "read_from_link",
-        "description": "Get content from url",
+        "description": "Gives u access to any url in the internet",
         "parameters": {
             "type": "object",
-            "properties": {
+        "properties": {
                 "link": {
                     "type": "string",
                     "description": "url"
