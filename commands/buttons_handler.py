@@ -20,6 +20,11 @@ def keyboard_buttons_handler(call):
         call_data = "confirm-commercial"
     if "add_commercial_link" in call.data:
         call_data = "add_commercial_link"
+    if "permission-of-group" in call.data:
+        call_data = "permission"
+    if "change-permissions" in call.data:
+        call_data = "change-permissions"
+        
     # if "group_permission" in call.data:
     #     call_data
 
@@ -186,8 +191,13 @@ def keyboard_buttons_handler(call):
             bot_answers_settings(call.message)
         case "special_features":
             special_features_settings(call.message)
+        case "change-permissions":
+            change_permissions_of_group(message=call.message, group_id=int(call.data.split("_")[1]))
+        case "change-permission":
+            
+
         case "permissions_of_group":
-            change_permission_settings(call.message)
+            change_permissions_settings(call.message)
         case "inline_mode_model_additional_settings":
             inline_mode_additional_settings(message=call.message)
 

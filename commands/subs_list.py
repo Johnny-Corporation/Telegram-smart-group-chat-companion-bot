@@ -67,6 +67,7 @@ def sub_info(message):
 
     
 
+@bot.message_handler(commands=["subs_list"], func=time_filter)
 def subs_list(message):
 
     language_code = groups[message.chat.id].lang_code 
