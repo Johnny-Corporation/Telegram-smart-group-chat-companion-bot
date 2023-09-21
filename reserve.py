@@ -29,6 +29,8 @@ dev_tools_button = types.KeyboardButton("/dev_tools")
 markup.add(run_button)
 dev_markup.add(run_button)
 dev_markup.add(dev_tools_button)
+dev_markup.input_field_placeholder = "All hope is on you!"
+markup.input_field_placeholder = "Johnny is temporarily unavailable "
 
 
 def create_archive(folder_path, output_path):
