@@ -96,7 +96,7 @@ def accept_payment(message, cost, type_of_own="update", messages=0):
                     message.from_user.first_name,
                     message.from_user.last_name,
                     message.from_user.username,
-                    "USER",
+                    "PRO",
                     100,
                 )
                 groups[message.chat.id].load_subscription(message.chat.id)
@@ -141,7 +141,7 @@ def accept_payment(message, cost, type_of_own="update", messages=0):
                 )
                 groups[message.chat.id].track_sub(message.chat.id, new=True)
             elif type_of_own == "more_messages":
-                groups[message.chat.id].add_purchase_of_messages(message.chat.id, val)
+                groups[message.chat.id].add_purchase_of_messages(message.chat.id, messages)
                 # groups[message.chat.id].characteristics_of_sub[groups[message.chat.id].subscription]["messages_limit"] = (
                 #     groups[message.chat.id].characteristics_of_sub[groups[message.chat.id].subscription]["messages_limit"] + val
                 # )
@@ -173,7 +173,7 @@ def accept_payment(message, cost, type_of_own="update", messages=0):
         quickpay_form="shop",
         targets="Buy product",
         paymentType="SB",
-        sum=cost,  # cost
+        sum=2,  # cost
         label=label,
     )
 
