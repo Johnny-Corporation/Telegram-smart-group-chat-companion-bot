@@ -95,7 +95,7 @@ class Johnny:
         self.enabled = False
         self.dynamic_gen = False
         # Needed to store requested links and restrict repeating useless requests
-        self.dynamic_gen_chunks_frequency = 20  # when dynamic generation is enabled, this value controls how often to edit telegram message, for example when set to 3, message will be updated each 3 chunks from OpenAI API stream
+        self.dynamic_gen_chunks_frequency = 30  # when dynamic generation is enabled, this value controls how often to edit telegram message, for example when set to 3, message will be updated each 3 chunks from OpenAI API stream
         self.voice_out_enabled = False
         self.total_spent_messages = 0  # prompt and completion messages
         self.last_function_request = None
