@@ -352,8 +352,8 @@ class Johnny:
                     #     environ["DEVELOPER_CHAT_IDS"].split(","),
                     # )
                     # self.messages_history.pop()  # we are not making new prepared_messages! just removing from actual history to dont consider this in future
-                    self.messages_history.clear()
                     self.response = self.get_completion(allow_function_call=False)
+                    self.messages_history.clear()
                     text_answer = self.dynamic_generation(self.response)
 
             else:
