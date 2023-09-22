@@ -28,3 +28,4 @@ templates/el/
 server.zip
 test.ipynb
 test.*
+*.zip
