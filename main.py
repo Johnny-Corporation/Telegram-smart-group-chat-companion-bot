@@ -37,7 +37,7 @@ skip_old_messages = True  # True until message older than bot start time receive
 ignored_messages = 0  # count number of ignored messages when bot was offline for logs
 
 
-bot_token = environ.get("BOT_API_TOKEN_OFFICIAL_OLD")
+bot_token = environ.get("BOT_API_TOKEN")
 
 
 yoomoney_token = environ.get("PAYMENT_RUS_TOKEN")
@@ -365,7 +365,15 @@ def send_welcome_text_and_load_data(
         # Add to owner's data info about him group
         groups[owner_id].id_groups.append(chat_id)
 
-        permissions = {"change_model": True, "bot_answers": True,"sphere": True,"change_lang": True,"special_features": True,"choose_inline_mode": True,"change_owner": True}
+        permissions = {
+            "change_model": True,
+            "bot_answers": True,
+            "sphere": True,
+            "change_lang": True,
+            "special_features": True,
+            "choose_inline_mode": True,
+            "change_owner": True,
+        }
         groups[owner_id].permissions_of_groups[chat_id] = permissions
 
     # Load buttons
