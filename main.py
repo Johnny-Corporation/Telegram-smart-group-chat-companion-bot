@@ -365,6 +365,9 @@ def send_welcome_text_and_load_data(
         # Add to owner's data info about him group
         groups[owner_id].id_groups.append(chat_id)
 
+        permissions = {"change_model": True, "bot_answers": True,"sphere": True,"change_lang": True,"special_features": True,"choose_inline_mode": True,"change_owner": True}
+        groups[owner_id].permissions_of_groups[chat_id] = permissions
+
     # Load buttons
     markup = load_buttons(
         types, groups, chat_id, language_code, owner_id=groups[chat_id].owner_id

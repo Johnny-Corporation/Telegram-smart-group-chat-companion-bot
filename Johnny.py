@@ -124,6 +124,9 @@ class Johnny:
 
         # User
         self.id_groups = []
+
+        self.permissions_of_groups = {}
+
         self.commercial_trigger = 0
         self.commercial_links = {}
 

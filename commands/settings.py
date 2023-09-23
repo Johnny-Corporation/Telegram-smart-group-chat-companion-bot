@@ -52,12 +52,12 @@ def settings(message):
         )
         markup.add(owner_button)
 
-    # if groups[message.chat.id].owner_id and message.chat.id>0:
-    #     permission_button = types.InlineKeyboardButton(
-    #         text="Change the characteristics of group",
-    #         callback_data="permissions_of_group",
-    #     )
-    #     markup.add(permission_button)
+    if groups[message.chat.id].owner_id and message.chat.id>0:
+        permission_button = types.InlineKeyboardButton(
+            text="Change the characteristics of group",
+            callback_data="permissions_of_group",
+        )
+        markup.add(permission_button)
 
     back_button = types.InlineKeyboardButton(
         text="<<<",
