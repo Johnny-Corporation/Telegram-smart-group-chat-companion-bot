@@ -53,7 +53,7 @@ def keyboard_buttons_handler(call):
         case "close_message":
             bot.delete_message(call.message.chat.id, call.message.message_id)
         case "choose_inline_mode":
-            if call.message.chat.id<0:
+            if call.message.chat.id<0 and call.message.from_user!=groups[call.message.chat.id].owner_id:
                 if groups[groups[call.message.chat.id].owner_id].permissions_of_groups[call.message.chat.id][call_data] == False:
                     markup = types.InlineKeyboardMarkup()
                     back_button = types.InlineKeyboardButton(
@@ -193,7 +193,7 @@ def keyboard_buttons_handler(call):
             bot.clear_reply_handlers_by_message_id(call.message.message_id)
             settings(message=call.message)
         case "change_model":
-            if call.message.chat.id<0:
+            if call.message.chat.id<0 and call.message.from_user!=groups[call.message.chat.id].owner_id:
                 if groups[groups[call.message.chat.id].owner_id].permissions_of_groups[call.message.chat.id][call_data] == False:
                     markup = types.InlineKeyboardMarkup()
                     back_button = types.InlineKeyboardButton(
@@ -207,7 +207,7 @@ def keyboard_buttons_handler(call):
 
             models_switcher(call.message)
         case "bot_answers":
-            if call.message.chat.id<0:
+            if call.message.chat.id<0 and call.message.from_user!=groups[call.message.chat.id].owner_id:
                 if groups[groups[call.message.chat.id].owner_id].permissions_of_groups[call.message.chat.id][call_data] == False:
                     markup = types.InlineKeyboardMarkup()
                     back_button = types.InlineKeyboardButton(
@@ -227,7 +227,7 @@ def keyboard_buttons_handler(call):
             bot.clear_reply_handlers_by_message_id(call.message.message_id)
             bot_answers_settings(call.message)
         case "special_features":
-            if call.message.chat.id<0:
+            if call.message.chat.id<0 and call.message.from_user!=groups[call.message.chat.id].owner_id:
                 if groups[groups[call.message.chat.id].owner_id].permissions_of_groups[call.message.chat.id][call_data] == False:
                     markup = types.InlineKeyboardMarkup()
                     back_button = types.InlineKeyboardButton(
@@ -317,7 +317,7 @@ def keyboard_buttons_handler(call):
             set_length_answer(call.message)
         case "sphere":
 
-            if call.message.chat.id<0:
+            if call.message.chat.id<0 and call.message.from_user!=groups[call.message.chat.id].owner_id:
                 if groups[groups[call.message.chat.id].owner_id].permissions_of_groups[call.message.chat.id][call_data] == False:
                     markup = types.InlineKeyboardMarkup()
                     back_button = types.InlineKeyboardButton(
@@ -355,7 +355,7 @@ def keyboard_buttons_handler(call):
             set_sphere_command(call.message)
 
         case "change_lang":
-            if call.message.chat.id<0:
+            if call.message.chat.id<0 and call.message.from_user!=groups[call.message.chat.id].owner_id:
                 if groups[groups[call.message.chat.id].owner_id].permissions_of_groups[call.message.chat.id][call_data] == False:
                     markup = types.InlineKeyboardMarkup()
                     back_button = types.InlineKeyboardButton(
@@ -368,7 +368,7 @@ def keyboard_buttons_handler(call):
                     return
             change_language(call.message.chat.id, call.message.message_id)
         case "change_owner":
-            if call.message.chat.id<0:
+            if call.message.chat.id<0 and call.message.from_user!=groups[call.message.chat.id].owner_id:
                 if groups[groups[call.message.chat.id].owner_id].permissions_of_groups[call.message.chat.id][call_data] == False:
                     markup = types.InlineKeyboardMarkup()
                     back_button = types.InlineKeyboardButton(
