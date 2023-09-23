@@ -26,7 +26,7 @@ def start(message):
             return
 
 
-    if message.chat.id not in groups:
+    if (message.chat.id not in groups) or (not groups[message.chat.id].lang_code):
         init_new_group(message.chat.id)
     else:
         help(message)
