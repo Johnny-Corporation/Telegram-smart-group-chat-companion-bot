@@ -54,7 +54,7 @@ def settings(message):
 
     if groups[message.chat.id].owner_id and message.chat.id>0:
         permission_button = types.InlineKeyboardButton(
-            text="Change the characteristics of group",
+            text=templates[language_code]["button_settings_change_permissions.txt"],
             callback_data="permissions_of_group",
         )
         markup.add(permission_button)
