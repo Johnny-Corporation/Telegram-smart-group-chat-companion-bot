@@ -1,1 +1,3 @@
 Enter the sum of messages in reply to this message.
+
+<i> From 1 to 1000000 </i>

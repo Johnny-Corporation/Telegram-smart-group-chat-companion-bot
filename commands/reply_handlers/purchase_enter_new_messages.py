@@ -7,11 +7,18 @@ def enter_new_messages_reply_handler(inner_message):
     language_code = groups[inner_message.chat.id].lang_code
     try:
         val = int(inner_message.text)
+
+        if val <= 0:
+            bot.reply_to(inner_message, "❌")
+            bot.clear_reply_handlers_by_message_id(inner_message.reply_to_message.message_id)
+            return
+        elif val > 1000000:
+            bot.reply_to(inner_message, "❌")
+            bot.clear_reply_handlers_by_message_id(inner_message.reply_to_message.message_id)
+            return
+
     except ValueError:
         bot.reply_to(inner_message, "❌")
-        bot.send_message(
-            inner_message.chat.id, templates[language_code]["new_messages_calnceled.txt"]
-        )
         bot.clear_reply_handlers_by_message_id(inner_message.reply_to_message.message_id)
         return
     
