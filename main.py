@@ -508,7 +508,7 @@ from commands.converts import *
 from commands.dev_tools import *
 from commands.enable_disable import *
 from commands.group import *
-from commands.help import *
+from commands.load import *
 from commands.other import *
 from commands.purchase_commercial import *
 from commands.purchase_enter_promocode import *
