@@ -29,16 +29,7 @@ def start(message):
             init_new_group(message.chat.id, inviting=True, referrer_id=referrer_id)
             return
 
-
     if (message.chat.id not in groups) or (not groups[message.chat.id].lang_code):
         init_new_group(message.chat.id)
     else:
         help(message)
-
-    
-
-    
-
-
-
-    
