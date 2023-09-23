@@ -330,6 +330,10 @@ def send_welcome_text_and_load_data(
 
     groups[chat_id].commercial_links = commercial_links
 
+    if chat_id >0:
+        groups[chat_id].enabled = True
+        groups[chat_id].trigger_probability = 1
+
     # User
     if chat_id > 0:
         # Try to get info from database
@@ -376,6 +380,9 @@ def send_welcome_text_and_load_data(
         }
         groups[owner_id].permissions_of_groups[chat_id] = permissions
 
+    if groups[chat_id].subscription == "Pro":
+        groups[chat_id].dynamic_gen = True
+
     # Load buttons
     markup = load_buttons(
         types, groups, chat_id, language_code, owner_id=groups[chat_id].owner_id
@@ -391,6 +398,7 @@ def send_welcome_text_and_load_data(
                 reply_markup=markup,
                 parse_mode="HTML",
             )
+        
     else:
         bot.send_message(
             chat_id,
@@ -415,6 +423,8 @@ def send_welcome_text_and_load_data(
                 999,
             )
             groups[message.chat.id].load_subscription(message.chat.id)
+            if groups[chat_id].subscription == "Pro":
+                groups[chat_id].dynamic_gen = True  
             return
 
 
