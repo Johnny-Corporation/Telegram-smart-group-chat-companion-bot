@@ -132,12 +132,11 @@ class Johnny:
 
         # Group
         self.owner_id = None
-        
+
         self.user_info = self.bot.get_chat(self.chat_id)
         self.username = self.user_info.username
         self.fn = self.user_info.first_name
         self.ln = self.user_info.last_name
-
 
     @property
     def trigger_probability(self):
@@ -407,7 +406,13 @@ class Johnny:
 
         if response_message.get("function_call"):
             function_name = response_message["function_call"]["name"]
-            function_args = json.loads(response_message["function_call"]["arguments"])
+            try:
+                function_args = json.loads(
+                    response_message["function_call"]["arguments"]
+                )
+            except:
+                return self.static_generation(self.get_completion())
+
             argument = next(iter(function_args.values()))
 
             self.messages_to_be_deleted.append(
