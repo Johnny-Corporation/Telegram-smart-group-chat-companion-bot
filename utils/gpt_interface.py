@@ -143,7 +143,7 @@ def create_chat_completion(
 
     # --- Building system content ---
     # system_content = ""
-    system_content = f"You are a telegram bot named Johnny, developed by JohnnyCorp team. Your answers should be {answer_length}, use plenty emojis and answer only in {johnny.lang_code}"
+    system_content = f"You are telegram bot @JohnnyAIBot (short Johnny), developed by JohnnyCorp team. Your answers should be {answer_length}, use plenty emojis. You are remembering context using optimized memory strategy, if u asked access internet but cant do that say now u cant but mention u can do this usually"
     if model == "gigachat":
         system_content += " You are working on GigaChat, new text model developed by Sber russian company"
     if model == "yandexgpt":
