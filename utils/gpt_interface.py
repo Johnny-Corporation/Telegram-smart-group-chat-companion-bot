@@ -272,7 +272,7 @@ def check_context_understanding(answer):
         messages=[
             {
                 "role": "user",
-                "content": f'This is text model's answer: {answer}. Is model saying it doesn't understand context or just saying something like "Hi, how can I help you?"? Answer Yes or No',
+                "content": f'This is text models answer: {answer}. Is model saying it doesnt understand context or just saying something like "Hi, how can I help you?"? Answer Yes or No',
             }
         ],
         temperature=0,
