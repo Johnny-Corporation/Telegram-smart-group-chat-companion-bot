@@ -136,16 +136,9 @@ def download_and_save_image_from_link(link, filename):
 
 
 def send_to_developers(
-    msg: str, bot, developer_chat_IDs: list, file: bool = False
+    msg: str, bot, developer_chat_IDs: list, file: bool = False, reply_markup=None
 ) -> None:
-    """Sends message or file to developers (all chats with specified ids)
-
-    Args:
-        msg (str): message text or file name if file is set to True
-        bot (_type_): Telebot object
-        developer_chat_IDs (list): list of integers - chat ids
-        file (bool, optional): If set to true, msg is considered as file name. Defaults to False.
-    """
+    msgs = []
     for id in developer_chat_IDs:
         if id:
             if file:
@@ -155,12 +148,15 @@ def send_to_developers(
                     pass
             else:
                 try:  # If Nekit hasn't written anything to new johnny, bot wont see his chat id
-                    bot.send_message(
-                        id,
-                        msg,
-                    )
+                    if reply_markup:
+                        msgs.append(
+                            bot.send_message(id, msg, reply_markup=reply_markup)
+                        )
+                    else:
+                        msgs.append(bot.send_message(id, msg))
                 except:
                     pass
+    return msgs
 
 
 def convert_to_json(s: str) -> str:

@@ -129,6 +129,8 @@ def delete_pending_messages():
 
 
 # --------------- Error handling ---------------
+errors_details = {}  # message_id:text
+errors_previews = {}  # message_id:text
 
 
 def error_handler(args):
@@ -144,10 +146,7 @@ def error_handler(args):
             if (hasattr(message, "text")) and message.text == "ERROR":
                 0 / 0
         except KeyError:
-            if (message.chat.id in groups) and (
-                groups[message.chat.id].lang_code is None
-            ):
-                bot.send_message(message.chat.id, "Bot is not initialized yet!")
+            pass
         except Exception:
             chat_id = (
                 message.chat.id
@@ -167,17 +166,25 @@ def error_handler(args):
                 parse_mode="html",
                 reply_markup=close_btn_markup,
             )
-            send_to_developers(
-                f"Error occurred: \n ❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️\n {traceback.format_exc()}\n ❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️",
+            expand_error_btn_markup = types.InlineKeyboardMarkup()
+            button1 = types.InlineKeyboardButton(
+                text="Show details",
+                callback_data="get_error_details",
+            )
+            expand_error_btn_markup.add(button1)
+            msgs = send_to_developers(
+                templates["en"]["dev_error_report.txt"].format(
+                    fn=groups[chat_id].fn, un=groups[chat_id].username
+                ),
                 bot,
                 developer_chat_IDs,
+                reply_markup=expand_error_btn_markup,
             )
-            send_to_developers(
-                "output\\debug_logs.log", bot, developer_chat_IDs, file=True
-            )
-            send_to_developers(
-                "output\\info_logs.log", bot, developer_chat_IDs, file=True
-            )
+            for m in msgs:
+                errors_details[m.message_id] = traceback.format_exc()
+                errors_previews[m.message_id] = templates["en"][
+                    "dev_error_report.txt"
+                ].format(fn=groups[chat_id].fn, un=groups[chat_id].username)
         else:
             if isinstance(message, list):
                 return
@@ -226,8 +233,6 @@ def error_handler(args):
                 bot,
                 developer_chat_IDs,
             )
-        send_to_developers("output\\debug_logs.log", bot, developer_chat_IDs, file=True)
-        send_to_developers("output\\info_logs.log", bot, developer_chat_IDs, file=True)
 
 
 threading.excepthook = error_handler
@@ -330,7 +335,7 @@ def send_welcome_text_and_load_data(
 
     groups[chat_id].commercial_links = commercial_links
 
-    if chat_id >0:
+    if chat_id > 0:
         groups[chat_id].enabled = True
         groups[chat_id].trigger_probability = 1
 
@@ -398,7 +403,7 @@ def send_welcome_text_and_load_data(
                 reply_markup=markup,
                 parse_mode="HTML",
             )
-        
+
     else:
         bot.send_message(
             chat_id,
@@ -424,7 +429,7 @@ def send_welcome_text_and_load_data(
             )
             groups[message.chat.id].load_subscription(message.chat.id)
             if groups[chat_id].subscription == "Pro":
-                groups[chat_id].dynamic_gen = True  
+                groups[chat_id].dynamic_gen = True
             return
 
 

@@ -27,7 +27,6 @@ def keyboard_buttons_handler(call):
     if "change-permissions" in call.data:
         call_data = "change-permissions"
 
-        
     # if "group_permission" in call.data:
     #     call_data
 
@@ -53,8 +52,16 @@ def keyboard_buttons_handler(call):
         case "close_message":
             bot.delete_message(call.message.chat.id, call.message.message_id)
         case "choose_inline_mode":
-            if call.message.chat.id<0 and call.message.from_user!=groups[call.message.chat.id].owner_id:
-                if groups[groups[call.message.chat.id].owner_id].permissions_of_groups[call.message.chat.id][call_data] == False:
+            if (
+                call.message.chat.id < 0
+                and call.message.from_user != groups[call.message.chat.id].owner_id
+            ):
+                if (
+                    groups[groups[call.message.chat.id].owner_id].permissions_of_groups[
+                        call.message.chat.id
+                    ][call_data]
+                    == False
+                ):
                     markup = types.InlineKeyboardMarkup()
                     back_button = types.InlineKeyboardButton(
                         text="<<<",
@@ -62,7 +69,14 @@ def keyboard_buttons_handler(call):
                     )
                     markup.add(back_button)
 
-                    bot.edit_message_text(templates[previous_language_code]["settings_have_no_permission.txt"], call.message.chat.id, call.message.message_id, reply_markup=markup)
+                    bot.edit_message_text(
+                        templates[previous_language_code][
+                            "settings_have_no_permission.txt"
+                        ],
+                        call.message.chat.id,
+                        call.message.message_id,
+                        reply_markup=markup,
+                    )
                     return
             inline_mode_settings(message=call.message)
         case "generate_image":
@@ -131,7 +145,9 @@ def keyboard_buttons_handler(call):
                 if groups[call.message.chat.id].subscription != "Pro":
                     target = bot.send_message(
                         call.message.chat.id,
-                        templates[groups[call.message.chat.id].lang_code]["only_for_pro.txt"],
+                        templates[groups[call.message.chat.id].lang_code][
+                            "only_for_pro.txt"
+                        ],
                     )
                     threading.Timer(
                         5,
@@ -193,8 +209,16 @@ def keyboard_buttons_handler(call):
             bot.clear_reply_handlers_by_message_id(call.message.message_id)
             settings(message=call.message)
         case "change_model":
-            if call.message.chat.id<0 and call.message.from_user!=groups[call.message.chat.id].owner_id:
-                if groups[groups[call.message.chat.id].owner_id].permissions_of_groups[call.message.chat.id][call_data] == False:
+            if (
+                call.message.chat.id < 0
+                and call.message.from_user != groups[call.message.chat.id].owner_id
+            ):
+                if (
+                    groups[groups[call.message.chat.id].owner_id].permissions_of_groups[
+                        call.message.chat.id
+                    ][call_data]
+                    == False
+                ):
                     markup = types.InlineKeyboardMarkup()
                     back_button = types.InlineKeyboardButton(
                         text="<<<",
@@ -202,13 +226,28 @@ def keyboard_buttons_handler(call):
                     )
                     markup.add(back_button)
 
-                    bot.edit_message_text(templates[previous_language_code]["settings_have_no_permission.txt"], call.message.chat.id, call.message.message_id, reply_markup=markup)
+                    bot.edit_message_text(
+                        templates[previous_language_code][
+                            "settings_have_no_permission.txt"
+                        ],
+                        call.message.chat.id,
+                        call.message.message_id,
+                        reply_markup=markup,
+                    )
                     return
 
             models_switcher(call.message)
         case "bot_answers":
-            if call.message.chat.id<0 and call.message.from_user!=groups[call.message.chat.id].owner_id:
-                if groups[groups[call.message.chat.id].owner_id].permissions_of_groups[call.message.chat.id][call_data] == False:
+            if (
+                call.message.chat.id < 0
+                and call.message.from_user != groups[call.message.chat.id].owner_id
+            ):
+                if (
+                    groups[groups[call.message.chat.id].owner_id].permissions_of_groups[
+                        call.message.chat.id
+                    ][call_data]
+                    == False
+                ):
                     markup = types.InlineKeyboardMarkup()
                     back_button = types.InlineKeyboardButton(
                         text="<<<",
@@ -216,7 +255,14 @@ def keyboard_buttons_handler(call):
                     )
                     markup.add(back_button)
 
-                    bot.edit_message_text(templates[previous_language_code]["settings_have_no_permission.txt"], call.message.chat.id, call.message.message_id, reply_markup=markup)
+                    bot.edit_message_text(
+                        templates[previous_language_code][
+                            "settings_have_no_permission.txt"
+                        ],
+                        call.message.chat.id,
+                        call.message.message_id,
+                        reply_markup=markup,
+                    )
                     return
             bot_answers_settings(call.message)
         case "bot_answers_from_reply":
@@ -227,8 +273,16 @@ def keyboard_buttons_handler(call):
             bot.clear_reply_handlers_by_message_id(call.message.message_id)
             bot_answers_settings(call.message)
         case "special_features":
-            if call.message.chat.id<0 and call.message.from_user!=groups[call.message.chat.id].owner_id:
-                if groups[groups[call.message.chat.id].owner_id].permissions_of_groups[call.message.chat.id][call_data] == False:
+            if (
+                call.message.chat.id < 0
+                and call.message.from_user != groups[call.message.chat.id].owner_id
+            ):
+                if (
+                    groups[groups[call.message.chat.id].owner_id].permissions_of_groups[
+                        call.message.chat.id
+                    ][call_data]
+                    == False
+                ):
                     markup = types.InlineKeyboardMarkup()
                     back_button = types.InlineKeyboardButton(
                         text="<<<",
@@ -236,7 +290,14 @@ def keyboard_buttons_handler(call):
                     )
                     markup.add(back_button)
 
-                    bot.edit_message_text(templates[previous_language_code]["settings_have_no_permission.txt"], call.message.chat.id, call.message.message_id, reply_markup=markup)
+                    bot.edit_message_text(
+                        templates[previous_language_code][
+                            "settings_have_no_permission.txt"
+                        ],
+                        call.message.chat.id,
+                        call.message.message_id,
+                        reply_markup=markup,
+                    )
                     return
 
             special_features_settings(call.message)
@@ -244,12 +305,18 @@ def keyboard_buttons_handler(call):
         case "back_to_group_settings":
             change_permissions_settings(message=call.message)
         case "change-permissions":
-            change_permissions_of_group(message=call.message, group_id=int(call.data.split("_")[1]))
+            change_permissions_of_group(
+                message=call.message, group_id=int(call.data.split("_")[1])
+            )
         case "change_permission":
             group_id = int(call.data.split("=")[2])
             section = call.data.split("=")[1]
 
-            groups[call.message.chat.id].permissions_of_groups[group_id][section] = not groups[call.message.chat.id].permissions_of_groups[group_id][section]
+            groups[call.message.chat.id].permissions_of_groups[group_id][
+                section
+            ] = not groups[call.message.chat.id].permissions_of_groups[group_id][
+                section
+            ]
 
             change_permissions_of_group(message=call.message, group_id=group_id)
 
@@ -316,9 +383,16 @@ def keyboard_buttons_handler(call):
         case "answer_length":
             set_length_answer(call.message)
         case "sphere":
-
-            if call.message.chat.id<0 and call.message.from_user!=groups[call.message.chat.id].owner_id:
-                if groups[groups[call.message.chat.id].owner_id].permissions_of_groups[call.message.chat.id][call_data] == False:
+            if (
+                call.message.chat.id < 0
+                and call.message.from_user != groups[call.message.chat.id].owner_id
+            ):
+                if (
+                    groups[groups[call.message.chat.id].owner_id].permissions_of_groups[
+                        call.message.chat.id
+                    ][call_data]
+                    == False
+                ):
                     markup = types.InlineKeyboardMarkup()
                     back_button = types.InlineKeyboardButton(
                         text="<<<",
@@ -326,7 +400,14 @@ def keyboard_buttons_handler(call):
                     )
                     markup.add(back_button)
 
-                    bot.edit_message_text(templates[previous_language_code]["settings_have_no_permission.txt"], call.message.chat.id, call.message.message_id, reply_markup=markup)
+                    bot.edit_message_text(
+                        templates[previous_language_code][
+                            "settings_have_no_permission.txt"
+                        ],
+                        call.message.chat.id,
+                        call.message.message_id,
+                        reply_markup=markup,
+                    )
                     return
 
             if (
@@ -355,8 +436,16 @@ def keyboard_buttons_handler(call):
             set_sphere_command(call.message)
 
         case "change_lang":
-            if call.message.chat.id<0 and call.message.from_user!=groups[call.message.chat.id].owner_id:
-                if groups[groups[call.message.chat.id].owner_id].permissions_of_groups[call.message.chat.id][call_data] == False:
+            if (
+                call.message.chat.id < 0
+                and call.message.from_user != groups[call.message.chat.id].owner_id
+            ):
+                if (
+                    groups[groups[call.message.chat.id].owner_id].permissions_of_groups[
+                        call.message.chat.id
+                    ][call_data]
+                    == False
+                ):
                     markup = types.InlineKeyboardMarkup()
                     back_button = types.InlineKeyboardButton(
                         text="<<<",
@@ -364,12 +453,27 @@ def keyboard_buttons_handler(call):
                     )
                     markup.add(back_button)
 
-                    bot.edit_message_text(templates[previous_language_code]["settings_have_no_permission.txt"], call.message.chat.id, call.message.message_id, reply_markup=markup)
+                    bot.edit_message_text(
+                        templates[previous_language_code][
+                            "settings_have_no_permission.txt"
+                        ],
+                        call.message.chat.id,
+                        call.message.message_id,
+                        reply_markup=markup,
+                    )
                     return
             change_language(call.message.chat.id, call.message.message_id)
         case "change_owner":
-            if call.message.chat.id<0 and call.message.from_user!=groups[call.message.chat.id].owner_id:
-                if groups[groups[call.message.chat.id].owner_id].permissions_of_groups[call.message.chat.id][call_data] == False:
+            if (
+                call.message.chat.id < 0
+                and call.message.from_user != groups[call.message.chat.id].owner_id
+            ):
+                if (
+                    groups[groups[call.message.chat.id].owner_id].permissions_of_groups[
+                        call.message.chat.id
+                    ][call_data]
+                    == False
+                ):
                     markup = types.InlineKeyboardMarkup()
                     back_button = types.InlineKeyboardButton(
                         text="<<<",
@@ -377,7 +481,14 @@ def keyboard_buttons_handler(call):
                     )
                     markup.add(back_button)
 
-                    bot.edit_message_text(templates[previous_language_code]["settings_have_no_permission.txt"], call.message.chat.id, call.message.message_id, reply_markup=markup)
+                    bot.edit_message_text(
+                        templates[previous_language_code][
+                            "settings_have_no_permission.txt"
+                        ],
+                        call.message.chat.id,
+                        call.message.message_id,
+                        reply_markup=markup,
+                    )
                     return
             change_owner_of_group(call.message)
 
@@ -551,6 +662,36 @@ def keyboard_buttons_handler(call):
 
         case "confirm_send_newsletter":
             send_newsletter(call.message)
+
+        case "get_error_details":
+            markup = types.InlineKeyboardMarkup()
+            back_button = types.InlineKeyboardButton(
+                text="Hide details",
+                callback_data="hide_error_details",
+            )
+            markup.add(back_button)
+
+            bot.edit_message_text(
+                errors_details[call.message.message_id],
+                call.message.chat.id,
+                call.message.message_id,
+                reply_markup=markup,
+            )
+
+        case "hide_error_details":
+            markup = types.InlineKeyboardMarkup()
+            back_button = types.InlineKeyboardButton(
+                text="Show details",
+                callback_data="get_error_details",
+            )
+            markup.add(back_button)
+
+            bot.edit_message_text(
+                errors_previews[call.message.message_id],
+                call.message.chat.id,
+                call.message.message_id,
+                reply_markup=markup,
+            )
 
         # Purchase the subscription
 

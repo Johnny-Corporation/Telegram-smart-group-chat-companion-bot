@@ -1,0 +1,2 @@
+❗️Error occurred❗️
+In chat with: {fn} (@{un})

@@ -132,6 +132,12 @@ class Johnny:
 
         # Group
         self.owner_id = None
+        
+        self.user_info = self.bot.get_chat(self.chat_id)
+        self.username = self.user_info.username
+        self.fn = self.user_info.first_name
+        self.ln = self.user_info.last_name
+
 
     @property
     def trigger_probability(self):
