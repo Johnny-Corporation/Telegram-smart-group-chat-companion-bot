@@ -221,18 +221,25 @@ def error_handler(args):
             reply_markup=close_btn_markup,
             parse_mode="html",
         )
-        try:
-            send_to_developers(
-                f"Error occurred!!!: \n ❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️\n {traceback.format_exc()}\n ❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️❗️ ",
-                bot,
-                developer_chat_IDs,
-            )
-        except ApiTelegramException:  # Most probably too long message
-            send_to_developers(
-                "Error occurred, but output is too long, see logs!",
-                bot,
-                developer_chat_IDs,
-            )
+        expand_error_btn_markup = types.InlineKeyboardMarkup()
+        button1 = types.InlineKeyboardButton(
+            text="Show details",
+            callback_data="get_error_details",
+        )
+        expand_error_btn_markup.add(button1)
+        msgs = send_to_developers(
+            templates["en"]["dev_error_report.txt"].format(
+                fn=groups[chat_id].fn, un=groups[chat_id].username
+            ),
+            bot,
+            developer_chat_IDs,
+            reply_markup=expand_error_btn_markup,
+        )
+        for m in msgs:
+            errors_details[m.message_id] = traceback.format_exc()
+            errors_previews[m.message_id] = templates["en"][
+                "dev_error_report.txt"
+            ].format(fn=groups[chat_id].fn, un=groups[chat_id].username)
 
 
 threading.excepthook = error_handler
