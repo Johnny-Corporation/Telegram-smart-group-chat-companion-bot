@@ -69,4 +69,7 @@ def menu(message, back_from=False):
         reply_markup=markup,
         parse_mode="HTML",
     )
-    bot.delete_message(message.chat.id, message.message_id)
+    try:
+        bot.delete_message(message.chat.id, message.message_id)
+    except:
+        pass
