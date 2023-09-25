@@ -676,7 +676,7 @@ class Johnny:
                     ),
                     parse_mode="Markdown",
                 )
-            except ApiException as e:  # If bad markdown, sending without parse mode
+            except ApiTelegramException as e:  # If bad markdown, sending without parse mode
                 if e.result.status_code == 400:
                     self.bot.edit_message_text(
                         chat_id=self.message.chat.id,
@@ -836,8 +836,13 @@ class Johnny:
 
                 current_date = datetime.now().isoformat()
 
+                chat_info = bot.get_chat(chat_id)
+                firstname = chat_info.first_name
+                lastname = chat_info.last_name
+                username = chat_info.username   
+
                 db_controller.add_user_with_sub(
-                    chat_id, "Free", current_date, " ", " ", " ", 30
+                    chat_id, "Free", current_date, firstname, lastname, username, 30
                 )
 
                 self.subscription = "Free"

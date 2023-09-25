@@ -1,0 +1,1 @@
+Only owner can change owner of group

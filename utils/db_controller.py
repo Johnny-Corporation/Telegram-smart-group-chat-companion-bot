@@ -216,14 +216,7 @@ class Controller:
         columns = [description[0] for description in self.cursor.description]
         users_dict = {}
         for i, column in enumerate(columns):
-            if (
-                (column != "MessagesTotal")
-                and (column != "TypeOfSubscription")
-                and (column != "DateOfStart")
-            ):
-                users_dict[column] = bool(result[i])
-            else:
-                users_dict[column] = result[i]
+            users_dict[column] = result[i]
 
         return users_dict
 
@@ -240,16 +233,7 @@ class Controller:
         columns = [description[0] for description in self.cursor.description]
         users_dict = {}
         for i, column in enumerate(columns):
-            if (
-                (column != "MessagesTotal")
-                and (column != "NumAllowedGroups")
-                and (column != "TemporaryMemorySize")
-                and (column != "TypeOfSubscription")
-                and (column != "DateOfStart")
-            ):
-                users_dict[column] = bool(result[i])
-            else:
-                users_dict[column] = result[i]
+            users_dict[column] = result[i]
 
         return users_dict
 

@@ -354,7 +354,13 @@ def send_welcome_text_and_load_data(
         # If there isn't data, registries new user
         if not sub_exist:
             new_user = True
-            groups[chat_id].add_new_user(chat_id, " ", " ", " ", "Free", 10)
+
+            chat_info = bot.get_chat(chat_id)
+            firstname = chat_info.first_name
+            lastname = chat_info.last_name
+            username = chat_info.username   
+
+            groups[chat_id].add_new_user(chat_id, firstname, lastname, username, "Free", 10)
             groups[chat_id].load_subscription(chat_id)
 
         else:
@@ -426,11 +432,15 @@ def send_welcome_text_and_load_data(
                 f"As a developer, you granted Pro sub\n {'='*20} \n Как разработчику, вам выдана подписка Pro",
                 reply_markup=markup,
             )
+            chat_info = bot.get_chat(chat_id)
+            firstname = chat_info.first_name
+            lastname = chat_info.last_name
+            username = chat_info.username   
             groups[message.chat.id].add_new_user(
                 message.chat.id,
-                message.from_user.first_name,
-                message.from_user.last_name,
-                message.from_user.username,
+                firstname,
+                lastname,
+                username,
                 "Pro",
                 999,
             )

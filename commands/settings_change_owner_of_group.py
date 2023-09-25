@@ -3,14 +3,14 @@ from __main__ import *
 
 # --- Change the owner of group ---
 
-@bot.message_handler(commands=["change_owner_of_group"], func=time_filter)
-@error_handler
+# @error_handler
 def change_owner_of_group(message):
     language_code = groups[message.chat.id].lang_code
-    bot_reply = bot.reply_to(
-        message,
+
+    bot_reply = bot.send_message(
+        message.chat.id,
         templates[language_code]["change_owner_of_group.txt"],
-        parse_mode="HTML",
+        parse_mode="HTML"
     )
 
     reply_blacklist[message.chat.id].append(bot_reply.message_id)
