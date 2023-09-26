@@ -25,6 +25,7 @@ from utils.functions import (
     send_to_developers,
     translate_text,
     load_buttons,
+    generate_image_and_send,
 )
 
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -38,6 +39,7 @@ from utils.functions import (
     to_text,
     video_note_to_text,
     take_info_about_sub,
+    check_draw_image_trigger_words_in_message_text,
 )
 from utils.text_to_voice import *
 from telebot.apihelper import *
@@ -282,6 +284,18 @@ class Johnny:
             self.total_spent_messages,
         )
         self.message = message
+
+        if check_draw_image_trigger_words_in_message_text(text):
+            self.bot.send_chat_action(self.chat_id, "upload_photo")
+            generate_image_and_send(
+                self.bot,
+                self.chat_id,
+                translate_text("en", text, force=True),
+                1,
+                "poor",
+            )
+            return
+
         # --- Add message to temporary memory ---
         self.messages_history.append(
             [
@@ -676,7 +690,9 @@ class Johnny:
                     ),
                     parse_mode="Markdown",
                 )
-            except ApiTelegramException as e:  # If bad markdown, sending without parse mode
+            except (
+                ApiTelegramException
+            ) as e:  # If bad markdown, sending without parse mode
                 if e.result.status_code == 400:
                     self.bot.edit_message_text(
                         chat_id=self.message.chat.id,
@@ -839,7 +855,7 @@ class Johnny:
                 chat_info = bot.get_chat(chat_id)
                 firstname = chat_info.first_name
                 lastname = chat_info.last_name
-                username = chat_info.username   
+                username = chat_info.username
 
                 db_controller.add_user_with_sub(
                     chat_id, "Free", current_date, firstname, lastname, username, 30

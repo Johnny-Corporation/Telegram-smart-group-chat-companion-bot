@@ -702,6 +702,24 @@ def generate_image_and_send(bot, chat_id, prompt, n=1, size="1024x1024"):
     return f"Function has sent {n} AI-generated image(s). (prompt:'{prompt}')"
 
 
+def check_draw_image_trigger_words_in_message_text(message_text: str) -> bool:
+    trigger_words = [
+        "draw",
+        "imagine",
+        "нарисуй",
+        "сгенерируй",
+        "представь",
+        "нарисовать",
+        "рисовать",
+        "изобрази",
+    ]
+    message_text = message_text.lower()
+    for word in trigger_words:
+        if word in message_text:
+            return True
+    return False
+
+
 def check_on_channel_sub(bot, user_id, channel_username):
     try:
         member = bot.get_chat_member(f"@{channel_username}", user_id)
