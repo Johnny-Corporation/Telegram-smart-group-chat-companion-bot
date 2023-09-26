@@ -622,7 +622,7 @@ def keyboard_buttons_handler(call):
         case "get_group":
             get_group_info(call.message)
         case "get_db_file":
-            send_file("output/DB.sqlite", call.message.chat.id, bot)
+            send_file("output\\DB.sqlite", call.message.chat.id, bot)
         case "get_promocodes":
             get_promocodes(call.message)
         case "add_promocode":
@@ -675,12 +675,23 @@ def keyboard_buttons_handler(call):
             )
             markup.add(back_button)
 
-            bot.edit_message_text(
-                errors_details[call.message.message_id],
-                call.message.chat.id,
-                call.message.message_id,
-                reply_markup=markup,
-            )
+            try:
+                bot.edit_message_text(
+                    errors_details[call.message.message_id],
+                    call.message.chat.id,
+                    call.message.message_id,
+                    reply_markup=markup,
+                )
+            except:  # error text too long
+                bot.edit_message_text(
+                    "Output too long",
+                    call.message.chat.id,
+                    call.message.message_id,
+                    reply_markup=markup,
+                )
+                with open("temp\\error.txt", "w") as f:
+                    f.write(errors_details[call.message.message_id])
+                send_file("temp\\error.txt", call.message.chat.id, bot)
 
         case "hide_error_details":
             markup = types.InlineKeyboardMarkup()

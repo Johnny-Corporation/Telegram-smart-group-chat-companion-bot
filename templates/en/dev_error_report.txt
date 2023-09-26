@@ -1,2 +1,5 @@
 ❗️Error occurred❗️
-In chat with: {fn} (@{un})
+In chat with:
+Username: @{un}
+First name: {fn}
+Last name: {ln}
