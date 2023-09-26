@@ -16,7 +16,6 @@ from Johnny import Johnny
 from utils.internet_access import *
 from utils.functions import *
 from utils.logger import logger
-from utils.time_tracking import *
 from utils.gpt_interface import *
 
 # Other
@@ -26,6 +25,16 @@ from datetime import datetime
 from time import sleep
 import threading
 from typing import Dict
+import string
+from random import choice
+
+from utils.time_tracking import *
+sub_pro_promocode = generate_code()
+discount_on_sub_50 = generate_code()
+discount_on_sub_20 = generate_code()
+discount_for_public = 'JOHNNY'
+promocode_100 = generate_code()
+promocodes = {'sub': sub_pro_promocode, "discount_50": discount_on_sub_50, 'discount_50': discount_for_public, 'messages_100': promocode_100}
 
 # --------------- Initialization ---------------
 
@@ -37,8 +46,7 @@ skip_old_messages = True  # True until message older than bot start time receive
 ignored_messages = 0  # count number of ignored messages when bot was offline for logs
 
 
-bot_token = environ.get("BOT_API_TOKEN")
-
+bot_token = environ.get("BOT_API_TOKEN_OFFICIAL_OLD")
 
 yoomoney_token = environ.get("PAYMENT_RUS_TOKEN")
 
@@ -524,6 +532,7 @@ def init_new_group(chat_id, inviting=False, referrer_id=None):
 
 # Reply handlers (important to import them before commands, because commands are using them)
 from commands.reply_handlers.add_commercial_link import *
+from commands.reply_handlers.dev_tool_add_promocode import *
 from commands.reply_handlers.settings_change_language import *
 from commands.reply_handlers.bug_report import *
 from commands.reply_handlers.feature_request import *

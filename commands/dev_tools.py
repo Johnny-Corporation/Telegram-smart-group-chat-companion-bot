@@ -49,7 +49,16 @@ def dev_tools(message, edit: bool = False):
         text=translate_text(groups[chat_id].lang_code, "Available promocodes"),
         callback_data="get_promocodes",
     )
+    button1 = types.InlineKeyboardButton(
+        text=translate_text(groups[chat_id].lang_code, "Add promocode"),
+        callback_data="add_promocode",
+    )
+    button2 = types.InlineKeyboardButton(
+        text=translate_text(groups[chat_id].lang_code, "Delete promocode"),
+        callback_data="delete_promocode",
+    )
     dev_tools_markup.add(button)
+    dev_tools_markup.add(button1, button2)
     button = types.InlineKeyboardButton(
         text=translate_text(
             groups[chat_id].lang_code, "Add new language(s) (not working on server!)"

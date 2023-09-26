@@ -17,28 +17,26 @@ def enter_promocode_reply_handler(inner_message):
         bot.clear_reply_handlers_by_message_id(inner_message.reply_to_message.message_id)
         return
     
-    code_back = check_code(inner_message.text)
-
-    print(code_back)
-
+    code_back = check_code(promocodes, inner_message.text)
     
-    
-    if len(code_back) == 1:
+    if len(code_back) == 2:
 
         if code_back[0]>=1:
             groups[inner_message.chat.id].add_purchase_of_messages(inner_message.chat.id, code_back[0])
 
             bot.send_message(inner_message.chat.id, templates[language_code]["more_100000_messages.txt"].format(messages=groups[inner_message.chat.id].characteristics_of_sub[groups[inner_message.chat.id].subscription]["messages_limit"]))
-            generate_new_code('promocode_100')
+            
+            promocodes[code_back[-1]] = generate_code()
         elif code_back[0]<1:
-            groups[inner_message.chat.id].discount_subscription["Promocode discount"] = 0.50
+            groups[inner_message.chat.id].discount_subscription["Promocode discount"] = code_back[0]
 
             bot.send_message(inner_message.chat.id, templates[language_code]["promocode_discount_50.txt"])
 
-            generate_new_code('discount_on_sub_50')
+            if code_back[-1] != 'JOHNNY':
+                promocodes[code_back[-1]] = generate_code()
 
 
-    elif len(code_back) == 2:
+    elif len(code_back) == 3:
         groups[inner_message.chat.id].add_new_user(inner_message.chat.id, inner_message.from_user.first_name, inner_message.from_user.last_name, inner_message.from_user.username, code_back[0], code_back[1])
         groups[inner_message.chat.id].load_subscription(inner_message.chat.id)
 
@@ -50,7 +48,7 @@ def enter_promocode_reply_handler(inner_message):
 
         groups[inner_message.chat.id].track_sub(inner_message.chat.id, new=True)
 
-        generate_new_code('sub_pro_promocode')
+        promocodes[code_back[-1]] = generate_code()
 
     else:
         bot.send_message(

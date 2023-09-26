@@ -625,6 +625,10 @@ def keyboard_buttons_handler(call):
             send_file("output/DB.sqlite", call.message.chat.id, bot)
         case "get_promocodes":
             get_promocodes(call.message)
+        case "add_promocode":
+            add_promocode(call.message)
+        case "delete_promocode":
+            delete_promocode(call.message)
         case "add_lang":
             language_code = groups[call.message.chat.id].lang_code
             reply_to = bot.send_message(

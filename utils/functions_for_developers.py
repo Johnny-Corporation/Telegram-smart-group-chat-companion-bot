@@ -106,13 +106,35 @@ def get_group_info_reply_handler(inner_message):
         bot.send_message(inner_message.chat.id, "History is empty")
 
 
-@error_handler
 def get_promocodes(inner_message):
+    text = ''
+    for promocode_key in promocodes:
+        if 'sub' in promocode_key:
+            text += f"Get Subscription Pro: {promocodes[promocode_key]}\n"
+        elif 'messages' in promocode_key:
+            text += f"Get {promocode_key.split('_')[1]} messages: {promocodes[promocode_key]}\n"
+        elif 'discount' in promocode_key:
+            text += f"Get discount on {promocode_key.split('_')[1]}%: {promocodes[promocode_key]}\n"
     bot.send_message(
         inner_message.chat.id,
-        f"Subscription 'Pro': {sub_pro_promocode}\nDiscount 50% ob buying the sub: {discount_on_sub_50}\nGet 100 messages: {promocode_100}",
+        text
     )
 
+def add_promocode(message):
+    bot_reply = bot.send_message(
+        message.chat.id,
+        f"Write your new promocode in format\n  -for discount, messages: type_value (type is discount or messages, value - num of messages or the % for dicount)\n  -for sub: sub\n*for public code add to basic form: _yourcode",
+    )
+    reply_blacklist[message.chat.id].append(bot_reply.message_id)
+    bot.register_for_reply(bot_reply, add_promocode_reply_handler)
+
+def delete_promocode(message):
+    bot_reply = bot.send_message(
+        message.chat.id,
+        f"Write key of promocode to delete",
+    )
+    reply_blacklist[message.chat.id].append(bot_reply.message_id)
+    bot.register_for_reply(bot_reply, delete_promocode_reply_handler)
 
 def ask_newsletter(message):
     bot_reply = bot.reply_to(
