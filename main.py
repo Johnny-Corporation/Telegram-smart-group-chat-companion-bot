@@ -174,7 +174,9 @@ def error_handler(args):
             expand_error_btn_markup.add(button1)
             msgs = send_to_developers(
                 templates["en"]["dev_error_report.txt"].format(
-                    fn=groups[chat_id].fn, un=groups[chat_id].username
+                    fn=groups[chat_id].fn,
+                    un=groups[chat_id].username,
+                    ln=groups[chat_id].ln,
                 ),
                 bot,
                 developer_chat_IDs,
@@ -184,7 +186,11 @@ def error_handler(args):
                 errors_details[m.message_id] = traceback.format_exc()
                 errors_previews[m.message_id] = templates["en"][
                     "dev_error_report.txt"
-                ].format(fn=groups[chat_id].fn, un=groups[chat_id].username)
+                ].format(
+                    fn=groups[chat_id].fn,
+                    un=groups[chat_id].username,
+                    ln=groups[chat_id].ln,
+                )
         else:
             if isinstance(message, list):
                 return
@@ -229,7 +235,9 @@ def error_handler(args):
         expand_error_btn_markup.add(button1)
         msgs = send_to_developers(
             templates["en"]["dev_error_report.txt"].format(
-                fn=groups[chat_id].fn, un=groups[chat_id].username
+                fn=groups[chat_id].fn,
+                un=groups[chat_id].username,
+                ln=groups[chat_id].ln,
             ),
             bot,
             developer_chat_IDs,
@@ -239,7 +247,11 @@ def error_handler(args):
             errors_details[m.message_id] = traceback.format_exc()
             errors_previews[m.message_id] = templates["en"][
                 "dev_error_report.txt"
-            ].format(fn=groups[chat_id].fn, un=groups[chat_id].username)
+            ].format(
+                fn=groups[chat_id].fn,
+                un=groups[chat_id].username,
+                ln=groups[chat_id].ln,
+            )
 
 
 threading.excepthook = error_handler
@@ -358,9 +370,11 @@ def send_welcome_text_and_load_data(
             chat_info = bot.get_chat(chat_id)
             firstname = chat_info.first_name
             lastname = chat_info.last_name
-            username = chat_info.username   
+            username = chat_info.username
 
-            groups[chat_id].add_new_user(chat_id, firstname, lastname, username, "Free", 10)
+            groups[chat_id].add_new_user(
+                chat_id, firstname, lastname, username, "Free", 10
+            )
             groups[chat_id].load_subscription(chat_id)
 
         else:
@@ -435,7 +449,7 @@ def send_welcome_text_and_load_data(
             chat_info = bot.get_chat(chat_id)
             firstname = chat_info.first_name
             lastname = chat_info.last_name
-            username = chat_info.username   
+            username = chat_info.username
             groups[message.chat.id].add_new_user(
                 message.chat.id,
                 firstname,
