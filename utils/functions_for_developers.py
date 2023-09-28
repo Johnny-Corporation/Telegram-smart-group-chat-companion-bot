@@ -22,10 +22,16 @@ def get_user_info(message):
 
 @error_handler
 def get_user_info_reply_handler(inner_message):
-    path = (
-        "output\\clients_info\\"
-        + listdir("output\\clients_info")[int(inner_message.text)]
-    )
+    try:
+        path = (
+            "output\\clients_info\\"
+            + listdir("output\\clients_info")[int(inner_message.text)]
+        )
+    except IndexError:
+        bot.send_message(
+            inner_message.chat.id, "Index out of range, please select from given list"
+        )
+        return
     send_file(
         path,
         inner_message.chat.id,
@@ -72,10 +78,16 @@ def get_group_info(message):
 
 @error_handler
 def get_group_info_reply_handler(inner_message):
-    path = (
-        "output\\groups_info\\"
-        + listdir("output\\groups_info")[int(inner_message.text)]
-    )
+    try:
+        path = (
+            "output\\groups_info\\"
+            + listdir("output\\groups_info")[int(inner_message.text)]
+        )
+    except IndexError:
+        bot.send_message(
+            inner_message.chat.id, "Index out of range, please select from given list"
+        )
+        return
     send_file(
         path,
         inner_message.chat.id,
@@ -107,18 +119,16 @@ def get_group_info_reply_handler(inner_message):
 
 
 def get_promocodes(inner_message):
-    text = ''
+    text = ""
     for promocode_key in promocodes:
-        if 'sub' in promocode_key:
+        if "sub" in promocode_key:
             text += f"Get Subscription Pro: {promocodes[promocode_key]}\n"
-        elif 'messages' in promocode_key:
+        elif "messages" in promocode_key:
             text += f"Get {promocode_key.split('_')[1]} messages: {promocodes[promocode_key]}\n"
-        elif 'discount' in promocode_key:
+        elif "discount" in promocode_key:
             text += f"Get discount on {promocode_key.split('_')[1]}%: {promocodes[promocode_key]}\n"
-    bot.send_message(
-        inner_message.chat.id,
-        text
-    )
+    bot.send_message(inner_message.chat.id, text)
+
 
 def add_promocode(message):
     bot_reply = bot.send_message(
@@ -128,6 +138,7 @@ def add_promocode(message):
     reply_blacklist[message.chat.id].append(bot_reply.message_id)
     bot.register_for_reply(bot_reply, add_promocode_reply_handler)
 
+
 def delete_promocode(message):
     bot_reply = bot.send_message(
         message.chat.id,
@@ -135,6 +146,7 @@ def delete_promocode(message):
     )
     reply_blacklist[message.chat.id].append(bot_reply.message_id)
     bot.register_for_reply(bot_reply, delete_promocode_reply_handler)
+
 
 def ask_newsletter(message):
     bot_reply = bot.reply_to(

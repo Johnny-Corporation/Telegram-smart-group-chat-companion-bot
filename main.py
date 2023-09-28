@@ -29,12 +29,18 @@ import string
 from random import choice
 
 from utils.time_tracking import *
+
 sub_pro_promocode = generate_code()
 discount_on_sub_50 = generate_code()
 discount_on_sub_20 = generate_code()
-discount_for_public = 'JOHNNY'
+discount_for_public = "JOHNNY"
 promocode_100 = generate_code()
-promocodes = {'sub': sub_pro_promocode, "discount_50": discount_on_sub_50, 'discount_50': discount_for_public, 'messages_100': promocode_100}
+promocodes = {
+    "sub": sub_pro_promocode,
+    "discount_50": discount_on_sub_50,
+    "discount_50": discount_for_public,
+    "messages_100": promocode_100,
+}
 
 # --------------- Initialization ---------------
 
@@ -46,7 +52,7 @@ skip_old_messages = True  # True until message older than bot start time receive
 ignored_messages = 0  # count number of ignored messages when bot was offline for logs
 
 
-bot_token = environ.get("BOT_API_TOKEN_OFFICIAL_OLD")
+bot_token = environ.get("BOT_API_TOKEN")
 
 yoomoney_token = environ.get("PAYMENT_RUS_TOKEN")
 
