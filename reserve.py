@@ -125,7 +125,7 @@ def get_user_info_reply_handler(inner_message):
         for i in controller.get_last_n_messages_from_chat(
             n=999999999, chat_id=group_id
         )[::-1]:
-            print(i)
+            (i)
             f.write(f"{i[0]}  = = = {i[1]}" + "\n")
         f.write("[END]")
 
@@ -165,7 +165,7 @@ def get_group_info_reply_handler(inner_message):
         for i in controller.get_last_n_messages_from_chat(
             n=999999999, chat_id=group_id
         )[::-1]:
-            print(i)
+            (i)
             f.write(f"{i[0]}  = = = {i[1]}" + "\n")
         f.write("[END]")
 

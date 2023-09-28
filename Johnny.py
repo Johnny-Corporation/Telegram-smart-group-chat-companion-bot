@@ -148,7 +148,7 @@ class Johnny:
     @trigger_probability.setter
     def trigger_probability(self, val):
         self.trigger_probability_ = val
-        print("=====================================")
+        ("=====================================")
         # This line does nothing! Because load_buttons just returns markup.
         load_buttons(telebot_types, groups, self.chat_id, self.lang_code, self.owner_id)
 
@@ -727,7 +727,7 @@ class Johnny:
             if isinstance(message, str):  # strange bug with long message
                 continue
             for key, value in message.items():
-                print("@@@", value)
+                ("@@@", value)
                 num_tokens += len(encoding.encode(str(value)))
                 if key == "name":  # if there's a name, the role is omitted
                     num_tokens += -1  # role is always required and always 1 token
@@ -898,7 +898,7 @@ class Johnny:
                 # create a scheduler
                 sub_scheduler = BackgroundScheduler()
 
-                # schedule a task to print a number after 2 seconds
+                # schedule a task to  a number after 2 seconds
                 sub_scheduler.add_job(
                     sub_tracking,
                     "date",
@@ -919,7 +919,7 @@ class Johnny:
                     # create a scheduler
                     sub_scheduler = BackgroundScheduler()
 
-                    # schedule a task to print a number after 2 seconds
+                    # schedule a task to  a number after 2 seconds
                     sub_scheduler.add_job(
                         sub_tracking,
                         "date",

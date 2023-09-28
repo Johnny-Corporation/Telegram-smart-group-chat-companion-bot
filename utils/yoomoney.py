@@ -32,33 +32,36 @@ def accept_payment(message, cost, type_of_own="update", messages=0):
             url=url,
         )
         markup.add(temp_button)
-        if type_of_own == 'update' or type_of_own == 'extend':
-
+        if type_of_own == "update" or type_of_own == "extend":
             for name in groups[message.chat.id].discount_subscription.keys():
                 value = groups[message.chat.id].discount_subscription[name]
-                discounts = ''
+                discounts = ""
                 if not name == "total_sum":
-                    discounts = discounts + f'{translate_text(language_code, name)}: {(value)*100}%\n'
+                    discounts = (
+                        discounts
+                        + f"{translate_text(language_code, name)}: {(value)*100}%\n"
+                    )
 
             bot.send_message(
                 message.chat.id,
                 templates[language_code]["info_about_buy_of_sub.txt"].format(
-                    cost=cost,
-                    discounts=discounts
+                    cost=cost, discounts=discounts
                 ),
                 reply_markup=markup,
                 parse_mode="HTML",
             )
             groups[message.chat.id].discount_subscription["total sum"] = 1
 
-        elif type_of_own == 'more_messages':
-
-            discounts = ' '
+        elif type_of_own == "more_messages":
+            discounts = " "
             for name in groups[message.chat.id].discount_subscription.keys():
                 value = groups[message.chat.id].discount_subscription[name]
-                discounts = ''
+                discounts = ""
                 if not name == "total sum":
-                    discounts = discounts + f'{translate_text(language_code, name)}: {(1-value)*100}%\n'
+                    discounts = (
+                        discounts
+                        + f"{translate_text(language_code, name)}: {(1-value)*100}%\n"
+                    )
 
             bot.send_message(
                 message.chat.id,
@@ -66,7 +69,7 @@ def accept_payment(message, cost, type_of_own="update", messages=0):
                     count=messages,
                     sub=groups[message.chat.id].subscription,
                     cost=cost,
-                    discounts=discounts
+                    discounts=discounts,
                 ),
                 reply_markup=markup,
                 parse_mode="HTML",
@@ -85,10 +88,11 @@ def accept_payment(message, cost, type_of_own="update", messages=0):
 
         if result[0]:
             if type_of_own == "update":
-
-                #Referral check
+                # Referral check
                 if groups[message.chat.id].invited:
-                    groups[groups[message.chat.id].referrer_id].discount_subscription["referral discount"] = 0.70
+                    groups[groups[message.chat.id].referrer_id].discount_subscription[
+                        "referral discount"
+                    ] = 0.70
                     groups[message.chat.id].invited = False
 
                 groups[message.chat.id].add_new_user(
@@ -141,15 +145,23 @@ def accept_payment(message, cost, type_of_own="update", messages=0):
                 )
                 groups[message.chat.id].track_sub(message.chat.id, new=True)
             elif type_of_own == "more_messages":
-                groups[message.chat.id].add_purchase_of_messages(message.chat.id, messages)
+                groups[message.chat.id].add_purchase_of_messages(
+                    message.chat.id, messages
+                )
                 # groups[message.chat.id].characteristics_of_sub[groups[message.chat.id].subscription]["messages_limit"] = (
                 #     groups[message.chat.id].characteristics_of_sub[groups[message.chat.id].subscription]["messages_limit"] + val
                 # )
 
                 for group in groups[message.chat.id].id_groups:
-                    groups[group].characteristics_of_sub[groups[message.chat.id].subscription]["messages_limit"] = groups[
+                    groups[group].characteristics_of_sub[
+                        groups[message.chat.id].subscription
+                    ]["messages_limit"] = groups[
                         message.chat.id
-                    ].characteristics_of_sub[groups[message.chat.id].subscription]["messages_limit"]
+                    ].characteristics_of_sub[
+                        groups[message.chat.id].subscription
+                    ][
+                        "messages_limit"
+                    ]
 
                 bot.send_message(
                     message.chat.id,
@@ -214,7 +226,7 @@ def support(message, cost):
             reply_markup=markup,
             parse_mode="HTML",
         )
-        print(label)
+        (label)
 
         start_time = time.time()
 

@@ -7,10 +7,10 @@ def reply_keyboard_buttons_handler(message, commands):
         message.chat.id
     ].busy = False  # When resetting memory for example if lama didn't answer for some reason we need to reset busy status each button press to keep Johnny alive
     if message.chat.id < 0:
-        print(commands)
+        (commands)
 
         if groups[message.chat.id].activated == False:
-            print(commands)
+            (commands)
             if message.text == commands[0]:
                 send_welcome_text_and_load_data(
                     message,

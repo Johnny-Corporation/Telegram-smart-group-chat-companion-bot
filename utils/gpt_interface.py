@@ -31,7 +31,7 @@ templates = load_templates("templates\\")
 
 openAI_api_key = environ.get("OPENAI_API_KEY")
 if not openAI_api_key:
-    print("Failed to load OpenAI API key from environment, exiting...")
+    ("Failed to load OpenAI API key from environment, exiting...")
     exit()
 openai.api_key = openAI_api_key
 
@@ -221,7 +221,7 @@ def create_chat_completion(
         logger.error(f"Failed to connect to OpenAI API: {e}")
         raise e
     except openai.error.RateLimitError as e:
-        print(f"OpenAI API request exceeded rate limit: {e}")
+        (f"OpenAI API request exceeded rate limit: {e}")
         johnny.messages_to_be_deleted.append(
             johnny.bot.send_message(
                 johnny.message.chat.id, templates[johnny.lang_code]["high_demand.txt"]

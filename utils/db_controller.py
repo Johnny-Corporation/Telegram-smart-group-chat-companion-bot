@@ -9,7 +9,7 @@ def infinite_retry(func):
             try:
                 return func(*args, **kwargs)
             except Exception as e:
-                print(f"Exception caught: {e}, retrying...")
+                (f"Exception caught: {e}, retrying...")
                 sleep(1)
 
     return wrapper

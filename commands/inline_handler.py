@@ -15,7 +15,7 @@ import asyncio
 def inline_search(query):
     chat_id = query.from_user.id
     search_query = query.query
-    print("===============================", query, query.query)
+    ("===============================", query, query.query)
     """
     Each function must return list of dicts, in every dicts next fields are awaited:
         has_button: bool, required
@@ -127,5 +127,5 @@ def extend_gpt_prompt(chosen_inline_result):
     # if chosen_inline_result.id not in inline_results_by_gpt:
     #     return
 
-    print("========================================")
-    print(chosen_inline_result)
+    ("========================================")
+    (chosen_inline_result)

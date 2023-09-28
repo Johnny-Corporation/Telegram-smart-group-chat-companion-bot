@@ -363,7 +363,7 @@ def send_welcome_text_and_load_data(
 
     groups[chat_id].activated = True
 
-    print("REGISTRATION IS GOING")
+    ("REGISTRATION IS GOING")
 
     # Load messages
     groups[chat_id].load_data()
