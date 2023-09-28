@@ -270,4 +270,3 @@ def get_survey_stat(message):
             else:
                 content += f"[no_username](tg://user?id={val[0][0]})\n"
         bot.send_message(message.chat.id, content, parse_mode="Markdown")
-    bot.send_message(message.chat.id, content, parse_mode="Markdown")
