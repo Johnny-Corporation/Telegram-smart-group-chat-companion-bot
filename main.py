@@ -102,9 +102,9 @@ run_button = types.KeyboardButton("Start")
 markup.input_field_placeholder = "🚀"
 markup.add(run_button)
 
-first_message = input(
-    "Enter message to send users who were using bot, if Johnny notified them that he fall, its better to send something to notify them that it is working now, press Enter to do not send anything: "
-)
+first_message = ""  # input(
+#     "Enter message to send users who were using bot, if Johnny notified them that he fall, its better to send something to notify them that it is working now, press Enter to do not send anything: "
+# )
 
 remembered_chats_ids = []
 
