@@ -12,6 +12,8 @@ from telebot.apihelper import ApiTelegramException
 
 # Local modules
 groups = {}  # {group chat_id:Johnny object}
+survey_results = {} # option: [ [id,username] ]
+already_pressed_survey = [] # list of ids which take part in survey
 from Johnny import Johnny
 from utils.internet_access import *
 from utils.functions import *

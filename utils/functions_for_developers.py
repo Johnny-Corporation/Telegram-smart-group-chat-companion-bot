@@ -1,6 +1,8 @@
 from os import listdir
 from __main__ import *
 from utils.db_controller import Controller
+import plotly.express as px
+from utils.functions import send_file
 
 controller = Controller()
 # ----------------------- Functions for devtools -----------------------
@@ -148,12 +150,20 @@ def delete_promocode(message):
     bot.register_for_reply(bot_reply, delete_promocode_reply_handler)
 
 
-def ask_newsletter(message):
+def ask_newsletter(message, survey=False):
+    if not survey:
+        text = translate_text(
+            groups[message.chat.id].lang_code,
+            "Send your text in reply to this message. Attention! Do not use '|' symbol, it will be detected and parsed as survey!!!",
+        )
+    else:
+        text = translate_text(
+            groups[message.chat.id].lang_code,
+            'Send question and possible answers in format: question|option1|option2|etc. For example: "how old are you?|Yes|No|Im a dog."',
+        )
     bot_reply = bot.reply_to(
         message,
-        translate_text(
-            groups[message.chat.id].lang_code, "Send your text in reply to this message"
-        ),
+        text,
     )
     reply_blacklist[message.chat.id].append(bot_reply.message_id)
     bot.register_for_reply(bot_reply, ask_news_letter_reply_handler)
@@ -177,14 +187,14 @@ def ask_news_letter_reply_handler(inner_message):
         inner_message.chat.id,
         translate_text(
             groups[inner_message.chat.id].lang_code,
-            "This message will be sent to all users and groups! Confirm?",
+            "This message (survey) will be sent to all users and groups! Confirm?",
         ),
         reply_markup=markup,
     )
 
 
 def send_newsletter(message):
-    chat_id = groups[message.chat.id]
+    global survey_results
     text = groups[message.chat.id].prepared_newsletter
     if text is None:
         bot.send_message(
@@ -195,19 +205,66 @@ def send_newsletter(message):
             ),
         )
         return
+    survey = "|" in text
     bot.send_message(
         message.chat.id,
         translate_text(
             groups[message.chat.id].lang_code,
-            "Sending newsletter...",
+            ("Sending newsletter..." if not survey else "Sending survey..."),
         ),
     )
+    if survey:
+        keys_to_delete = list(survey_results.keys())
+        for i in keys_to_delete:
+            del survey_results[i]  # clearing the survey results before next survey
+        question = text.split("|")[0]
+        options = [i for i in text.split("|")[1:]]
+        keyboard = types.InlineKeyboardMarkup()
+        for option in options:
+            button = types.InlineKeyboardButton(
+                text=option, callback_data=f"survey_option_{option}"
+            )
+            survey_results[option] = []
+            keyboard.add(button)
     for chat_id_ in groups:
-        bot.send_message(int(chat_id_), text)
+        if survey:
+            if chat_id_ > 0:
+                bot.send_message(int(chat_id_), question, reply_markup=keyboard)
+        else:
+            bot.send_message(int(chat_id_), text)
     bot.send_message(
         message.chat.id,
         translate_text(
             groups[message.chat.id].lang_code,
-            f"Done sending! Sent to {len(groups)} groups and users in total including you.",
+            f"Done sending! Sent to {len(groups)} groups and users in total including you. If this was survey, it was sent only to groups and number is incorrect, i was lazy to count users sorry :(",
         ),
     )
+
+
+def get_survey_stat(message):
+    global survey_results
+    if not survey_results:
+        bot.send_message(message.chat.id, "No stats collected")
+        return
+
+    fig = px.bar(
+        x=list(survey_results.keys()),
+        y=[len(i) for i in survey_results.values()],
+        color=list(survey_results.keys()),
+    )
+    bot.send_message(message.chat.id, "Rendering plot...")
+    fig.write_image("temp\\stat.png")
+    send_file("temp\\stat.png", message.chat.id, bot, send_size=False)
+
+    for key, val in survey_results.items():
+        content = f"Guys who choosed {key}  --> \n"
+        for i, v in enumerate(val):
+            if i == 10:
+                bot.send_message(message.chat.id, content)
+                content = "Continuation: \n"
+            if v[1] != "@None":
+                content += f"{v[1]}\n"
+            else:
+                content += f"[no_username](tg://user?id={val[0][0]})\n"
+        bot.send_message(message.chat.id, content, parse_mode="Markdown")
+    bot.send_message(message.chat.id, content, parse_mode="Markdown")
