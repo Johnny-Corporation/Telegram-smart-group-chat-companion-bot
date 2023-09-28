@@ -607,7 +607,7 @@ def take_info_about_sub(subscription):
             "messages_limit": 10,
             "price_of_message": 10,
             "sphere_permission": False,
-            "dynamic_gen_permission": False,
+            "dynamic_gen_permission": True,
             "pro_voice_output": False,
         },
         "Pro": {

@@ -12,8 +12,8 @@ from telebot.apihelper import ApiTelegramException
 
 # Local modules
 groups = {}  # {group chat_id:Johnny object}
-survey_results = {} # option: [ [id,username] ]
-already_pressed_survey = [] # list of ids which take part in survey
+survey_results = {}  # option: [ [id,username] ]
+already_pressed_survey = []  # list of ids which take part in survey
 from Johnny import Johnny
 from utils.internet_access import *
 from utils.functions import *
@@ -428,8 +428,8 @@ def send_welcome_text_and_load_data(
         }
         groups[owner_id].permissions_of_groups[chat_id] = permissions
 
-    if groups[chat_id].subscription == "Pro":
-        groups[chat_id].dynamic_gen = True
+    # if groups[chat_id].subscription == "Pro":
+    groups[chat_id].dynamic_gen = True
 
     # Load buttons
     markup = load_buttons(
