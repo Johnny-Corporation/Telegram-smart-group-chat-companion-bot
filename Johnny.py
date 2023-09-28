@@ -180,7 +180,7 @@ class Johnny:
         for m in self.messages_history[:-4]:
             if (
                 m[0] == "$FUNCTION$"
-                or ("[FILE]" in m[1])
+                or("[FILE]" in m[1])
                 or ("[USER SENT AN IMAGE]" in m[1])
             ):
                 self.messages_history.remove(m)
