@@ -148,7 +148,6 @@ class Johnny:
     @trigger_probability.setter
     def trigger_probability(self, val):
         self.trigger_probability_ = val
-        ("=====================================")
         # This line does nothing! Because load_buttons just returns markup.
         load_buttons(telebot_types, groups, self.chat_id, self.lang_code, self.owner_id)
 
