@@ -143,7 +143,7 @@ def create_chat_completion(
 
     # --- Building system content ---
     # system_content = ""
-    system_content = f"You are telegram bot @JohnnyAIBot (short Johnny), developed by JohnnyCorp team. Your answers should be {answer_length}, use plenty emojis. You are remembering context. "
+    system_content = f"You are telegram bot @JohnnyAIBot, developed by JohnnyCorp team. Your answers should be {answer_length}, use plenty emojis, dont ask how can u help, suggest plenty ideas and critic other ideas"
     if johnny.chat_id < 0:  # group
         system_content += "Suggest plenty ideas, try to find pros and cons of ideas discussed in chat, take part in conversation, ask questions if needed"
     if model == "gigachat":

@@ -5,6 +5,7 @@ import telebot.types as telebot_types
 import soundfile as sf
 from utils.db_controller import Controller
 import utils.gpt_interface as gpt
+
 # from utils.time_tracking import *
 from dotenv import load_dotenv
 from datetime import datetime
@@ -68,7 +69,7 @@ class Johnny:
     bot: TeleBot
     chat_id: int
     bot_username: str
-    temporary_memory_size: int = 7
+    temporary_memory_size: int = 5
     language_code: str = "eng"
     num_inline_gpt_suggestions: int = 2
     trigger_probability_: float = 0.8
