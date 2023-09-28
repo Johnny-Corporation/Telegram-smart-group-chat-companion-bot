@@ -227,11 +227,14 @@ def send_newsletter(message):
             survey_results[option] = []
             keyboard.add(button)
     for chat_id_ in groups:
-        if survey:
-            if chat_id_ > 0:
-                bot.send_message(int(chat_id_), question, reply_markup=keyboard)
-        else:
-            bot.send_message(int(chat_id_), text)
+        try:
+            if survey:
+                if chat_id_ > 0:
+                    bot.send_message(int(chat_id_), question, reply_markup=keyboard)
+            else:
+                bot.send_message(int(chat_id_), text)
+        except:  # Bot was blocked or something else
+            pass
     bot.send_message(
         message.chat.id,
         translate_text(
