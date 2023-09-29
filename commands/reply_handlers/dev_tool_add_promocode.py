@@ -9,7 +9,8 @@ def add_promocode_reply_handler(inner_message):
 
     try:
 
-        if 'sub' in inner_message.text:
+        if inner_message.text=='sub':
+
             promocodes[f"sub"] = generate_code()
             if len(form)==2:
                 form = inner_message.text.split("_")
@@ -18,11 +19,20 @@ def add_promocode_reply_handler(inner_message):
             return
 
         form = inner_message.text.split("_")
- 
-        promocodes[f"{form[0]}_{form[1]}"] = generate_code()
-        if len(form)==3:
-            print("CUUUUUUUSTOOOOOOOOOMMMMMMM PROMOCODE")
-            promocodes[f"{form[0]}_{form[1]}"] = form[2]
+
+        if {form[0]} == 'discount':
+            try: 
+                num = float(form[0])
+                if num > 100:
+                    bot.send_message(inner_message.chat.id, f"Discount more 100%?!?!")
+            except:
+                bot.send_message(inner_message.chat.id, f"Incorrect type of sub")
+                return
+            
+
+        promocodes[f"{form[0]}_{form[1]}_{form[2]}"] = generate_code()
+        if len(form)==4:
+            promocodes[f"{form[0]}_{form[1]}_{form[2]}"] = form[3]
         bot.send_message(inner_message.chat.id, f"Your {form[0]} promocode was added")
         return
 

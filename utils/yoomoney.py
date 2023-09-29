@@ -49,13 +49,14 @@ def accept_payment(message, cost, type_of_own="update", messages=0):
                 reply_markup=markup,
                 parse_mode="HTML",
             )
+            groups[message.chat.id].discount_subscription = {}
             groups[message.chat.id].discount_subscription["total sum"] = 1
 
         elif type_of_own == 'more_messages':
 
             discounts = ' '
-            for name in groups[message.chat.id].discount_subscription.keys():
-                value = groups[message.chat.id].discount_subscription[name]
+            for name in groups[message.chat.id].discount_message.keys():
+                value = groups[message.chat.id].discount_message[name]
                 discounts = ''
                 if not name == "total sum":
                     discounts = discounts + f'{translate_text(language_code, name)}: {(1-value)*100}%\n'
@@ -71,6 +72,7 @@ def accept_payment(message, cost, type_of_own="update", messages=0):
                 reply_markup=markup,
                 parse_mode="HTML",
             )
+            groups[message.chat.id].discount_message = {}
             groups[message.chat.id].discount_message["total sum"] = 1
         start_time = time.time()
 

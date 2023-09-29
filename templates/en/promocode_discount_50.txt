@@ -1,1 +1,1 @@
-Congratulations! Now you have 50% discount on buy the subscription!
+Congratulations! Now you have 50% discount on buy the {type_}!

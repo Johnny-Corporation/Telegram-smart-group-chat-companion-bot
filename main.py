@@ -34,7 +34,7 @@ discount_on_sub_50 = generate_code()
 discount_on_sub_20 = generate_code()
 discount_for_public = 'JOHNNY'
 promocode_100 = generate_code()
-promocodes = {'sub': sub_pro_promocode, "discount_50": discount_on_sub_50, 'discount_50': discount_for_public, 'messages_100': promocode_100}
+promocodes = {'sub': sub_pro_promocode, 'discount_50_subscription': discount_for_public, 'messages_100': promocode_100}
 
 # --------------- Initialization ---------------
 

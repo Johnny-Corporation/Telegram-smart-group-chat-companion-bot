@@ -10,6 +10,7 @@ def extend_sub(message):
     #create price with all allowed discounts
     price = 999
     for discount in groups[message.chat.id].discount_subscription.values():
-        price = price * discount
+        if discount!=1:
+            price = price * 1-discount
 
     accept_payment(message, price, 'extend')

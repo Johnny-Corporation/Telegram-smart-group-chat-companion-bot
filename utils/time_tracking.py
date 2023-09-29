@@ -27,18 +27,19 @@ def check_code(promocodes ,promocode_in):
     if type_==None:
         print("NOOOOOOOOONEEEEEEEEEEEE")
         return []
-    if 'sub' in type_:
-        promocodes[type_] = generate_code()
-        return ['Pro', 100, type_]
-    elif 'discount' in type_:
+    if 'discount' in type_:
         discount = int(type_.split("_")[1])/100
-        return [discount, type_]
+        view = type_.split('_')[2]
+        return [discount, view, type_]
+    elif 'sub' in type_:
+        promocodes[type_] = generate_code()
+        return ['Pro', 100, '', type_]
     elif 'JOHNNY' in type_:
         return [0.50, type_]
     elif 'messages' in type_:
         num = int(type_.split("_")[1])
         promocodes[type_] = generate_code()
-        return [num, type_]
+        return [num, '', type_]
 
     
     else:

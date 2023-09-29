@@ -109,12 +109,12 @@ def get_group_info_reply_handler(inner_message):
 def get_promocodes(inner_message):
     text = ''
     for promocode_key in promocodes:
-        if 'sub' in promocode_key:
+        if 'discount' in promocode_key:
+            text += f"Get discount on {promocode_key.split('_')[1]}% on {promocode_key.split('_')[2]}: {promocodes[promocode_key]}\n"
+        elif 'sub' in promocode_key:
             text += f"Get Subscription Pro: {promocodes[promocode_key]}\n"
         elif 'messages' in promocode_key:
             text += f"Get {promocode_key.split('_')[1]} messages: {promocodes[promocode_key]}\n"
-        elif 'discount' in promocode_key:
-            text += f"Get discount on {promocode_key.split('_')[1]}%: {promocodes[promocode_key]}\n"
     bot.send_message(
         inner_message.chat.id,
         text
@@ -123,7 +123,7 @@ def get_promocodes(inner_message):
 def add_promocode(message):
     bot_reply = bot.send_message(
         message.chat.id,
-        f"Write your new promocode in format\n  -for discount, messages: type_value (type is discount or messages, value - num of messages or the % for dicount)\n  -for sub: sub\n*for public code add to basic form: _yourcode",
+        f"Write your new promocode in format\n  -for discount, messages: type_value_view (type is discount or messages, value - num of messages or the % for dicount, view - arrange of using promocode (messages, subscription, all))\n  -for sub: sub\n*for public code add to basic form: _yourcode",
     )
     reply_blacklist[message.chat.id].append(bot_reply.message_id)
     bot.register_for_reply(bot_reply, add_promocode_reply_handler)
