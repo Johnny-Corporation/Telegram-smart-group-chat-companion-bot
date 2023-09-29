@@ -7,7 +7,7 @@ def get_youtube_results(query):
     videos_search = VideosSearch(query, limit=10)
 
     for i in videos_search.result()["result"]:
-        print(i)
+        (i)
         message_text = i["accessibility"]["title"] + "\n" + i["link"]
         results.append(
             {

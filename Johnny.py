@@ -5,6 +5,7 @@ import telebot.types as telebot_types
 import soundfile as sf
 from utils.db_controller import Controller
 import utils.gpt_interface as gpt
+
 # from utils.time_tracking import *
 from dotenv import load_dotenv
 from datetime import datetime
@@ -68,9 +69,9 @@ class Johnny:
     bot: TeleBot
     chat_id: int
     bot_username: str
-    temporary_memory_size: int = 7
+    temporary_memory_size: int = 5
     language_code: str = "eng"
-    num_inline_gpt_suggestions: int = 2
+    num_inline_gpt_suggestions: int = 1
     trigger_probability_: float = 0.8
     model = "gpt-3.5-turbo"  # "lama" "gpt-3.5-turbo" "gpt-4" "vicuna" "gigachat" "yandexgpt"
     tokens_limit: int = 3950  # Leave gap for functions
@@ -109,7 +110,7 @@ class Johnny:
                 "messages_limit": 10,
                 "price_of_message": 10,
                 "sphere_permission": False,
-                "dynamic_gen_permission": False,
+                "dynamic_gen_permission": True,
                 "pro_voice_output": False,
             }
         }
@@ -147,7 +148,6 @@ class Johnny:
     @trigger_probability.setter
     def trigger_probability(self, val):
         self.trigger_probability_ = val
-        print("=====================================")
         # This line does nothing! Because load_buttons just returns markup.
         load_buttons(telebot_types, groups, self.chat_id, self.lang_code, self.owner_id)
 
@@ -180,7 +180,7 @@ class Johnny:
         for m in self.messages_history[:-4]:
             if (
                 m[0] == "$FUNCTION$"
-                or ("[FILE]" in m[1])
+                or("[FILE]" in m[1])
                 or ("[USER SENT AN IMAGE]" in m[1])
             ):
                 self.messages_history.remove(m)
@@ -726,7 +726,7 @@ class Johnny:
             if isinstance(message, str):  # strange bug with long message
                 continue
             for key, value in message.items():
-                print("@@@", value)
+                ("@@@", value)
                 num_tokens += len(encoding.encode(str(value)))
                 if key == "name":  # if there's a name, the role is omitted
                     num_tokens += -1  # role is always required and always 1 token
@@ -897,7 +897,7 @@ class Johnny:
                 # create a scheduler
                 sub_scheduler = BackgroundScheduler()
 
-                # schedule a task to print a number after 2 seconds
+                # schedule a task to  a number after 2 seconds
                 sub_scheduler.add_job(
                     sub_tracking,
                     "date",
@@ -918,7 +918,7 @@ class Johnny:
                     # create a scheduler
                     sub_scheduler = BackgroundScheduler()
 
-                    # schedule a task to print a number after 2 seconds
+                    # schedule a task to  a number after 2 seconds
                     sub_scheduler.add_job(
                         sub_tracking,
                         "date",

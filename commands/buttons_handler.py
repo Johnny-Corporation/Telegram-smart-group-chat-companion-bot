@@ -30,6 +30,34 @@ def keyboard_buttons_handler(call):
     # if "group_permission" in call.data:
     #     call_data
 
+    # survey option
+    if call_data.startswith("survey_option_"):
+        if call.message.chat.id in already_pressed_survey:
+            if call.message.chat.id < 0:
+                bot.send_message(
+                    call.message.chat.id,
+                    translate_text(
+                        groups[call.message.chat.id].lang_code,
+                        "Someone in this group already voted!",
+                    ),
+                )
+            elif call.message.chat.id > 0:
+                bot.send_message(
+                    call.message.chat.id,
+                    translate_text(
+                        groups[call.message.chat.id].lang_code,
+                        "You have already voted!",
+                    ),
+                )
+            return
+        else:
+            already_pressed_survey.append(call.message.chat.id)
+        option = call_data.replace("survey_option_", "")
+        user_info = bot.get_chat(call.message.chat.id)
+        username = user_info.username
+        survey_results[option].append([call.message.chat.id, "@" + str(username)])
+        return
+
     match call_data:
         case "menu":
             menu(message=call.message, back_from=True)
@@ -138,8 +166,21 @@ def keyboard_buttons_handler(call):
                 inline_mode_additional_settings(message=call.message)
         case "change_inline_gpt_suggestions_num_2":
             if groups[call.message.chat.id].num_inline_gpt_suggestions != 2:
-                groups[call.message.chat.id].num_inline_gpt_suggestions = 2
-                inline_mode_additional_settings(message=call.message)
+                if groups[call.message.chat.id].subscription != "Pro":
+                    target = bot.send_message(
+                        call.message.chat.id,
+                        templates[groups[call.message.chat.id].lang_code][
+                            "only_for_pro.txt"
+                        ],
+                    )
+                    threading.Timer(
+                        5,
+                        bot.delete_message,
+                        args=(call.message.chat.id, target.message_id),
+                    ).start()
+                else:
+                    groups[call.message.chat.id].num_inline_gpt_suggestions = 2
+                    inline_mode_additional_settings(message=call.message)
         case "change_inline_gpt_suggestions_num_3":
             if groups[call.message.chat.id].num_inline_gpt_suggestions != 3:
                 if groups[call.message.chat.id].subscription != "Pro":
@@ -653,6 +694,12 @@ def keyboard_buttons_handler(call):
 
         case "ask_newsletter":
             ask_newsletter(call.message)
+
+        case "ask_data_for_survey":
+            ask_newsletter(call.message, survey=True)
+
+        case "get_survey_stat":
+            get_survey_stat(call.message)
 
         case "decline_send_newsletter":
             bot.send_message(

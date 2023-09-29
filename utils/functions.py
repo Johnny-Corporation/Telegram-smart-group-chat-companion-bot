@@ -128,9 +128,9 @@ def download_and_save_image_from_link(link, filename):
             "wb",
         ) as file:  # windows file length limit ~250 chars
             file.write(response.content)
-            print("Image downloaded successfully.")
+            ("Image downloaded successfully.")
     else:
-        print("Failed to download image.")
+        ("Failed to download image.")
 
     return path
 
@@ -325,9 +325,7 @@ def translate_templates(lang):
 
     # Check if the target directory already exists
     if path.exists(target_directory):
-        print(
-            f"The directory '{target_directory}' already exists. Skipping translation."
-        )
+        (f"The directory '{target_directory}' already exists. Skipping translation.")
     else:
         # Create the target directory
         makedirs(target_directory)
@@ -382,9 +380,9 @@ def translate_text(lang, text, force=False):
 
 
 def load_buttons(types, groups, chat_id, language_code, owner_id=None):
-    print("IAM IN LOADBUTTONS")
-    print(f"ENABLING: {groups[chat_id].enabled}")
-    print(f"CHAT_ID: {chat_id}")
+    ("IAM IN LOADBUTTONS")
+    (f"ENABLING: {groups[chat_id].enabled}")
+    (f"CHAT_ID: {chat_id}")
 
     groups[chat_id].button_commands = []
 
@@ -417,7 +415,7 @@ def load_buttons(types, groups, chat_id, language_code, owner_id=None):
             "input_field_placeholder_private.txt"
         ]
     elif chat_id < 0:  # group
-        print("GROUP CONDITION")
+        ("GROUP CONDITION")
 
         if owner_id == None:
             text1 = translate_text(language_code, "ㅤ🚀 Activate botㅤ")
@@ -436,7 +434,7 @@ def load_buttons(types, groups, chat_id, language_code, owner_id=None):
 
             return markup
 
-        print(groups[chat_id].enabled)
+        (groups[chat_id].enabled)
         if groups[chat_id].enabled == True:
             text1 = translate_text(language_code, "ㅤ🔒 Stop conversationㅤ")
             itembtn1 = types.KeyboardButton(text1)
@@ -573,7 +571,7 @@ def generate_voice_message_premium(message, text, language, reply_to=None):
         ) as f:
             f.write(response.content)
     else:
-        print(f"Error: {response.status_code}, {response.text}")
+        (f"Error: {response.status_code}, {response.text}")
 
     return f"output\\voice_out\\voice_out_premium_{message.message_id}.wav"
 
@@ -607,7 +605,7 @@ def take_info_about_sub(subscription):
             "messages_limit": 10,
             "price_of_message": 10,
             "sphere_permission": False,
-            "dynamic_gen_permission": False,
+            "dynamic_gen_permission": True,
             "pro_voice_output": False,
         },
         "Pro": {
@@ -634,8 +632,8 @@ def read_text_from_image(url):
     status_code = response.status_code
     result = response.text
 
-    print(status_code)
-    print(result)
+    (status_code)
+    (result)
 
     if status_code != 200:
         return f"Failed to detect text. (status_code:{status_code}) "
@@ -653,7 +651,7 @@ def get_avaible_langs():
 
     # folder_path = '/path/to/your/folder'
     # directories = list_directories(folder_path)
-    # print(directories)
+    # (directories)
 
 
 def create_archive(folder_path, output_path):

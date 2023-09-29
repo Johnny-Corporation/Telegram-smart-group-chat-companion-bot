@@ -19,5 +19,5 @@ def get_access_token():
         token_data = json.loads(response.text)
         return token_data["access_token"]  # , token_data["expires_at"]
     else:
-        print(f"Error: {response.status_code}, {response.text}")
+        (f"Error: {response.status_code}, {response.text}")
         return None, None

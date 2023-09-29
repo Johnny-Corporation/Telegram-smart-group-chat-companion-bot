@@ -4,7 +4,6 @@ from __main__ import *
 # --- reply handler for bug reports ---
 # @error_handler
 def add_promocode_reply_handler(inner_message):
-
     language_code = groups[inner_message.chat.id].lang_code
 
     try:
@@ -12,7 +11,7 @@ def add_promocode_reply_handler(inner_message):
         if inner_message.text=='sub':
 
             promocodes[f"sub"] = generate_code()
-            if len(form)==2:
+            if len(form) == 2:
                 form = inner_message.text.split("_")
                 promocodes[f"sub"] = form[1]
             bot.send_message(inner_message.chat.id, "Your sub promocode was added")
@@ -37,19 +36,21 @@ def add_promocode_reply_handler(inner_message):
         return
 
     except:
-
-        bot.send_message(inner_message.chat.id, 'incorrect format')
+        bot.send_message(inner_message.chat.id, "incorrect format")
 
     # --- reply handler for bug reports ---
+
+
 # @error_handler
 def delete_promocode_reply_handler(inner_message):
-
     language_code = groups[inner_message.chat.id].lang_code
 
     if inner_message.text in promocodes:
         promocodes.pop(inner_message.text, None)
 
-        bot.send_message(inner_message.chat.id, f"Promocode {inner_message.text} was deleted")
+        bot.send_message(
+            inner_message.chat.id, f"Promocode {inner_message.text} was deleted"
+        )
 
     else:
-        bot.send_message(inner_message.chat.id, 'There isnt such promocode')
+        bot.send_message(inner_message.chat.id, "There isnt such promocode")

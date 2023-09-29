@@ -5,7 +5,7 @@ from __main__ import *
 @bot.message_handler(commands=["dev_tools"], func=time_filter)
 @error_handler
 def dev_tools(message, edit: bool = False):
-    if str(message.chat.id) not in developer_chat_IDs:  # Our group id
+    if str(message.chat.id) not in developer_chat_IDs:
         bot.reply_to(message, "ACCESS DENIED")
         bot.reply_to(message, "🖕")
         return
@@ -97,6 +97,16 @@ def dev_tools(message, edit: bool = False):
     button = types.InlineKeyboardButton(
         text=translate_text(groups[chat_id].lang_code, "Send newsletter to all users"),
         callback_data="ask_newsletter",
+    )
+    dev_tools_markup.add(button)
+    button = types.InlineKeyboardButton(
+        text=translate_text(groups[chat_id].lang_code, "Create survey"),
+        callback_data="ask_data_for_survey",
+    )
+    dev_tools_markup.add(button)
+    button = types.InlineKeyboardButton(
+        text=translate_text(groups[chat_id].lang_code, "Get current survey statistics"),
+        callback_data="get_survey_stat",
     )
     dev_tools_markup.add(button)
     button = types.InlineKeyboardButton(

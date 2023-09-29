@@ -12,6 +12,8 @@ from telebot.apihelper import ApiTelegramException
 
 # Local modules
 groups = {}  # {group chat_id:Johnny object}
+survey_results = {}  # option: [ [id,username] ]
+already_pressed_survey = []  # list of ids which take part in survey
 from Johnny import Johnny
 from utils.internet_access import *
 from utils.functions import *
@@ -29,10 +31,11 @@ import string
 from random import choice
 
 from utils.time_tracking import *
+
 sub_pro_promocode = generate_code()
 discount_on_sub_50 = generate_code()
 discount_on_sub_20 = generate_code()
-discount_for_public = 'JOHNNY'
+discount_for_public = "JOHNNY"
 promocode_100 = generate_code()
 promocodes = {'sub': sub_pro_promocode, 'discount_50_subscription': discount_for_public, 'messages_100': promocode_100}
 
@@ -46,7 +49,7 @@ skip_old_messages = True  # True until message older than bot start time receive
 ignored_messages = 0  # count number of ignored messages when bot was offline for logs
 
 
-bot_token = environ.get("BOT_API_TOKEN_OFFICIAL_OLD")
+bot_token = environ.get("BOT_API_TOKEN")
 
 yoomoney_token = environ.get("PAYMENT_RUS_TOKEN")
 
@@ -94,9 +97,9 @@ run_button = types.KeyboardButton("Start")
 markup.input_field_placeholder = "🚀"
 markup.add(run_button)
 
-first_message = input(
-    "Enter message to send users who were using bot, if Johnny notified them that he fall, its better to send something to notify them that it is working now, press Enter to do not send anything: "
-)
+first_message = ""  # input(
+#     "Enter message to send users who were using bot, if Johnny notified them that he fall, its better to send something to notify them that it is working now, press Enter to do not send anything: "
+# )
 
 remembered_chats_ids = []
 
@@ -355,7 +358,7 @@ def send_welcome_text_and_load_data(
 
     groups[chat_id].activated = True
 
-    print("REGISTRATION IS GOING")
+    ("REGISTRATION IS GOING")
 
     # Load messages
     groups[chat_id].load_data()
@@ -420,8 +423,8 @@ def send_welcome_text_and_load_data(
         }
         groups[owner_id].permissions_of_groups[chat_id] = permissions
 
-    if groups[chat_id].subscription == "Pro":
-        groups[chat_id].dynamic_gen = True
+    # if groups[chat_id].subscription == "Pro":
+    groups[chat_id].dynamic_gen = True
 
     # Load buttons
     markup = load_buttons(

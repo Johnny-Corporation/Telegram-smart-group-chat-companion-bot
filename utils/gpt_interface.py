@@ -31,7 +31,7 @@ templates = load_templates("templates\\")
 
 openAI_api_key = environ.get("OPENAI_API_KEY")
 if not openAI_api_key:
-    print("Failed to load OpenAI API key from environment, exiting...")
+    ("Failed to load OpenAI API key from environment, exiting...")
     exit()
 openai.api_key = openAI_api_key
 
@@ -143,7 +143,7 @@ def create_chat_completion(
 
     # --- Building system content ---
     # system_content = ""
-    system_content = f"You are telegram bot @JohnnyAIBot (short Johnny), developed by JohnnyCorp team. Your answers should be {answer_length}, use plenty emojis. You are remembering context. "
+    system_content = f"You are telegram bot @JohnnyAIBot, developed by JohnnyCorp team. Your answers should be {answer_length}, use plenty emojis, dont ask how can u help, suggest plenty ideas and critic other ideas"
     if johnny.chat_id < 0:  # group
         system_content += "Suggest plenty ideas, try to find pros and cons of ideas discussed in chat, take part in conversation, ask questions if needed"
     if model == "gigachat":
@@ -221,7 +221,7 @@ def create_chat_completion(
         logger.error(f"Failed to connect to OpenAI API: {e}")
         raise e
     except openai.error.RateLimitError as e:
-        print(f"OpenAI API request exceeded rate limit: {e}")
+        (f"OpenAI API request exceeded rate limit: {e}")
         johnny.messages_to_be_deleted.append(
             johnny.bot.send_message(
                 johnny.message.chat.id, templates[johnny.lang_code]["high_demand.txt"]

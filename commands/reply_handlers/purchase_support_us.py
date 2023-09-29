@@ -4,7 +4,6 @@ from __main__ import *
 # --- reply handler for set temp
 @error_handler
 def support_us_reply_handler(inner_message):
-
     None
 
     # def support(inner_message):
@@ -25,7 +24,7 @@ def support_us_reply_handler(inner_message):
     #             templates[language_code]["thanks_for_supporting.txt"]
     #         )
     #         return
-        
+
     #     bot.send_message(
     #         inner_message.chat.id, templates[language_code]["support_declined.txt"]
     #     )
@@ -33,10 +32,8 @@ def support_us_reply_handler(inner_message):
     # # create a scheduler
     # sub_scheduler = BackgroundScheduler()
 
-    # # schedule a task to print a number after 2 seconds
+    # # schedule a task to  a number after 2 seconds
     # sub_scheduler.add_job(support, 'date', run_date=start_date + relativedelta(=3), args=[inner_message], misfire_grace_time=86400)
 
     # # start the scheduler
     # sub_scheduler.start()
-
-    
