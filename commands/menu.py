@@ -19,24 +19,24 @@ def menu(message, back_from=False):
         callback_data="generate_image",
     )
     markup.add(button1)
-    if message.chat.id < 0:
-        button1 = types.InlineKeyboardButton(
-            text=templates[language_code]["button_menu_group.txt"],
-            callback_data="group",
-        )
-        markup.add(button1)
-    else:
-        button1 = types.InlineKeyboardButton(
-            text=templates[language_code]["button_menu_account.txt"],
-            callback_data="account",
-        )
-        markup.add(button1)
-    if message.chat.id > 0:
-        button1 = types.InlineKeyboardButton(
-            text=templates[language_code]["button_purchase.txt"],
-            callback_data="purchase",
-        )
-        markup.add(button1)
+    # if message.chat.id < 0:
+    #     button1 = types.InlineKeyboardButton(
+    #         text=templates[language_code]["button_menu_group.txt"],
+    #         callback_data="group",
+    #     )
+    #     markup.add(button1)
+    # else:
+    #     button1 = types.InlineKeyboardButton(
+    #         text=templates[language_code]["button_menu_account.txt"],
+    #         callback_data="account",
+    #     )
+    #     markup.add(button1)
+    # if message.chat.id > 0:
+    #     button1 = types.InlineKeyboardButton(
+    #         text=templates[language_code]["button_purchase.txt"],
+    #         callback_data="purchase",
+    #     )
+    #     markup.add(button1)
     button1 = types.InlineKeyboardButton(
         text=templates[language_code]["button_menu_settings.txt"],
         callback_data="settings",

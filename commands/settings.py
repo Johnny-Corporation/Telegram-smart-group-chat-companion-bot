@@ -15,10 +15,10 @@ def settings(message):
         callback_data="change_model",
     )
 
-    button1 = types.InlineKeyboardButton(
-        text=templates[language_code]["button_set_up.txt"],
-        callback_data="bot_answers",
-    )
+    # button1 = types.InlineKeyboardButton(
+    #     text=templates[language_code]["button_set_up.txt"],
+    #     callback_data="bot_answers",
+    # )
     # sphere of conservation
     sphere_button = types.InlineKeyboardButton(
         text=templates[language_code]["button_set_sphere.txt"],
@@ -39,25 +39,25 @@ def settings(message):
 
     # Adding buttons to keyboard
     markup.add(button0)
-    markup.add(button1)
+    # markup.add(button1)
     markup.add(sphere_button)
     markup.add(button2)
     markup.add(button3)
     markup.add(button4)
 
-    if message.chat.id < 0:
-        owner_button = types.InlineKeyboardButton(
-            text=templates[language_code]["button_change_owner.txt"],
-            callback_data="change_owner",
-        )
-        markup.add(owner_button)
+    # if message.chat.id < 0:
+    #     owner_button = types.InlineKeyboardButton(
+    #         text=templates[language_code]["button_change_owner.txt"],
+    #         callback_data="change_owner",
+    #     )
+    #     markup.add(owner_button)
 
-    if groups[message.chat.id].owner_id and message.chat.id>0:
-        permission_button = types.InlineKeyboardButton(
-            text=templates[language_code]["button_settings_change_permissions.txt"],
-            callback_data="permissions_of_group",
-        )
-        markup.add(permission_button)
+    # if groups[message.chat.id].owner_id and message.chat.id>0:
+    #     permission_button = types.InlineKeyboardButton(
+    #         text=templates[language_code]["button_settings_change_permissions.txt"],
+    #         callback_data="permissions_of_group",
+    #     )
+    #     markup.add(permission_button)
 
     back_button = types.InlineKeyboardButton(
         text="<<<",

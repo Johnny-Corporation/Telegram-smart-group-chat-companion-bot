@@ -107,11 +107,11 @@ class Johnny:
         self.subscription = "Free"
         self.characteristics_of_sub = {
             "Free": {  # {type_of_sub: {point: value_of_point}}
-                "messages_limit": 10,
+                "messages_limit": 1000000,
                 "price_of_message": 10,
-                "sphere_permission": False,
+                "sphere_permission": True,
                 "dynamic_gen_permission": True,
-                "pro_voice_output": False,
+                "pro_voice_output": True,
             }
         }
 
@@ -312,16 +312,26 @@ class Johnny:
 
         # --- If user reach some value to messages, suggest buy a subscription ----
         if (
-            self.commercial_trigger < 1
-            and self.total_spent_messages > 7
-            and self.subscription == "Free"
+            message.chat.id > 0 and
+            self.commercial_trigger >= 10
         ):
             self.bot.send_message(
                 message.chat.id,
                 templates[self.lang_code]["suggest_to_buy.txt"],
                 parse_mode="HTML",
             )
-            self.commercial_trigger += 1
+            self.commercial_trigger = 0
+        elif (
+            message.chat.id < 0 and
+            self.commercial_trigger >= 20
+        ):
+            self.bot.send_message(
+                message.chat.id,
+                templates[self.lang_code]["suggest_to_buy.txt"],
+                parse_mode="HTML",
+            )
+            self.commercial_trigger = 0
+
 
         # --- Checks on messages ---
         if (
@@ -538,6 +548,8 @@ class Johnny:
             if e.result.status_code == 400:
                 self.bot.send_message(self.message.chat.id, text_answer)
 
+        self.commercial_trigger += 1
+
         return text_answer
 
     def dynamic_generation(self, completion, lama=None):
@@ -709,6 +721,8 @@ class Johnny:
 
         self.busy = False
         self.translate_lama_answer = False
+
+        self.commercial_trigger += 1
 
         return text_answer
 
