@@ -174,6 +174,7 @@ class Johnny:
                 if allow_function_call is None
                 else allow_function_call
             ),
+            use_original_api=(True if self.subscription == "Pro" else False),
         )
 
     def clean_memory(self):
@@ -311,44 +312,37 @@ class Johnny:
             return
 
         # --- If user reach some value to messages, suggest buy a subscription ----
-        if (
-            message.chat.id > 0 and
-            self.commercial_trigger >= 10
-        ):
+        if message.chat.id > 0 and self.commercial_trigger >= 10:
             self.bot.send_message(
                 message.chat.id,
                 templates[self.lang_code]["suggest_to_buy.txt"],
                 parse_mode="HTML",
             )
             self.commercial_trigger = 0
-        elif (
-            message.chat.id < 0 and
-            self.commercial_trigger >= 20
-        ):
+        elif message.chat.id < 0 and self.commercial_trigger >= 20:
             self.bot.send_message(
                 message.chat.id,
                 templates[self.lang_code]["suggest_to_buy.txt"],
                 parse_mode="HTML",
             )
             self.commercial_trigger = 0
-
 
         # --- Checks on messages ---
-        if (
-            groups[self.owner_id].total_spent_messages
-            >= groups[self.owner_id].characteristics_of_sub[
-                groups[self.owner_id].subscription
-            ]["messages_limit"]
-        ):
-            self.bot.send_message(
-                message.chat.id,
-                templates[self.lang_code]["exceed_limit_on_messages.txt"],
-                parse_mode="HTML",
-            )
-            groups[self.owner_id].total_spent_messages = self.characteristics_of_sub[
-                self.subscription
-            ]["messages_limit"]
-            return
+        # if (
+        #     groups[self.owner_id].total_spent_messages
+        #     >= groups[self.owner_id].characteristics_of_sub[
+        #         groups[self.owner_id].subscription
+        #     ]["messages_limit"]
+        # ):
+        #     self.bot.send_message(
+        #         message.chat.id,
+        #         templates[self.lang_code]["exceed_limit_on_messages.txt"],
+        #         parse_mode="HTML",
+        #     )
+        #     groups[self.owner_id].total_spent_messages = self.characteristics_of_sub[
+        #         self.subscription
+        #     ]["messages_limit"]
+        #     return
 
         if (
             ("@" + self.bot_username in text)
@@ -527,8 +521,9 @@ class Johnny:
         self.translate_lama_answer = False
         # Check context understanding
         if check_understanding_:
-            if not self.check_understanding(text_answer):
-                return None
+            if self.subscription == "Pro":
+                if not self.check_understanding(text_answer):
+                    return None
 
         if self.voice_out_enabled == True:
             text_to_voice(
@@ -556,7 +551,7 @@ class Johnny:
         """Takes completion object and returns text answer. Handles message in telegram"""
 
         if not lama:
-            lama = self.model == "lama"
+            lama = self.model == "lama" or self.subscription != "Pro"
 
         if self.last_function_request is None:
             self.thinking_message = self.bot.send_message(self.chat_id, "🤔")

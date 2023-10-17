@@ -1,8 +1,7 @@
 Here you can select model.
 
-❗️ GPT-4 is only available for PRO users
 ❗️ Llama is currently can't be used as primary model, but used as reserve model by default
-❗️ When GPT is under high demand Lama and Vicuna are used
+❗️ When selected model is under high demand Lama and Vicuna are used
 ❗️ Vicuna can be set as primary model, but it is not recommended
 
 GPT-3:

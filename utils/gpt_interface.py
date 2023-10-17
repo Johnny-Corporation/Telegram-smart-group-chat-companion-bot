@@ -5,6 +5,7 @@ import utils.functions as functions
 import json
 from utils.internet_access import *
 import replicate
+import g4f
 
 
 # Cant import from functions because og the cycle imports
@@ -38,13 +39,16 @@ openai.api_key = openAI_api_key
 
 def extract_text(completion: openai.ChatCompletion) -> str:
     """Extracts text from OpenAI API response"""
-    if hasattr(completion, "choices"):
-        return completion.choices[0].message.content
-    else:
-        result = ""
-        for i in completion:
-            result += i
-        return result.replace("LAMA:", "")
+    try:
+        if hasattr(completion, "choices"):
+            return completion.choices[0].message.content
+        else:
+            result = ""
+            for i in completion:
+                result += i
+            return result.replace("LAMA:", "")
+    except:
+        return str(completion)
 
 
 def check_function_call(completion: openai.ChatCompletion) -> bool:
@@ -135,6 +139,7 @@ def create_chat_completion(
     stop: str = None,
     frequency_penalty: float = 0,
     presence_penalty: float = 0,
+    use_original_api: bool = False,
 ) -> openai.ChatCompletion:
     """Creates ChatCompletion
     messages(list): list of dicts, where key is users name and value is his message
@@ -192,25 +197,25 @@ def create_chat_completion(
             logger.info(f"Lama response:{completion}")
         elif ("gpt" in model) and ("yandex" not in model):
             logger.info("Requesting gpt...")
-            completion = openai.ChatCompletion.create(**chat_completion_arguments)
+            completion = get_completion(chat_completion_arguments, use_original_api)
         elif model == "gigachat":
             logger.info("Requesting gpt... (GigaChat)")
             chat_completion_arguments["model"] = "gpt-3.5-turbo"
             del chat_completion_arguments["function_call"]
             del chat_completion_arguments["functions"]
-            completion = openai.ChatCompletion.create(**chat_completion_arguments)
+            completion = get_completion(chat_completion_arguments, use_original_api)
         elif model == "yandexgpt":
             logger.info("Requesting gpt... (YandexGPT)")
             chat_completion_arguments["model"] = "gpt-3.5-turbo"
             del chat_completion_arguments["function_call"]
             del chat_completion_arguments["functions"]
-            completion = openai.ChatCompletion.create(**chat_completion_arguments)
+            completion = get_completion(chat_completion_arguments, use_original_api)
         elif model == "bard":
             logger.info("Requesting gpt... (Bard)")
             chat_completion_arguments["model"] = "gpt-3.5-turbo"
             del chat_completion_arguments["function_call"]
             del chat_completion_arguments["functions"]
-            completion = openai.ChatCompletion.create(**chat_completion_arguments)
+            completion = get_completion(chat_completion_arguments, use_original_api)
     except openai.error.APIError as e:
         logger.error(f"OpenAI API returned an API Error: {e}")
         # functions.send_to_developers(
@@ -222,7 +227,7 @@ def create_chat_completion(
         del chat_completion_arguments["function_call"]
         johnny.messages_history.pop()  # we are not making new prepared_messages! just removing from actual history to consider this in future
         # johnny.messages_history.clear()
-        completion = openai.ChatCompletion.create(**chat_completion_arguments)
+        completion = get_completion(chat_completion_arguments, use_original_api)
 
     except openai.error.APIConnectionError as e:
         logger.error(f"Failed to connect to OpenAI API: {e}")
@@ -241,6 +246,19 @@ def create_chat_completion(
     logger.info(f"API completion object: {completion}")
 
     return completion
+
+
+def get_completion(args, use_original):
+    if use_original:
+        return openai.ChatCompletion.create(**args)
+    else:
+        response = g4f.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=args["messages"],
+            provider=g4f.Provider.ChatgptDemo,
+            stream=args["stream"],
+        )
+        return response
 
 
 available_functions = {
@@ -333,7 +351,7 @@ def check_theme_context(answer, theme):
 
 
 def improve_img_gen_prompt(start_prompt):
-    completion = openai.ChatCompletion.create(
+    response = g4f.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
             {
@@ -341,13 +359,12 @@ def improve_img_gen_prompt(start_prompt):
                 "content": f"Make this prompt ({start_prompt}) for AI image generation a bit verbose and detailed",
             }
         ],
-        temperature=0,
-        max_tokens=40,
     )
+    new_prompt = response
     logger.info(
-        f"Image prompt improved from {start_prompt} to {extract_text(completion)}"
+        f"Image prompt improved from {start_prompt} to {extract_text(new_prompt)}"
     )
-    return extract_text(completion)
+    return new_prompt
 
 
 def speech_to_text(path):
