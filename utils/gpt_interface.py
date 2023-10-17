@@ -356,9 +356,11 @@ def improve_img_gen_prompt(start_prompt):
         messages=[
             {
                 "role": "user",
-                "content": f"Make this prompt ({start_prompt}) for AI image generation a bit verbose and detailed",
+                "content": f"Make this prompt ({start_prompt}) for AI image generation a bit verbose and detailed, about 5 sentences. Give right prompt itself without any additional words",
             }
         ],
+        provider=g4f.Provider.ChatgptDemo,
+        stream=False,
     )
     new_prompt = response
     logger.info(

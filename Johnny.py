@@ -368,7 +368,9 @@ class Johnny:
             if self.dynamic_gen:
                 try:
                     text_answer = self.dynamic_generation(self.response)
-                except openai.error.APIError as e:
+                except (
+                    openai.error.APIError
+                ) as e:  # This will be executed only when OpenAI API error occurs
                     self.bot.delete_message(
                         self.chat_id, self.thinking_message.message_id
                     )
