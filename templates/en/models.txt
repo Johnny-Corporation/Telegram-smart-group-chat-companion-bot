@@ -20,3 +20,20 @@ Vicuna:
 🔴 No internet access
 🔴 Bad context understanding
 🟡 Not recommended as primary model
+
+Sber GigaChat:
+🟢 High response speed
+🔴 No internet access
+🟡 Normal context understanding
+🟡 Not recommended as primary model
+
+YandexGPT2:
+🟢 High response speed
+🔴 No internet access
+🔴 Normal context understanding
+🟡 Not recommended as primary model
+
+Google bard:
+🟢 Internet access
+🟢 High response speed
+🟢 Good context understanding

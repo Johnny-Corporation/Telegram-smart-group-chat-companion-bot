@@ -142,7 +142,6 @@ def create_chat_completion(
     """
 
     # --- Building system content ---
-    # system_content = ""
     system_content = f"You are telegram bot @JohnnyAIBot, developed by JohnnyCorp team. Your answers should be {answer_length}, use plenty emojis, dont ask how can u help, suggest plenty ideas and critic other ideas"
     if johnny.chat_id < 0:  # group
         system_content += "Suggest plenty ideas, try to find pros and cons of ideas discussed in chat, take part in conversation, ask questions if needed"
@@ -150,6 +149,8 @@ def create_chat_completion(
         system_content += " You are working on GigaChat, new text model developed by Sber russian company"
     if model == "yandexgpt":
         system_content += " You are working on YandexGPT, new text model developed by Yandex russian company"
+    if model == "bard":
+        system_content += " You are working on Bard, AI chat bot developed by Google"
 
     previous_messages = [
         {
@@ -200,6 +201,12 @@ def create_chat_completion(
             completion = openai.ChatCompletion.create(**chat_completion_arguments)
         elif model == "yandexgpt":
             logger.info("Requesting gpt... (YandexGPT)")
+            chat_completion_arguments["model"] = "gpt-3.5-turbo"
+            del chat_completion_arguments["function_call"]
+            del chat_completion_arguments["functions"]
+            completion = openai.ChatCompletion.create(**chat_completion_arguments)
+        elif model == "bard":
+            logger.info("Requesting gpt... (Bard)")
             chat_completion_arguments["model"] = "gpt-3.5-turbo"
             del chat_completion_arguments["function_call"]
             del chat_completion_arguments["functions"]
